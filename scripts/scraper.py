@@ -36,83 +36,186 @@ def initialize_gemini():
     if not api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file")
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel('gemini-1.5-flash')
+    return genai.GenerativeModel('models/gemini-2.5-flash')
 
-async def scrape_olive_young(max_items: int = 20) -> List[Dict[str, Any]]:
+async def scrape_olive_young(max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
     """
     올리브영 베스트 제품 크롤링
     
     Args:
         max_items: 크롤링할 최대 아이템 수
+        max_retries: Cloudflare 우회 실패 시 최대 재시도 횟수
         
     Returns:
         제품 데이터 리스트
     """
     products = []
     
-    async with async_playwright() as p:
-        print("🌐 브라우저 시작 중...")
-        browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page()
-        
-        # 올리브영 베스트 페이지
-        url = "https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=1000000010001&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=48"
-        
-        print(f"📄 페이지 로딩 중: {url}")
-        await page.goto(url, wait_until='networkidle', timeout=60000)
-        
-        # 페이지 로딩 대기
-        await page.wait_for_timeout(3000)
-        
-        # HTML 가져오기
-        content = await page.content()
-        soup = BeautifulSoup(content, 'html.parser')
-        
-        # 제품 아이템 찾기
-        # 올리브영 구조에 맞게 선택자 조정 필요
-        items = soup.select('.prd_info')[:max_items]
-        
-        print(f"✅ {len(items)}개 제품 발견")
-        
-        for idx, item in enumerate(items, 1):
-            try:
-                # 제품명
-                name_elem = item.select_one('.tx_name')
-                name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
+    for attempt in range(max_retries):
+        try:
+            async with async_playwright() as p:
+                print(f"🌐 브라우저 시작 중... (시도 {attempt + 1}/{max_retries})")
                 
-                # 브랜드
-                brand_elem = item.select_one('.tx_brand')
-                brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
+                # 브라우저 설정: headless=False로 변경하여 더 실제 브라우저처럼 보이게
+                browser = await p.chromium.launch(
+                    headless=True,
+                    args=[
+                        '--disable-blink-features=AutomationControlled',
+                        '--disable-dev-shm-usage',
+                        '--no-sandbox'
+                    ]
+                )
                 
-                # 이미지
-                img_elem = item.select_one('img')
-                image_url = img_elem.get('src', '') if img_elem else ""
-                if image_url and not image_url.startswith('http'):
-                    image_url = 'https:' + image_url
+                # 브라우저 컨텍스트 생성 with User-Agent 설정
+                context = await browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080},
+                    locale='ko-KR',
+                    timezone_id='Asia/Seoul'
+                )
                 
-                # 가격
-                price_elem = item.select_one('.tx_price')
-                price = price_elem.get_text(strip=True) if price_elem else "0"
+                # JavaScript로 webdriver 감지 우회
+                await context.add_init_script("""
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    });
+                """)
                 
-                product = {
-                    'rank': idx,
-                    'productName': name,
-                    'brand': brand,
-                    'imageUrl': image_url or f"https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
-                    'price': price,
-                    'tags': [],
-                    'subcategory': 'skincare',  # 기본값, Gemini로 분류 예정
-                    'trend': 0,  # 추후 계산
-                }
+                page = await context.new_page()
                 
-                products.append(product)
-                print(f"  {idx}. {brand} - {name}")
+                # 올리브영 베스트 랭킹 페이지
+                url = "https://www.oliveyoung.co.kr/store/main/getBestList.do"
                 
-            except Exception as e:
-                print(f"⚠️  제품 {idx} 파싱 오류: {e}")
+                print(f"📄 페이지 로딩 중: {url}")
+                await page.goto(url, wait_until='domcontentloaded', timeout=60000)
+                
+                # Cloudflare 챌린지 대기 및 통과 확인
+                print("⏳ Cloudflare 챌린지 통과 대기 중...")
+                await page.wait_for_timeout(15000)  # 15초 대기
+                
+                # 추가 네트워크 안정화 대기
+                try:
+                    await page.wait_for_load_state('networkidle', timeout=10000)
+                except:
+                    print("⚠️  네트워크 idle 상태 대기 타임아웃 (계속 진행)")
+                
+                # 페이지 제목으로 Cloudflare 페이지인지 확인
+                page_title = await page.title()
+                if "Just a moment" in page_title or "잠시만 기다려" in page_title:
+                    print(f"⚠️  Cloudflare 챌린지 페이지 감지됨 (시도 {attempt + 1}/{max_retries})")
+                    await browser.close()
+                    if attempt < max_retries - 1:
+                        print("🔄 재시도 중...")
+                        await asyncio.sleep(5)  # 재시도 전 5초 대기
+                        continue
+                    else:
+                        print("❌ 최대 재시도 횟수 초과")
+                        return products
+                
+                print(f"✅ 페이지 로드 완료: {page_title}")
+                
+                # HTML 가져오기
+                content = await page.content()
+                
+                # 디버깅: HTML 저장
+                with open('oliveyoung_debug.html', 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print("💾 HTML 저장: oliveyoung_debug.html")
+                
+                soup = BeautifulSoup(content, 'html.parser')
+                
+                # 제품 아이템 찾기 - 올리브영 실제 구조
+                items = soup.select('ul.common_prd_list li')[:max_items]
+                
+                # 디버깅: 다른 셀렉터도 시도
+                if len(items) == 0:
+                    print("⚠️  'ul.common_prd_list li' 로 제품을 찾지 못함")
+                    items = soup.select('.prd_info')[:max_items]
+                    print(f"   '.prd_info' 시도: {len(items)}개 발견")
+                
+                if len(items) == 0:
+                    items = soup.select('li.flag')[:max_items]
+                    print(f"   'li.flag' 시도: {len(items)}개 발견")
+                
+                print(f"✅ {len(items)}개 제품 발견")
+                
+                # 제품을 찾지 못한 경우 재시도
+                if len(items) == 0:
+                    print(f"⚠️  제품을 찾지 못함 (시도 {attempt + 1}/{max_retries})")
+                    await browser.close()
+                    if attempt < max_retries - 1:
+                        print("🔄 재시도 중...")
+                        await asyncio.sleep(5)
+                        continue
+                    else:
+                        print("❌ 최대 재시도 횟수 초과")
+                        return products
+                
+                for idx, item in enumerate(items, 1):
+                    try:
+                        # 제품명 (.prd_name 안의 .tx_name에서 추출)
+                        name_elem = item.select_one('.prd_name .tx_name')
+                        name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
+                        
+                        # 브랜드
+                        brand_elem = item.select_one('.tx_brand')
+                        brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
+                        
+                        # 이미지 (src와 data-original 둘 다 확인)
+                        img_elem = item.select_one('.prd_thumb img')
+                        image_url = ''
+                        if img_elem:
+                            image_url = img_elem.get('data-original', '') or img_elem.get('src', '')
+                        if image_url and not image_url.startswith('http'):
+                            image_url = 'https:' + image_url
+                        
+                        # 가격 (현재가)
+                        price_elem = item.select_one('.tx_cur .tx_num')
+                        price = price_elem.get_text(strip=True) if price_elem else "0"
+                        if price:
+                            price = price + "원"
+                        
+                        # 구매 링크 (상세 페이지 URL)
+                        link_elem = item.select_one('.prd_thumb a')
+                        buy_url = link_elem.get('href', '') if link_elem else ''
+                        if buy_url and not buy_url.startswith('http'):
+                            buy_url = 'https://www.oliveyoung.co.kr' + buy_url
+                        
+                        product = {
+                            'rank': idx,
+                            'productName': name,
+                            'brand': brand,
+                            'imageUrl': image_url or f"https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
+                            'price': price,
+                            'buyUrl': buy_url,
+                            'tags': [],
+                            'subcategory': 'skincare',  # 기본값, Gemini로 분류 예정
+                            'trend': 0,  # 추후 계산
+                        }
+                        
+                        products.append(product)
+                        print(f"  {idx}. {brand} - {name} ({price})")
+                        
+                    except Exception as e:
+                        print(f"⚠️  제품 {idx} 파싱 오류: {e}")
+                        continue
+                
+                await browser.close()
+                
+                # 성공적으로 제품을 수집한 경우 루프 종료
+                print("✅ 제품 크롤링 성공!")
+                break
+                
+        except Exception as e:
+            print(f"❌ 크롤링 오류 (시도 {attempt + 1}/{max_retries}): {e}")
+            if attempt < max_retries - 1:
+                print("🔄 재시도 중...")
+                await asyncio.sleep(5)
                 continue
-        
-        await browser.close()
+            else:
+                print("❌ 최대 재시도 횟수 초과")
+                import traceback
+                traceback.print_exc()
     
     return products
 
