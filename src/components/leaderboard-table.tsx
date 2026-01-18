@@ -60,7 +60,7 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                             key={cat.id}
                             onClick={() => setSelectedCategory(cat.id)}
                             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${selectedCategory === cat.id
-                                ? "bg-brand-500 text-white shadow-md"
+                                ? "bg-beauty-500 text-white shadow-md"
                                 : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                                 }`}
                         >
@@ -74,7 +74,7 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
             {loading ? (
                 <div className="bg-bg-surface rounded-lg shadow-lg overflow-hidden">
                     <div className="py-20 text-center">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-500 border-r-transparent"></div>
+                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-beauty-500 border-r-transparent"></div>
                         <p className="mt-4 text-gray-500">카테고리 데이터 로딩 중...</p>
                     </div>
                 </div>
@@ -198,7 +198,7 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                                         className="inline-block"
                                     >
                                         <button
-                                            className="bg-brand-500 hover:bg-brand-600 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-transform active:scale-95"
+                                            className="bg-beauty-500 hover:bg-beauty-600 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-transform active:scale-95"
                                             title="Buy on Amazon"
                                         >
                                             <ShoppingCart size={12} />

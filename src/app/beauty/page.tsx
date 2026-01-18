@@ -45,7 +45,7 @@ export default function BeautyPage() {
             <Navbar />
 
             {/* Hero Section */}
-            <div className={`w-full ${category === 'media' ? 'bg-slate-900' : 'bg-brand-500'}`}>
+            <div className="w-full bg-beauty-500">
                 <div className="mx-auto max-w-[1020px] px-4 py-16">
                     <h1 className="text-4xl font-bold text-white mb-3">
                         Real-time K-Beauty Leaderboard
@@ -63,7 +63,7 @@ export default function BeautyPage() {
             <div className="mx-auto max-w-[1020px] px-4 py-8">
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-500 border-r-transparent"></div>
+                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-white border-r-transparent opacity-50"></div>
                         <p className="mt-4 text-gray-500">Loading rankings...</p>
                     </div>
                 ) : (

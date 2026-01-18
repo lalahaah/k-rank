@@ -84,7 +84,7 @@ export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) 
                                                 {item.titleKo}
                                             </div>
                                         )}
-                                        <span className="inline-block mt-1 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded">
+                                        <span className="inline-block mt-1 bg-media-500 text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wider">
                                             {item.type}
                                         </span>
                                     </div>
@@ -112,7 +112,7 @@ export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) 
 
                                 {/* Weeks in Top 10 */}
                                 <div className="col-span-2 text-center">
-                                    <span className="text-sm font-medium text-slate-700">
+                                    <span className="text-sm font-bold text-media-600">
                                         {item.weeksInTop10} {parseInt(item.weeksInTop10) === 1 ? 'week' : 'weeks'}
                                     </span>
                                 </div>
@@ -126,10 +126,10 @@ export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) 
                                         className="inline-block"
                                     >
                                         <button
-                                            className="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-transform active:scale-95"
+                                            className="bg-media-500 hover:bg-media-600 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-transform active:scale-95"
                                             title="Watch Trailer"
                                         >
-                                            <Play size={12} />
+                                            <Play size={12} fill="currentColor" />
                                             Trailer
                                         </button>
                                     </a>

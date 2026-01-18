@@ -50,7 +50,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 w-full h-auto md:h-[420px]">
 
             {/* Card 1: Beauty (Left Big Column) */}
-            <Link href="/beauty" className="group col-span-1 md:col-span-2 md:row-span-2 relative h-64 md:h-auto rounded-3xl overflow-hidden bg-[#5383E8] hover:bg-[#4169E1] transition-all shadow-2xl hover:-translate-y-1 block border border-white/10">
+            <Link href="/beauty" className="group col-span-1 md:col-span-2 md:row-span-2 relative h-64 md:h-auto rounded-3xl overflow-hidden bg-beauty-500/50 hover:bg-beauty-600 transition-all shadow-2xl hover:-translate-y-1 block border border-white/10">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1612817288484-96639d073114?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 group-hover:opacity-20 transition-opacity"></div>
 
               <div className="absolute inset-0 p-8 flex flex-col justify-between">
@@ -58,12 +58,12 @@ export default function LandingPage() {
                   <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl text-white">
                     <Sparkles className="w-8 h-8" />
                   </div>
-                  <span className="bg-white text-brand-500 px-3 py-1 rounded-full text-xs font-bold uppercase shadow-sm">#1 Traffic</span>
+                  <span className="bg-white text-beauty-500 px-3 py-1 rounded-full text-xs font-bold uppercase shadow-sm">#1 Traffic</span>
                 </div>
                 <div className="text-left relative z-10">
                   <h3 className="text-4xl font-black text-white mb-2 tracking-tight">K-BEAUTY</h3>
-                  <p className="text-blue-100 text-sm mb-6 font-medium">Olive Young Real-time Rankings.</p>
-                  <div className="inline-flex items-center gap-3 bg-white text-brand-500 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg">
+                  <p className="text-rose-100 text-sm mb-6 font-medium">Olive Young Real-time Rankings.</p>
+                  <div className="inline-flex items-center gap-3 bg-white text-beauty-500 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-rose-50 transition-colors shadow-lg">
                     View Ranking <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
@@ -71,38 +71,38 @@ export default function LandingPage() {
             </Link>
 
             {/* Card 2: Media (Top Right Wide) */}
-            <Link href="/media" className="group col-span-1 md:col-span-2 md:row-span-1 relative h-48 md:h-auto rounded-3xl overflow-hidden bg-slate-900 hover:bg-slate-800 transition-all shadow-2xl hover:-translate-y-1 border border-white/10 block">
+            <Link href="/media" className="group col-span-1 md:col-span-2 md:row-span-1 relative h-48 md:h-auto rounded-3xl overflow-hidden bg-media-500/50 hover:bg-media-600 transition-all shadow-2xl hover:-translate-y-1 border border-white/10 block">
               <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-30 transition-opacity"></div>
 
               <div className="absolute inset-0 p-6 flex justify-between items-center">
                 <div className="text-left relative z-10">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">Netflix Top 10</span>
+                    <span className="bg-white text-media-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Netflix Top 10</span>
                   </div>
                   <h3 className="text-2xl font-black text-white mb-1">K-MEDIA</h3>
-                  <p className="text-slate-300 text-xs">Dramas & Movies.</p>
+                  <p className="text-red-100 text-xs font-medium">Dramas & Movies.</p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md p-3 rounded-full text-red-500 border border-white/10">
+                <div className="bg-white/10 backdrop-blur-md p-3 rounded-full text-white border border-white/10">
                   <PlayCircle className="w-8 h-8 fill-current" />
                 </div>
               </div>
             </Link>
 
             {/* Card 3: Food (Bottom Right 1) */}
-            <Link href="/food" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all block">
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 group-hover:text-white transition-colors">
-                <Utensils className="w-8 h-8 mb-2 opacity-50" />
-                <span className="font-bold text-sm uppercase text-white/50">K-Food</span>
-                <span className="text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/10">Coming Soon</span>
+            <Link href="/food" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-food-500/50 hover:bg-food-600 border border-white/20 transition-all block text-white shadow-xl">
+              <div className="absolute inset-0 flex flex-col items-center justify-center transition-colors">
+                <Utensils className="w-8 h-8 mb-2" />
+                <span className="font-bold text-sm uppercase">K-Food</span>
+                <span className="text-[9px] bg-white/20 text-white px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/20">Coming Soon</span>
               </div>
             </Link>
 
             {/* Card 4: Place (Bottom Right 2) */}
-            <Link href="/place" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all block">
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 group-hover:text-white transition-colors">
-                <MapPin className="w-8 h-8 mb-2 opacity-50" />
-                <span className="font-bold text-sm uppercase text-white/50">K-Place</span>
-                <span className="text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/10">Coming Soon</span>
+            <Link href="/place" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-place-500/50 hover:bg-place-600 border border-white/20 transition-all block text-white shadow-xl">
+              <div className="absolute inset-0 flex flex-col items-center justify-center transition-colors">
+                <MapPin className="w-8 h-8 mb-2" />
+                <span className="font-bold text-sm uppercase">K-Place</span>
+                <span className="text-[9px] bg-white/20 text-white px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/20">Coming Soon</span>
               </div>
             </Link>
 

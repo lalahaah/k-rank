@@ -8,23 +8,72 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
   --font-mono: var(--font-inter);
-  
+
   /* K-Rank Brand Colors */
-  --color-brand-50: #EFF6FF;
-  --color-brand-100: #DBEAFE;
-  --color-brand-500: #5383E8;
-  --color-brand-600: #4169E1;
-  --color-brand-900: #1E3A8A;
-  
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-500: #5383e8;
+  --color-brand-600: #4169e1;
+  --color-brand-900: #1e3a8a;
+
+  /* Category Colors (Design System 2.0) */
+  /* Beauty - Glam Rose */
+  --color-beauty-50: #fff1f2;
+  --color-beauty-100: #ffe4e6;
+  --color-beauty-200: #fecdd3;
+  --color-beauty-300: #fda4af;
+  --color-beauty-400: #fb7185;
+  --color-beauty-500: #e11d48;
+  --color-beauty-600: #be123c;
+  --color-beauty-700: #9f1239;
+  --color-beauty-800: #881337;
+  --color-beauty-900: #701a2e;
+
+  /* Media - Streaming Red */
+  --color-media-50: #fef2f2;
+  --color-media-100: #fee2e2;
+  --color-media-200: #fecaca;
+  --color-media-300: #fca5a5;
+  --color-media-400: #f87171;
+  --color-media-500: #e50914;
+  --color-media-600: #b20710;
+  --color-media-700: #991b1b;
+  --color-media-800: #7f1d1d;
+  --color-media-900: #65171b;
+
+  /* Food - Savory Orange */
+  --color-food-50: #fff7ed;
+  --color-food-100: #ffedd5;
+  --color-food-200: #fed7aa;
+  --color-food-300: #fdba74;
+  --color-food-400: #fb923c;
+  --color-food-500: #f97316;
+  --color-food-600: #ea580c;
+  --color-food-700: #c2410c;
+  --color-food-800: #9a3412;
+  --color-food-900: #7c2d12;
+
+  /* Place - Map Green */
+  --color-place-50: #ecfdf5;
+  --color-place-100: #d1fae5;
+  --color-place-200: #a7f3d0;
+  --color-place-300: #6ee7b7;
+  --color-place-400: #34d399;
+  --color-place-500: #10b981;
+  --color-place-600: #059669;
+  --color-place-700: #047857;
+  --color-place-800: #065f46;
+  --color-place-900: #064e3b;
+
   /* Trend Colors */
   --color-trend-up: #EF4444;
   --color-trend-down: #3B82F6;
   --color-trend-stable: #9CA3AF;
-  
+
   /* Background Colors */
   --color-bg: #F5F7FA;
   --color-bg-surface: #FFFFFF;
-  
+
   /* Text Colors */
   --color-text-heading: #111827;
   --color-text-body: #374151;
@@ -140,6 +189,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
