@@ -198,17 +198,23 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
 
                                 {/* Action */}
                                 <div className="col-span-1 flex justify-center">
-                                    <button
-                                        className="bg-brand-500 hover:bg-brand-600 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1"
-                                        onClick={() => {
-                                            if (item.buyUrl) {
-                                                window.open(item.buyUrl, "_blank");
-                                            }
-                                        }}
+                                    <a
+                                        href={
+                                            item.buyUrl ||
+                                            `https://www.amazon.com/s?k=${encodeURIComponent(item.productName)}`
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-block"
                                     >
-                                        <ShoppingCart size={12} />
-                                        Buy
-                                    </button>
+                                        <button
+                                            className="bg-brand-500 hover:bg-brand-600 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-transform active:scale-95"
+                                            title="Buy on Amazon"
+                                        >
+                                            <ShoppingCart size={12} />
+                                            Buy
+                                        </button>
+                                    </a>
                                 </div>
                             </div>
                         ))}
