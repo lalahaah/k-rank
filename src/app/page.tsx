@@ -4,8 +4,8 @@ import { LeaderboardTable } from "@/components/leaderboard-table";
 import { getLatestRankings } from "@/lib/data";
 
 export default async function Home() {
-  // Fetch real data from Firebase
-  const rankings = await getLatestRankings('beauty');
+  // Fetch real data from Firebase - 'all' category for initial load
+  const rankings = await getLatestRankings('all');
 
   return (
     <div className="min-h-screen bg-canvas">

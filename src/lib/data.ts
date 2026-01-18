@@ -21,7 +21,7 @@ export interface DailyRanking {
 
 /**
  * Fetch the latest ranking data for a specific category
- * @param category - The category to fetch (e.g., 'beauty')
+ * @param category - The category to fetch (e.g., 'all', 'skincare', 'suncare', 'masks', 'makeup', 'hair-body')
  * @returns Array of ranking items, or empty array if no data found
  */
 export async function getLatestRankings(category: string): Promise<RankingItem[]> {
@@ -29,36 +29,42 @@ export async function getLatestRankings(category: string): Promise<RankingItem[]
         // Get today's date in YYYY-MM-DD format (UTC)
         const today = new Date().toISOString().split('T')[0];
 
+        // 카테고리 매핑: 프론트엔드 카테고리 -> Firestore 카테고리
+        let firestoreCategory = 'beauty'; // default for 'all'
+        if (category !== 'all') {
+            firestoreCategory = `beauty-${category}`;
+        }
+
         // Query using today's date as document ID
         const rankingsRef = collection(db, 'daily_rankings');
         const q = query(
             rankingsRef,
-            where('category', '==', category),
+            where('category', '==', firestoreCategory),
             where('date', '==', today)
         );
 
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            console.warn(`No rankings found for category: ${category} on date: ${today}`);
+            console.warn(`No rankings found for category: ${firestoreCategory} on date: ${today}`);
 
             // Fallback: Try to get any document for this category (without date filter)
             const fallbackQ = query(
                 rankingsRef,
-                where('category', '==', category)
+                where('category', '==', firestoreCategory)
             );
 
             const fallbackSnapshot = await getDocs(fallbackQ);
 
             if (fallbackSnapshot.empty) {
-                console.warn(`No rankings found for category: ${category} at all`);
+                console.warn(`No rankings found for category: ${firestoreCategory} at all`);
                 return [];
             }
 
             // Get the first document found
             const doc = fallbackSnapshot.docs[0];
             const data = doc.data() as DailyRanking;
-            console.log(`Loaded rankings from date: ${data.date}`);
+            console.log(`Loaded rankings from date: ${data.date} for category: ${firestoreCategory}`);
 
             return data.items || [];
         }

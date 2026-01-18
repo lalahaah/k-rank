@@ -21,6 +21,18 @@ from dotenv import load_dotenv
 # 환경변수 로드
 load_dotenv()
 
+# 카테고리 매핑 정의
+CATEGORY_MAPPING = {
+    'all': {'url_param': None, 'firestore_category': 'beauty'},
+    'skincare': {'url_param': '10000010001', 'firestore_category': 'beauty-skincare'},
+    'suncare': {'url_param': '10000010011', 'firestore_category': 'beauty-suncare'},
+    'masks': {'url_param': '10000010009', 'firestore_category': 'beauty-masks'},
+    'makeup': {'url_param': '10000010002', 'firestore_category': 'beauty-makeup'},
+    'haircare': {'url_param': '10000010004', 'firestore_category': 'beauty-haircare'},
+    'bodycare': {'url_param': '10000010003', 'firestore_category': 'beauty-bodycare'},
+}
+
+
 # Firebase 초기화
 def initialize_firebase():
     """Firebase Admin SDK 초기화"""
@@ -38,11 +50,12 @@ def initialize_gemini():
     genai.configure(api_key=api_key)
     return genai.GenerativeModel('models/gemini-2.5-flash')
 
-async def scrape_olive_young(max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
+async def scrape_olive_young_by_category(category_code: str = None, max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
     """
-    올리브영 베스트 제품 크롤링
+    올리브영 카테고리별 베스트 제품 크롤링
     
     Args:
+        category_code: 카테고리 코드 (예: '10000010001' for Skincare, None for All)
         max_items: 크롤링할 최대 아이템 수
         max_retries: Cloudflare 우회 실패 시 최대 재시도 횟수
         
@@ -83,8 +96,11 @@ async def scrape_olive_young(max_items: int = 20, max_retries: int = 3) -> List[
                 
                 page = await context.new_page()
                 
-                # 올리브영 베스트 랭킹 페이지
-                url = "https://www.oliveyoung.co.kr/store/main/getBestList.do"
+                # 올리브영 베스트 랭킹 페이지 - 카테고리별 URL 생성
+                if category_code:
+                    url = f"https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&fltDispCatNo={category_code}&rowsPerPage=100"
+                else:
+                    url = "https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&rowsPerPage=100"
                 
                 print(f"📄 페이지 로딩 중: {url}")
                 await page.goto(url, wait_until='domcontentloaded', timeout=60000)
@@ -219,45 +235,101 @@ async def scrape_olive_young(max_items: int = 20, max_retries: int = 3) -> List[
     
     return products
 
-async def classify_with_gemini(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+async def calculate_trends(db, category_key: str, current_products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Gemini AI로 제품 카테고리 분류
+    이전 날짜 랭킹과 비교하여 트렌드 계산
+    
+    Args:
+        db: Firestore 클라이언트
+        category_key: 카테고리 키
+        current_products: 현재 제품 리스트
+        
+    Returns:
+        트렌드가 추가된 제품 리스트
+    """
+    from datetime import timedelta
+    
+    try:
+        # 어제 날짜 (UTC)
+        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+        firestore_category = CATEGORY_MAPPING[category_key]['firestore_category']
+        doc_id = f"{yesterday}_{firestore_category}"
+        
+        # 어제 데이터 가져오기
+        doc_ref = db.collection('daily_rankings').document(doc_id)
+        doc = doc_ref.get()
+        
+        if not doc.exists:
+            # 어제 데이터 없으면 트렌드 0
+            for product in current_products:
+                product['trend'] = 0
+            return current_products
+        
+        yesterday_items = doc.to_dict().get('items', [])
+        
+        # 제품명으로 매칭하여 순위 변동 계산
+        for current_item in current_products:
+            current_rank = current_item['rank']
+            product_name = current_item['productName']
+            
+            # 어제 순위 찾기
+            yesterday_rank = None
+            for old_item in yesterday_items:
+                if old_item['productName'] == product_name:
+                    yesterday_rank = old_item['rank']
+                    break
+            
+            if yesterday_rank:
+                # 트렌드 = 어제 순위 - 오늘 순위 (양수면 상승)
+                current_item['trend'] = yesterday_rank - current_rank
+            else:
+                # 신규 진입
+                current_item['trend'] = 0
+        
+        return current_products
+        
+    except Exception as e:
+        print(f"⚠️  트렌드 계산 오류: {e}")
+        # 오류 발생 시 트렌드 0으로 설정
+        for product in current_products:
+            product['trend'] = 0
+        return current_products
+
+async def translate_to_english(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Gemini AI로 제품명과 브랜드명을 영어로 번역
     
     Args:
         model: Gemini 모델
         products: 제품 리스트
         
     Returns:
-        분류된 제품 리스트
+        영어로 번역된 제품 리스트
     """
-    print("\n🤖 Gemini AI로 카테고리 분류 중...")
+    print("\n🌐 Gemini AI로 제품명 및 브랜드명 영어 번역 중...")
     
     # 제품 이름 리스트 생성
-    product_names = [f"{p['rank']}. {p['productName']}" for p in products]
+    product_names = [f"{p['rank']}. {p['brand']} - {p['productName']}" for p in products]
     
     prompt = f"""
-다음은 K-Beauty 제품 목록입니다. 각 제품을 아래 카테고리 중 하나로 분류해주세요:
+Translate the following Korean beauty product brands and names to English.
+Romanize Korean brand names (e.g., 메디힐 → Mediheal, 어노브 → UNOVE).
+Remove special characters like [], 기획, 단품, etc.
+Make the names concise and clear.
 
-카테고리:
-- skincare: 토너, 세럼, 크림, 에센스 등 스킨케어 제품
-- suncare: 선크림, 선스틱 등 자외선 차단 제품  
-- masks: 시트마스크, 팩, 필링패드 등
-- makeup: 립스틱, 아이섀도우, 파운데이션 등 메이크업
-- hair-body: 샴푸, 바디워시, 핸드크림 등
-
-제품 목록:
+Products:
 {chr(10).join(product_names)}
 
-응답 형식 (JSON):
+Response format (JSON):
 {{
-  "classifications": [
-    {{"rank": 1, "subcategory": "skincare"}},
-    {{"rank": 2, "subcategory": "suncare"}},
+  "translations": [
+    {{"rank": 1, "brand": "English Brand Name", "product_name": "English Product Name"}},
+    {{"rank": 2, "brand": "English Brand Name", "product_name": "English Product Name"}},
     ...
   ]
 }}
 
-JSON만 출력하세요.
+JSON only.
 """
     
     try:
@@ -271,46 +343,128 @@ JSON만 출력하세요.
             if result_text.startswith('json'):
                 result_text = result_text[4:]
         
-        classifications = json.loads(result_text)
+        translations = json.loads(result_text)
         
-        # 제품에 카테고리 적용
-        for item in classifications.get('classifications', []):
+        # 제품에 영어 이름 및 브랜드 적용
+        for item in translations.get('translations', []):
             rank = item.get('rank')
-            subcategory = item.get('subcategory', 'skincare')
+            english_brand = item.get('brand', '')
+            english_name = item.get('product_name', '')
             
             for product in products:
                 if product['rank'] == rank:
-                    product['subcategory'] = subcategory
+                    # 한글 브랜드와 제품명을 영어로 완전히 교체
+                    if english_brand:
+                        product['brand'] = english_brand
+                    if english_name:
+                        product['productName'] = english_name
                     break
         
-        print("✅ 카테고리 분류 완료")
+        print("✅ 영어 번역 완료 (브랜드 + 제품명)")
         
     except Exception as e:
-        print(f"⚠️  Gemini 분류 오류: {e}")
-        print("기본 카테고리(skincare) 사용")
+        print(f"⚠️  Gemini 번역 오류: {e}")
+        print("한글 제품명 유지")
     
     return products
 
-def save_to_firebase(db, products: List[Dict[str, Any]]):
+async def generate_tags(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Firebase Firestore에 데이터 저장
+    Gemini AI로 제품별 태그 자동 생성
+    
+    Args:
+        model: Gemini 모델
+        products: 제품 리스트
+        
+    Returns:
+        태그가 추가된 제품 리스트
+    """
+    print("\n🏷️  Gemini AI로 제품 태그 자동 생성 중...")
+    
+    # 제품 이름 리스트 생성 (영어 번역된 이름 사용)
+    product_info = [f"{p['rank']}. {p['brand']} - {p['productName']}" for p in products]
+    
+    prompt = f"""
+Generate 2-3 relevant tags for each beauty product.
+Tags should describe product benefits, type, or main features.
+Use English tags only. Keep them short and concise.
+
+Examples:
+- Mask Pack → ["Hydrating", "Soothing", "Sheet Mask"]
+- Hair Treatment → ["Damage Repair", "Moisturizing"]
+- Sunscreen → ["UV Protection", "Tone Up"]
+
+Products:
+{chr(10).join(product_info)}
+
+Response format (JSON):
+{{
+  "tags": [
+    {{"rank": 1, "tags": ["Hydrating", "Soothing", "Sheet Mask"]}},
+    {{"rank": 2, "tags": ["Damage Repair", "Moisturizing"]}},
+    ...
+  ]
+}}
+
+JSON only.
+"""
+    
+    try:
+        response = model.generate_content(prompt)
+        result_text = response.text.strip()
+        
+        # JSON 파싱
+        # 마크다운 코드 블록 제거
+        if result_text.startswith('```'):
+            result_text = result_text.split('```')[1]
+            if result_text.startswith('json'):
+                result_text = result_text[4:]
+        
+        tag_data = json.loads(result_text)
+        
+        # 제품에 태그 적용
+        for item in tag_data.get('tags', []):
+            rank = item.get('rank')
+            tags = item.get('tags', [])
+            
+            for product in products:
+                if product['rank'] == rank:
+                    product['tags'] = tags
+                    break
+        
+        print("✅ 태그 생성 완료")
+        
+    except Exception as e:
+        print(f"⚠️  Gemini 태그 생성 오류: {e}")
+        print("빈 태그 배열 유지")
+    
+    return products
+
+def save_to_firebase(db, category_key: str, products: List[Dict[str, Any]]):
+    """
+    Firebase Firestore에 카테고리별 데이터 저장
     
     Args:
         db: Firestore 클라이언트
+        category_key: 카테고리 키 (예: 'all', 'skincare', 'suncare')
         products: 제품 리스트
     """
-    print("\n💾 Firebase에 저장 중...")
+    print(f"\n💾 Firebase에 {category_key} 카테고리 저장 중...")
     
     # 오늘 날짜 (UTC)
     today = datetime.utcnow().strftime('%Y-%m-%d')
     
-    # 문서 ID는 날짜
-    doc_ref = db.collection('daily_rankings').document(today)
+    # Firestore 카테고리 가져오기
+    firestore_category = CATEGORY_MAPPING[category_key]['firestore_category']
+    
+    # 문서 ID: {날짜}_{카테고리}
+    doc_id = f"{today}_{firestore_category}"
+    doc_ref = db.collection('daily_rankings').document(doc_id)
     
     # 데이터 구조
     data = {
         'date': today,
-        'category': 'beauty',
+        'category': firestore_category,
         'items': products,
         'updatedAt': firestore.SERVER_TIMESTAMP
     }
@@ -318,14 +472,14 @@ def save_to_firebase(db, products: List[Dict[str, Any]]):
     # 저장
     doc_ref.set(data)
     
-    print(f"✅ {len(products)}개 제품을 {today} 문서에 저장 완료")
+    print(f"✅ {len(products)}개 제품을 {doc_id} 문서에 저장 완료")
     print(f"📁 컬렉션: daily_rankings")
-    print(f"📄 문서 ID: {today}")
+    print(f"📄 문서 ID: {doc_id}")
 
 async def main():
     """메인 실행 함수"""
     print("=" * 60)
-    print("🇰🇷 K-Rank Beauty Scraper")
+    print("🇰🇷 K-Rank Beauty Scraper - 카테고리별 크롤링")
     print("=" * 60)
     
     try:
@@ -335,40 +489,49 @@ async def main():
         print("✅ Firebase 연결 완료")
         
         # 2. Gemini 초기화
-        print("\n🧠 Gemini AI 초기화 중...")
+        print("\n🤖 Gemini AI 초기화 중...")
         model = initialize_gemini()
-        print("✅ Gemini API 연결 완료")
+        print("✅ Gemini AI 연결 완료")
         
-        # 3. 올리브영 크롤링
-        products = await scrape_olive_young(max_items=20)
+        total_products = 0
         
-        if not products:
-            print("❌ 크롤링된 제품이 없습니다.")
-            return
-        
-        # 4. Gemini로 카테고리 분류
-        products = await classify_with_gemini(model, products)
-        
-        # 5. Firebase에 저장
-        save_to_firebase(db, products)
+        # 3. 각 카테고리별로 크롤링
+        for category_key, config in CATEGORY_MAPPING.items():
+            print("\n" + "=" * 60)
+            print(f"📦 {category_key.upper()} 카테고리 크롤링 시작")
+            print("=" * 60)
+            
+            # 카테고리별 크롤링
+            products = await scrape_olive_young_by_category(
+                category_code=config['url_param'],
+                max_items=20
+            )
+            
+            if not products:
+                print(f"⚠️  {category_key} 카테고리에서 제품을 찾지 못했습니다.")
+                continue
+            
+            # 트렌드 계산 (이전 날짜 데이터와 비교)
+            products = await calculate_trends(db, category_key, products)
+            
+            # 영어 번역 (브랜드 + 제품명)
+            products = await translate_to_english(model, products)
+            
+            # 태그 자동 생성
+            products = await generate_tags(model, products)
+            
+            # Firebase에 저장
+            save_to_firebase(db, category_key, products)
+            total_products += len(products)
         
         print("\n" + "=" * 60)
-        print("✅ 모든 작업 완료!")
+        print("✅ 모든 카테고리 크롤링 완료!")
         print("=" * 60)
         
         # 결과 요약
         print(f"\n📊 크롤링 결과:")
-        print(f"  - 총 제품 수: {len(products)}")
-        
-        # 카테고리별 집계
-        categories = {}
-        for p in products:
-            cat = p.get('subcategory', 'unknown')
-            categories[cat] = categories.get(cat, 0) + 1
-        
-        print(f"  - 카테고리별:")
-        for cat, count in categories.items():
-            print(f"    • {cat}: {count}개")
+        print(f"  - 총 제품 수: {total_products}개")
+        print(f"  - 크롤링된 카테고리: All, Skincare, Suncare, Masks, Makeup, Haircare, Bodycare")
         
     except Exception as e:
         print(f"\n❌ 오류 발생: {e}")
@@ -378,3 +541,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
