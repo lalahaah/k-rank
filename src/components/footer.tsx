@@ -25,7 +25,7 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                     {/* Brand Info */}
                     <div className="col-span-1 md:col-span-1">
-                        <Logo variant="brand" className="mb-4" />
+                        <Logo variant="brand" className="mb-4" size="lg" />
                         <p className="text-sm text-gray-500 leading-relaxed">
                             Your data-driven guide to real-time Korean trends.
                             We track daily rankings to help you shop smart.
