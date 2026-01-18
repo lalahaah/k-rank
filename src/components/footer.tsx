@@ -95,7 +95,7 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1">
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Disclosure</h4>
                         <p className="text-xs text-gray-400 leading-relaxed">
-                            K-RANK is a participant in the Amazon Services LLC Associates Program.
+                            Next Idea Lab Co., Ltd. is a participant in the Amazon Services LLC Associates Program.
                             We may earn commissions on qualifying purchases made through our links at no extra cost to you.
                         </p>
                     </div>
@@ -104,7 +104,7 @@ export function Footer() {
                 {/* Bottom Bar */}
                 <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-gray-400">
-                        &copy; {new Date().getFullYear()} K-Rank Leaderboards. All rights reserved.
+                        &copy; {new Date().getFullYear()} Next Idea Lab Co., Ltd. All rights reserved.
                     </p>
 
                 </div>
