@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Bell, CheckCircle2, AlertCircle } from "lucide-react";
 import { useState } from "react";
-import { db } from "@/lib/firebase";
+import { db } from "@/infrastructure/firebase/client";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 export function CtaSection() {

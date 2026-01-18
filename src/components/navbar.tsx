@@ -14,8 +14,14 @@ export function Navbar() {
     useEffect(() => {
         if (pathname === "/media") {
             setActiveTab("media");
-        } else {
+        } else if (pathname === "/beauty") {
             setActiveTab("beauty");
+        } else if (pathname === "/food") {
+            setActiveTab("food");
+        } else if (pathname === "/place") {
+            setActiveTab("place");
+        } else {
+            setActiveTab("home");
         }
     }, [pathname]);
 
@@ -30,7 +36,7 @@ export function Navbar() {
 
                     {/* Navigation Tabs */}
                     <div className="hidden md:flex items-center space-x-1">
-                        <Link href="/">
+                        <Link href="/beauty">
                             <button
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "beauty"
                                     ? "bg-white/20 text-white"
@@ -40,28 +46,26 @@ export function Navbar() {
                                 Beauty
                             </button>
                         </Link>
-                        <div className="relative group">
+                        <Link href="/food">
                             <button
-                                disabled
-                                className="px-4 py-2 rounded-md text-sm font-medium text-white/50 cursor-not-allowed"
+                                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "food"
+                                    ? "bg-white/20 text-white"
+                                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                                    }`}
                             >
                                 Food
                             </button>
-                            <div className="absolute hidden group-hover:block top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap">
-                                Coming Soon
-                            </div>
-                        </div>
-                        <div className="relative group">
+                        </Link>
+                        <Link href="/place">
                             <button
-                                disabled
-                                className="px-4 py-2 rounded-md text-sm font-medium text-white/50 cursor-not-allowed"
+                                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "place"
+                                    ? "bg-white/20 text-white"
+                                    : "text-white/80 hover:bg-white/10 hover:text-white"
+                                    }`}
                             >
                                 Place
                             </button>
-                            <div className="absolute hidden group-hover:block top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap">
-                                Coming Soon
-                            </div>
-                        </div>
+                        </Link>
                         <Link href="/media">
                             <button
                                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeTab === "media"
@@ -85,7 +89,7 @@ export function Navbar() {
 
             {/* Mobile Navigation */}
             <div className="md:hidden px-4 pb-3 space-x-2">
-                <Link href="/">
+                <Link href="/beauty">
                     <button
                         className={`px-3 py-1.5 rounded text-sm font-medium ${activeTab === "beauty"
                             ? "bg-white/20 text-white"
@@ -95,12 +99,26 @@ export function Navbar() {
                         Beauty
                     </button>
                 </Link>
-                <button disabled className="px-3 py-1.5 rounded text-sm font-medium text-white/50 cursor-not-allowed">
-                    Food
-                </button>
-                <button disabled className="px-3 py-1.5 rounded text-sm font-medium text-white/50 cursor-not-allowed">
-                    Place
-                </button>
+                <Link href="/food">
+                    <button
+                        className={`px-3 py-1.5 rounded text-sm font-medium ${activeTab === "food"
+                            ? "bg-white/20 text-white"
+                            : "text-white/80"
+                            }`}
+                    >
+                        Food
+                    </button>
+                </Link>
+                <Link href="/place">
+                    <button
+                        className={`px-3 py-1.5 rounded text-sm font-medium ${activeTab === "place"
+                            ? "bg-white/20 text-white"
+                            : "text-white/80"
+                            }`}
+                    >
+                        Place
+                    </button>
+                </Link>
                 <Link href="/media">
                     <button
                         className={`px-3 py-1.5 rounded text-sm font-medium ${activeTab === "media"

@@ -1,79 +1,115 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Sparkles, ArrowRight, PlayCircle, Utensils, MapPin } from "lucide-react";
+import Link from "next/link";
 import { Navbar } from "@/components/navbar";
-import { LeaderboardTable } from "@/components/leaderboard-table";
-import { SearchBar } from "@/components/search-bar";
-import { getLatestRankings } from "@/lib/data";
-import type { RankingItem } from "@/components/leaderboard-table";
-import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 
-export default function Home() {
-  const [rankings, setRankings] = useState<RankingItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const category: string = "all"; // Default category for home page
-
-  // Initial data fetch
-  useEffect(() => {
-    async function fetchInitialData() {
-      try {
-        const data = await getLatestRankings('all');
-        setRankings(data);
-      } catch (error) {
-        console.error('Error fetching rankings:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchInitialData();
-  }, []);
-
-  // Filter rankings based on search query
-  const filteredRankings = searchQuery.trim()
-    ? rankings.filter((item) =>
-      item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.brand.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    : rankings;
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-canvas">
+    <div className="min-h-screen flex flex-col bg-[#F5F7FA] font-sans">
       <Navbar />
 
-      {/* Hero Section */}
-      <div className={`w-full ${category === 'media' ? 'bg-slate-900' : 'bg-brand-500'}`}>
-        <div className="mx-auto max-w-[1020px] px-4 py-16">
-          <h1 className="text-4xl font-bold text-white mb-3">
-            Real-time K-Trend Leaderboard
+      {/* Hero Section with Background Image */}
+      <section className="relative flex-1 flex flex-col items-center justify-center px-4 py-24 text-center overflow-hidden">
+
+        {/* Background Image (Seoul Night View) */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=2000&auto=format&fit=crop"
+            alt="Seoul Cityscape"
+            className="w-full h-full object-cover"
+          />
+          {/* Dark Overlay for Readability */}
+          <div className="absolute inset-0 bg-slate-900/70 backdrop-blur-[2px]"></div>
+        </div>
+
+        <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center">
+
+          {/* Brand Badge */}
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider mb-8 backdrop-blur-md shadow-lg">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            Live Data from Seoul
+          </div>
+
+          {/* Main Typography */}
+          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6 leading-tight drop-shadow-xl">
+            K-RANK <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#5383E8] to-blue-300">LEADERBOARD</span>
           </h1>
-          <p className="text-white/90 text-lg mb-8">
-            Track the top performing products, places, and media in Korea. Updated daily.
+
+          <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-16 leading-relaxed font-light drop-shadow-md">
+            Don't guess what's trending. <strong className="text-white font-bold">Know it.</strong> <br className="hidden md:block" />
+            Real-time rankings for Beauty, Media, Food and Places straight from Korea.
           </p>
 
-          {/* Search Bar */}
-          <SearchBar onSearch={setSearchQuery} />
-        </div>
-      </div>
+          {/* Bento Grid Navigation */}
+          <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-4 w-full h-auto md:h-[420px]">
 
-      {/* Main Content */}
-      <div className="mx-auto max-w-[1020px] px-4 py-8">
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-500 border-r-transparent"></div>
-            <p className="mt-4 text-gray-500">Loading rankings...</p>
+            {/* Card 1: Beauty (Left Big Column) */}
+            <Link href="/beauty" className="group col-span-1 md:col-span-2 md:row-span-2 relative h-64 md:h-auto rounded-3xl overflow-hidden bg-[#5383E8] hover:bg-[#4169E1] transition-all shadow-2xl hover:-translate-y-1 block border border-white/10">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1612817288484-96639d073114?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 group-hover:opacity-20 transition-opacity"></div>
+
+              <div className="absolute inset-0 p-8 flex flex-col justify-between">
+                <div className="flex justify-between items-start">
+                  <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl text-white">
+                    <Sparkles className="w-8 h-8" />
+                  </div>
+                  <span className="bg-white text-brand-500 px-3 py-1 rounded-full text-xs font-bold uppercase shadow-sm">#1 Traffic</span>
+                </div>
+                <div className="text-left relative z-10">
+                  <h3 className="text-4xl font-black text-white mb-2 tracking-tight">K-BEAUTY</h3>
+                  <p className="text-blue-100 text-sm mb-6 font-medium">Olive Young Real-time Rankings.</p>
+                  <div className="inline-flex items-center gap-3 bg-white text-brand-500 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-blue-50 transition-colors shadow-lg">
+                    View Ranking <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* Card 2: Media (Top Right Wide) */}
+            <Link href="/media" className="group col-span-1 md:col-span-2 md:row-span-1 relative h-48 md:h-auto rounded-3xl overflow-hidden bg-slate-900 hover:bg-slate-800 transition-all shadow-2xl hover:-translate-y-1 border border-white/10 block">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-30 transition-opacity"></div>
+
+              <div className="absolute inset-0 p-6 flex justify-between items-center">
+                <div className="text-left relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-red-600 text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase">Netflix Top 10</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-white mb-1">K-MEDIA</h3>
+                  <p className="text-slate-300 text-xs">Dramas & Movies.</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md p-3 rounded-full text-red-500 border border-white/10">
+                  <PlayCircle className="w-8 h-8 fill-current" />
+                </div>
+              </div>
+            </Link>
+
+            {/* Card 3: Food (Bottom Right 1) */}
+            <Link href="/food" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all block">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 group-hover:text-white transition-colors">
+                <Utensils className="w-8 h-8 mb-2 opacity-50" />
+                <span className="font-bold text-sm uppercase text-white/50">K-Food</span>
+                <span className="text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/10">Coming Soon</span>
+              </div>
+            </Link>
+
+            {/* Card 4: Place (Bottom Right 2) */}
+            <Link href="/place" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all block">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 group-hover:text-white transition-colors">
+                <MapPin className="w-8 h-8 mb-2 opacity-50" />
+                <span className="font-bold text-sm uppercase text-white/50">K-Place</span>
+                <span className="text-[9px] bg-white/10 text-white/70 px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/10">Coming Soon</span>
+              </div>
+            </Link>
+
           </div>
-        ) : (
-          <LeaderboardTable rankings={filteredRankings} />
-        )}
-      </div>
+        </div>
+      </section>
 
-      {/* CTA Section */}
-      <CtaSection />
-
-      {/* Footer */}
       <Footer />
     </div>
   );

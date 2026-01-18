@@ -2,27 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/navbar";
-import { MediaLeaderboardTable } from "@/components/media-leaderboard-table";
+import { LeaderboardTable } from "@/components/leaderboard-table";
 import { SearchBar } from "@/components/search-bar";
 import { FirebaseRankingRepository } from "@/infrastructure/repositories/firebase-ranking-repository";
-import type { MediaRankingItem } from "@/domain/entities/ranking";
+import type { RankingItem } from "@/domain/entities/ranking";
+import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
-import { VpnCta } from "@/components/vpn-cta";
 
-export default function MediaPage() {
-    const [rankings, setRankings] = useState<MediaRankingItem[]>([]);
+export default function BeautyPage() {
+    const [rankings, setRankings] = useState<RankingItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
+    const category: string = "all"; // Default category for beauty page
 
     // Initial data fetch
     useEffect(() => {
         async function fetchInitialData() {
             try {
                 const repository = new FirebaseRankingRepository();
-                const data = await repository.getMediaRankings();
+                const data = await repository.getLatestRankings('all');
                 setRankings(data);
             } catch (error) {
-                console.error('Error fetching media rankings:', error);
+                console.error('Error fetching rankings:', error);
             } finally {
                 setLoading(false);
             }
@@ -34,8 +35,8 @@ export default function MediaPage() {
     // Filter rankings based on search query
     const filteredRankings = searchQuery.trim()
         ? rankings.filter((item) =>
-            item.titleEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (item.titleKo && item.titleKo.toLowerCase().includes(searchQuery.toLowerCase()))
+            item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.brand.toLowerCase().includes(searchQuery.toLowerCase())
         )
         : rankings;
 
@@ -43,14 +44,14 @@ export default function MediaPage() {
         <div className="min-h-screen bg-canvas">
             <Navbar />
 
-            {/* Hero Section - Dark Slate Theme */}
-            <div className="w-full bg-slate-900">
+            {/* Hero Section */}
+            <div className={`w-full ${category === 'media' ? 'bg-slate-900' : 'bg-brand-500'}`}>
                 <div className="mx-auto max-w-[1020px] px-4 py-16">
                     <h1 className="text-4xl font-bold text-white mb-3">
-                        🎬 K-Media Leaderboard
+                        Real-time K-Beauty Leaderboard
                     </h1>
                     <p className="text-white/90 text-lg mb-8">
-                        Track the top trending Korean dramas and shows on Netflix. Updated daily.
+                        Track the top performing beauty products in Korea. Updated daily.
                     </p>
 
                     {/* Search Bar */}
@@ -62,16 +63,16 @@ export default function MediaPage() {
             <div className="mx-auto max-w-[1020px] px-4 py-8">
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-slate-900 border-r-transparent"></div>
+                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-500 border-r-transparent"></div>
                         <p className="mt-4 text-gray-500">Loading rankings...</p>
                     </div>
                 ) : (
-                    <MediaLeaderboardTable rankings={filteredRankings} />
+                    <LeaderboardTable rankings={filteredRankings} />
                 )}
             </div>
 
-            {/* VPN CTA */}
-            <VpnCta />
+            {/* CTA Section */}
+            <CtaSection />
 
             {/* Footer */}
             <Footer />

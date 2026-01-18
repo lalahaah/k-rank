@@ -3,19 +3,8 @@
 import { TrendingUp, TrendingDown, Minus, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { getLatestRankings } from "@/lib/data";
-
-export interface RankingItem {
-    rank: number;
-    productName: string;
-    brand: string;
-    imageUrl: string;
-    price: string;
-    trend: number; // 양수=상승, 음수=하락, 0=유지
-    tags: string[];
-    buyUrl?: string;
-    subcategory: string; // 서브 카테고리 필터용
-}
+import { FirebaseRankingRepository } from "@/infrastructure/repositories/firebase-ranking-repository";
+import type { RankingItem } from "@/domain/entities/ranking";
 
 interface LeaderboardTableProps {
     rankings: RankingItem[];
@@ -48,7 +37,8 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
 
             setLoading(true);
             try {
-                const data = await getLatestRankings(selectedCategory);
+                const repository = new FirebaseRankingRepository();
+                const data = await repository.getLatestRankings(selectedCategory);
                 setRankings(data);
             } catch (error) {
                 console.error('Error fetching category data:', error);

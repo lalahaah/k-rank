@@ -2,7 +2,7 @@
 
 import { Play, TrendingUp, TrendingDown, Minus, Unlock } from "lucide-react";
 import Image from "next/image";
-import type { MediaRankingItem } from "@/lib/data";
+import type { MediaRankingItem } from "@/domain/entities/ranking";
 
 interface MediaLeaderboardTableProps {
     rankings: MediaRankingItem[];
