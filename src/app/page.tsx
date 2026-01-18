@@ -13,6 +13,7 @@ export default function Home() {
   const [rankings, setRankings] = useState<RankingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const category: string = "all"; // Default category for home page
 
   // Initial data fetch
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <div className="w-full bg-brand-500">
+      <div className={`w-full ${category === 'media' ? 'bg-slate-900' : 'bg-brand-500'}`}>
         <div className="mx-auto max-w-[1020px] px-4 py-16">
           <h1 className="text-4xl font-bold text-white mb-3">
             Real-time K-Trend Leaderboard

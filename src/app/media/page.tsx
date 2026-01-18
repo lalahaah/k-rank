@@ -42,8 +42,8 @@ export default function MediaPage() {
         <div className="min-h-screen bg-canvas">
             <Navbar />
 
-            {/* Hero Section - Netflix Red Theme */}
-            <div className="w-full bg-[#E50914]">
+            {/* Hero Section - Dark Slate Theme */}
+            <div className="w-full bg-slate-900">
                 <div className="mx-auto max-w-[1020px] px-4 py-16">
                     <h1 className="text-4xl font-bold text-white mb-3">
                         🎬 K-Media Leaderboard
@@ -61,7 +61,7 @@ export default function MediaPage() {
             <div className="mx-auto max-w-[1020px] px-4 py-8">
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#E50914] border-r-transparent"></div>
+                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-slate-900 border-r-transparent"></div>
                         <p className="mt-4 text-gray-500">Loading rankings...</p>
                     </div>
                 ) : (
