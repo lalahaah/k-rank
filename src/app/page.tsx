@@ -6,6 +6,8 @@ import { LeaderboardTable } from "@/components/leaderboard-table";
 import { SearchBar } from "@/components/search-bar";
 import { getLatestRankings } from "@/lib/data";
 import type { RankingItem } from "@/components/leaderboard-table";
+import { CtaSection } from "@/components/cta-section";
+import { Footer } from "@/components/footer";
 
 export default function Home() {
   const [rankings, setRankings] = useState<RankingItem[]>([]);
@@ -66,6 +68,12 @@ export default function Home() {
           <LeaderboardTable rankings={filteredRankings} />
         )}
       </div>
+
+      {/* CTA Section */}
+      <CtaSection />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
