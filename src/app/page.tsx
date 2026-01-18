@@ -1,11 +1,40 @@
-import { Search } from "lucide-react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/navbar";
 import { LeaderboardTable } from "@/components/leaderboard-table";
+import { SearchBar } from "@/components/search-bar";
 import { getLatestRankings } from "@/lib/data";
+import type { RankingItem } from "@/components/leaderboard-table";
 
-export default async function Home() {
-  // Fetch real data from Firebase - 'all' category for initial load
-  const rankings = await getLatestRankings('all');
+export default function Home() {
+  const [rankings, setRankings] = useState<RankingItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Initial data fetch
+  useEffect(() => {
+    async function fetchInitialData() {
+      try {
+        const data = await getLatestRankings('all');
+        setRankings(data);
+      } catch (error) {
+        console.error('Error fetching rankings:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchInitialData();
+  }, []);
+
+  // Filter rankings based on search query
+  const filteredRankings = searchQuery.trim()
+    ? rankings.filter((item) =>
+      item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.brand.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    : rankings;
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -22,22 +51,20 @@ export default async function Home() {
           </p>
 
           {/* Search Bar */}
-          <div className="relative max-w-2xl">
-            <input
-              type="text"
-              placeholder="Search brands, spots, or dramas..."
-              className="w-full px-6 py-4 pr-14 rounded-full text-lg border-none focus:outline-none focus:ring-2 focus:ring-white/50"
-            />
-            <button className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
-              <Search className="w-6 h-6" />
-            </button>
-          </div>
+          <SearchBar onSearch={setSearchQuery} />
         </div>
       </div>
 
       {/* Main Content */}
       <div className="mx-auto max-w-[1020px] px-4 py-8">
-        <LeaderboardTable rankings={rankings} />
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-500 border-r-transparent"></div>
+            <p className="mt-4 text-gray-500">Loading rankings...</p>
+          </div>
+        ) : (
+          <LeaderboardTable rankings={filteredRankings} />
+        )}
       </div>
     </div>
   );

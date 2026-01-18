@@ -19,6 +19,7 @@ export interface RankingItem {
 
 interface LeaderboardTableProps {
     rankings: RankingItem[];
+    searchQuery?: string;
 }
 
 const categories = [
