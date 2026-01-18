@@ -58,7 +58,7 @@ export function CtaSection() {
                 </h2>
 
                 <p className="text-gray-500 mb-8 max-w-lg mx-auto">
-                    We are currently curating data for <strong>K-Food</strong> and <strong>K-Place</strong>.
+                    We are currently curating data for <strong>K-Food</strong>, <strong>K-Place</strong> and <strong>K-Media</strong>.
                     Join the waitlist to get notified when we launch new categories.
                 </p>
 

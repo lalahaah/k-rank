@@ -2,6 +2,7 @@
 
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { Logo } from "./logo";
 
 export function Navbar() {
     const [activeTab, setActiveTab] = useState("beauty");
@@ -12,7 +13,7 @@ export function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex-shrink-0">
-                        <h1 className="text-2xl font-bold tracking-tight">K-RANK</h1>
+                        <Logo variant="white" />
                     </div>
 
                     {/* Navigation Tabs */}

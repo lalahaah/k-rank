@@ -1,3 +1,21 @@
+"use client";
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Logo } from "./logo";
+
+const DATA_SOURCES = [
+    { name: "Olive Young Korea", category: "Beauty", link: "https://www.oliveyoung.co.kr" },
+    // 추후 다른 소스 추가 예시:
+    // { name: "Naver Shopping", category: "General", link: "https://shopping.naver.com" },
+];
+
 export function Footer() {
     return (
         <footer className="bg-gray-50 border-t border-gray-200 pt-12 pb-8">
@@ -6,7 +24,7 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                     {/* Brand Info */}
                     <div className="col-span-1 md:col-span-1">
-                        <div className="font-black text-brand-500 text-xl mb-4 tracking-tighter">K-RANK</div>
+                        <Logo variant="brand" className="mb-4" />
                         <p className="text-sm text-gray-500 leading-relaxed">
                             Your data-driven guide to real-time Korean trends.
                             We track daily rankings to help you shop smart.
@@ -19,6 +37,7 @@ export function Footer() {
                         <ul className="space-y-2 text-sm text-gray-500">
                             <li><a href="#" className="hover:text-brand-500 transition-colors">K-Beauty</a></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Food (Soon)</span></li>
+                            <li><span className="opacity-50 cursor-not-allowed">K-Place (Soon)</span></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Media (Soon)</span></li>
                         </ul>
                     </div>
@@ -30,6 +49,44 @@ export function Footer() {
                             <li><a href="#" className="hover:text-brand-500 transition-colors">About Us</a></li>
                             <li><a href="#" className="hover:text-brand-500 transition-colors">Contact</a></li>
                             <li><a href="#" className="hover:text-brand-500 transition-colors">Privacy Policy</a></li>
+                            <li>
+                                <Dialog>
+                                    <DialogTrigger asChild>
+                                        <button className="hover:text-brand-500 transition-colors text-left outline-none">
+                                            Data Source
+                                        </button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-md">
+                                        <DialogHeader>
+                                            <DialogTitle>Data Sources</DialogTitle>
+                                            <DialogDescription>
+                                                We collect and analyze data from the following authoritative sources.
+                                            </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="mt-4 space-y-4">
+                                            {DATA_SOURCES.map((source) => (
+                                                <div key={source.name} className="flex items-center justify-between p-3 border rounded-lg bg-gray-50">
+                                                    <div>
+                                                        <div className="font-semibold text-gray-900">{source.name}</div>
+                                                        <div className="text-xs text-gray-500">{source.category}</div>
+                                                    </div>
+                                                    <a
+                                                        href={source.link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs text-brand-500 hover:underline font-medium"
+                                                    >
+                                                        Visit Site
+                                                    </a>
+                                                </div>
+                                            ))}
+                                            <div className="p-3 border border-dashed rounded-lg bg-gray-50/50 flex items-center justify-center">
+                                                <span className="text-xs text-gray-400 italic">More sources coming soon...</span>
+                                            </div>
+                                        </div>
+                                    </DialogContent>
+                                </Dialog>
+                            </li>
                         </ul>
                     </div>
 
@@ -48,10 +105,7 @@ export function Footer() {
                     <p className="text-xs text-gray-400">
                         &copy; {new Date().getFullYear()} K-Rank Leaderboards. All rights reserved.
                     </p>
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <span>Data Source:</span>
-                        <span className="font-bold text-gray-600">Olive Young Korea</span>
-                    </div>
+
                 </div>
             </div>
         </footer>
