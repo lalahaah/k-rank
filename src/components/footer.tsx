@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
     Dialog,
     DialogContent,
@@ -35,7 +36,7 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Explore</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li><a href="#" className="hover:text-brand-500 transition-colors">K-Beauty</a></li>
+                            <li><Link href="/" className="hover:text-brand-500 transition-colors">K-Beauty</Link></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Food (Soon)</span></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Place (Soon)</span></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Media (Soon)</span></li>
@@ -46,9 +47,9 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Company</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li><a href="#" className="hover:text-brand-500 transition-colors">About Us</a></li>
-                            <li><a href="#" className="hover:text-brand-500 transition-colors">Contact</a></li>
-                            <li><a href="#" className="hover:text-brand-500 transition-colors">Privacy Policy</a></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-colors">About Us</Link></li>
+                            <li><Link href="#" className="hover:text-brand-500 transition-colors">Contact</Link></li>
+                            <li><Link href="/privacy" className="hover:text-brand-500 transition-colors">Privacy Policy</Link></li>
                             <li>
                                 <Dialog>
                                     <DialogTrigger asChild>
