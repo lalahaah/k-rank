@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "image.oliveyoung.co.kr",
       },
+      {
+        protocol: "https",
+        hostname: "dnm.nflximg.net",
+      },
+      {
+        protocol: "https",
+        hostname: "assets.nflxext.com",
+      },
     ],
   },
 };

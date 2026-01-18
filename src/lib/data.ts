@@ -80,6 +80,82 @@ export async function getLatestRankings(category: string): Promise<RankingItem[]
     }
 }
 
+// Media 관련 인터페이스
+export interface MediaRankingItem {
+    rank: number;
+    titleEn: string;
+    titleKo?: string;
+    imageUrl: string;
+    weeksInTop10: string;
+    type: 'TV Show' | 'Film';
+    trailerLink: string;
+    vpnLink?: string;
+    tags: string[];
+    trend: number;
+}
+
+export interface MediaDailyRanking {
+    date: string;
+    category: string;
+    items: MediaRankingItem[];
+    updatedAt: any;
+}
+
+/**
+ * Fetch the latest media rankings (Netflix Top 10)
+ * @returns Array of media ranking items, or empty array if no data found
+ */
+export async function getMediaRankings(): Promise<MediaRankingItem[]> {
+    try {
+        // Get today's date in YYYY-MM-DD format (UTC)
+        const today = new Date().toISOString().split('T')[0];
+
+        // Query using today's date as document ID
+        const rankingsRef = collection(db, 'daily_rankings');
+        const q = query(
+            rankingsRef,
+            where('category', '==', 'media'),
+            where('date', '==', today)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.warn(`No media rankings found for date: ${today}`);
+
+            // Fallback: Try to get any document for media category
+            const fallbackQ = query(
+                rankingsRef,
+                where('category', '==', 'media')
+            );
+
+            const fallbackSnapshot = await getDocs(fallbackQ);
+
+            if (fallbackSnapshot.empty) {
+                console.warn('No media rankings found at all');
+                return [];
+            }
+
+            // Get the first document found
+            const doc = fallbackSnapshot.docs[0];
+            const data = doc.data() as MediaDailyRanking;
+            console.log(`Loaded media rankings from date: ${data.date}`);
+
+            return data.items || [];
+        }
+
+        // Get the first (should be only one) document for today
+        const doc = querySnapshot.docs[0];
+        const data = doc.data() as MediaDailyRanking;
+
+        return data.items || [];
+    } catch (error) {
+        console.error('Error fetching media rankings:', error);
+        return [];
+    }
+}
+
+
 /**
  * Fetch all rankings for a specific date
  * @param date - Date string in YYYY-MM-DD format
