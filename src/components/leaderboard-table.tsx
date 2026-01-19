@@ -139,6 +139,11 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                                             fill
                                             className="object-cover"
                                             sizes="48px"
+                                            unoptimized
+                                            onError={(e) => {
+                                                const target = e.target as HTMLImageElement;
+                                                target.src = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=48&h=48&fit=crop";
+                                            }}
                                         />
                                     </div>
                                     <div className="min-w-0 flex-1">
