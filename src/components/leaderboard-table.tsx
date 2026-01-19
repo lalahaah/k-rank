@@ -87,8 +87,8 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                 </div>
             ) : (
                 <div className="bg-bg-surface rounded-lg shadow-lg overflow-hidden">
-                    {/* Header Row */}
-                    <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-100">
+                    {/* Desktop Header Row - 태블릿 이상에서만 표시 */}
+                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 bg-gray-50 border-b border-gray-100">
                         <div className="col-span-1 text-center">
                             <span className="text-xs font-bold text-text-muted uppercase">
                                 Rank
@@ -121,78 +121,85 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                         {rankings.map((item) => (
                             <div
                                 key={item.rank}
-                                className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-brand-50 transition-colors group"
+                                /* 모바일: 카드 레이아웃, 태블릿 이상: 그리드 레이아웃 */
+                                className="flex flex-col gap-3 p-4 md:grid md:grid-cols-12 md:gap-4 md:px-6 md:py-4 md:items-center hover:bg-brand-50 transition-colors group"
                             >
-                                {/* Rank */}
-                                <div className="col-span-1 text-center">
-                                    <span className="text-base font-bold text-text-heading font-mono">
-                                        {item.rank}
-                                    </span>
-                                </div>
-
-                                {/* Product */}
-                                <div className="col-span-5 flex items-center gap-3">
-                                    <div className="relative w-12 h-12 rounded-md overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100">
-                                        <Image
-                                            src={item.imageUrl}
-                                            alt={item.productName}
-                                            fill
-                                            className="object-cover"
-                                            sizes="48px"
-                                            unoptimized
-                                            onError={(e) => {
-                                                const target = e.target as HTMLImageElement;
-                                                target.src = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=48&h=48&fit=crop";
-                                            }}
-                                        />
+                                {/* 모바일 헤더 행: Rank + Product + Image */}
+                                <div className="flex items-start gap-3 md:col-span-6">
+                                    {/* Rank */}
+                                    <div className="flex-shrink-0 md:col-span-1 md:text-center pt-1 md:pt-0">
+                                        <span className="text-2xl md:text-base font-bold text-text-heading font-mono">
+                                            {item.rank}
+                                        </span>
                                     </div>
-                                    <div className="min-w-0 flex-1">
-                                        <div className="font-bold text-sm text-text-heading truncate">
-                                            {item.productName}
+
+                                    {/* Image + Product Info */}
+                                    <div className="flex items-start gap-3 flex-1 min-w-0 md:col-span-5">
+                                        <div className="relative w-20 h-20 md:w-12 md:h-12 rounded-md overflow-hidden border border-gray-200 flex-shrink-0 bg-gray-100">
+                                            <Image
+                                                src={item.imageUrl}
+                                                alt={item.productName}
+                                                fill
+                                                className="object-cover"
+                                                sizes="(max-width: 768px) 80px, 48px"
+                                                unoptimized
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=48&h=48&fit=crop";
+                                                }}
+                                            />
                                         </div>
-                                        <div className="text-xs text-text-muted truncate">
-                                            {item.brand}
-                                        </div>
-                                        <div className="text-xs font-medium text-heading">
-                                            ₩{item.price.replace('원', '')}
+                                        <div className="min-w-0 flex-1">
+                                            <div className="font-bold text-base md:text-sm text-text-heading line-clamp-2 md:truncate">
+                                                {item.productName}
+                                            </div>
+                                            <div className="text-sm md:text-xs text-text-muted truncate mt-0.5">
+                                                {item.brand}
+                                            </div>
+                                            <div className="text-sm md:text-xs font-medium text-heading mt-1">
+                                                ₩{item.price.replace('원', '')}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Trend */}
-                                <div className="col-span-2 flex justify-center">
-                                    {item.trend > 0 ? (
-                                        <span className="flex items-center gap-1 text-xs font-bold text-trend-up bg-red-50 px-2 py-1 rounded">
-                                            <TrendingUp size={14} />
-                                            {item.trend}
-                                        </span>
-                                    ) : item.trend < 0 ? (
-                                        <span className="flex items-center gap-1 text-xs font-bold text-trend-down bg-blue-50 px-2 py-1 rounded">
-                                            <TrendingDown size={14} />
-                                            {Math.abs(item.trend)}
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-xs font-bold text-trend-stable bg-gray-50 px-2 py-1 rounded">
-                                            <Minus size={14} />
-                                            0
-                                        </span>
-                                    )}
+                                {/* 모바일 메타 정보: Trend + Tags */}
+                                <div className="flex flex-col gap-2 md:contents">
+                                    {/* Trend */}
+                                    <div className="md:col-span-2 md:flex md:justify-center">
+                                        {item.trend > 0 ? (
+                                            <span className="inline-flex items-center gap-1 text-xs font-bold text-trend-up bg-red-50 px-2 py-1 rounded w-fit">
+                                                <TrendingUp size={14} />
+                                                {item.trend}
+                                            </span>
+                                        ) : item.trend < 0 ? (
+                                            <span className="inline-flex items-center gap-1 text-xs font-bold text-trend-down bg-blue-50 px-2 py-1 rounded w-fit">
+                                                <TrendingDown size={14} />
+                                                {Math.abs(item.trend)}
+                                            </span>
+                                        ) : (
+                                            <span className="inline-flex items-center gap-1 text-xs font-bold text-trend-stable bg-gray-50 px-2 py-1 rounded w-fit">
+                                                <Minus size={14} />
+                                                0
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* Tags */}
+                                    <div className="md:col-span-3 flex flex-wrap gap-1.5 md:gap-1">
+                                        {item.tags.map((tag, idx) => (
+                                            <span
+                                                key={idx}
+                                                className="bg-gray-100 text-gray-600 text-xs md:text-[10px] px-2.5 md:px-2 py-1 rounded-full"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
 
-                                {/* Tags */}
-                                <div className="col-span-3 flex flex-wrap gap-1">
-                                    {item.tags.map((tag, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="bg-gray-100 text-gray-600 text-[10px] px-2 py-1 rounded-full"
-                                        >
-                                            {tag}
-                                        </span>
-                                    ))}
-                                </div>
-
-                                {/* Action */}
-                                <div className="col-span-1 flex justify-center">
+                                {/* Action Button */}
+                                <div className="md:col-span-1 md:flex md:justify-center">
                                     <a
                                         href={
                                             item.buyUrl ||
@@ -200,14 +207,14 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                                         }
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-block"
+                                        className="block md:inline-block"
                                     >
                                         <button
-                                            className="bg-beauty-500 hover:bg-beauty-600 text-white px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1 transition-transform active:scale-95"
+                                            className="w-full md:w-auto bg-beauty-500 hover:bg-beauty-600 text-white px-4 py-2 md:px-3 md:py-1.5 rounded-md text-sm md:text-xs font-medium flex items-center justify-center gap-1.5 md:gap-1 transition-transform active:scale-95"
                                             title="Buy on Amazon"
                                         >
-                                            <ShoppingCart size={12} />
-                                            Buy
+                                            <ShoppingCart size={14} className="md:w-3 md:h-3" />
+                                            Buy on Amazon
                                         </button>
                                     </a>
                                 </div>
