@@ -7,6 +7,7 @@ K-Rank Beauty Scraper
 import asyncio
 import os
 import sys
+import random
 from datetime import datetime
 from typing import List, Dict, Any
 import json
@@ -69,32 +70,79 @@ async def scrape_olive_young_by_category(category_code: str = None, max_items: i
             async with async_playwright() as p:
                 print(f"🌐 브라우저 시작 중... (시도 {attempt + 1}/{max_retries})")
                 
-                # 브라우저 설정: headless=False로 변경하여 더 실제 브라우저처럼 보이게
+                # 브라우저 설정: 더 많은 우회 옵션 추가
                 browser = await p.chromium.launch(
                     headless=True,
                     args=[
                         '--disable-blink-features=AutomationControlled',
                         '--disable-dev-shm-usage',
-                        '--no-sandbox'
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-infobars',
+                        '--window-position=0,0',
+                        '--ignore-certificate-errors',
+                        '--ignore-certificate-errors-spki-list',
+                        '--disable-web-security',
+                        '--disable-features=IsolateOrigins,site-per-process'
                     ]
                 )
                 
-                # 브라우저 컨텍스트 생성 with User-Agent 설정
+                # 브라우저 컨텍스트 생성 with User-Agent 설정 및 추가 헤더
                 context = await browser.new_context(
                     user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
                     viewport={'width': 1920, 'height': 1080},
                     locale='ko-KR',
-                    timezone_id='Asia/Seoul'
+                    timezone_id='Asia/Seoul',
+                    extra_http_headers={
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                        'Cache-Control': 'max-age=0',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                        'Sec-Fetch-Dest': 'document',
+                        'Sec-Fetch-Mode': 'navigate',
+                        'Sec-Fetch-Site': 'none',
+                        'Sec-Fetch-User': '?1'
+                    }
                 )
                 
-                # JavaScript로 webdriver 감지 우회
+                # JavaScript로 webdriver 감지 우회 강화
                 await context.add_init_script("""
+                    // Webdriver 속성 제거
                     Object.defineProperty(navigator, 'webdriver', {
                         get: () => undefined
+                    });
+                    
+                    // Chrome 객체 추가 (봇이 아님을 증명)
+                    window.chrome = {
+                        runtime: {}
+                    };
+                    
+                    // Permissions API 우회
+                    const originalQuery = window.navigator.permissions.query;
+                    window.navigator.permissions.query = (parameters) => (
+                        parameters.name === 'notifications' ?
+                            Promise.resolve({ state: Notification.permission }) :
+                            originalQuery(parameters)
+                    );
+                    
+                    // Plugin 배열 추가
+                    Object.defineProperty(navigator, 'plugins', {
+                        get: () => [1, 2, 3, 4, 5]
+                    });
+                    
+                    // Languages 설정
+                    Object.defineProperty(navigator, 'languages', {
+                        get: () => ['ko-KR', 'ko', 'en-US', 'en']
                     });
                 """)
                 
                 page = await context.new_page()
+                
+                # 랜덤 지연 추가 (더 인간처럼 보이도록)
+                random_delay = random.uniform(2, 5)
+                await asyncio.sleep(random_delay)
                 
                 # 올리브영 베스트 랭킹 페이지 - 카테고리별 URL 생성
                 if category_code:
@@ -105,13 +153,13 @@ async def scrape_olive_young_by_category(category_code: str = None, max_items: i
                 print(f"📄 페이지 로딩 중: {url}")
                 await page.goto(url, wait_until='domcontentloaded', timeout=60000)
                 
-                # Cloudflare 챌린지 대기 및 통과 확인
+                # Cloudflare 챌린지 대기 및 통과 확인 - 대기 시간 증가
                 print("⏳ Cloudflare 챌린지 통과 대기 중...")
-                await page.wait_for_timeout(15000)  # 15초 대기
+                await page.wait_for_timeout(20000)  # 20초로 증가
                 
                 # 추가 네트워크 안정화 대기
                 try:
-                    await page.wait_for_load_state('networkidle', timeout=10000)
+                    await page.wait_for_load_state('networkidle', timeout=15000)
                 except:
                     print("⚠️  네트워크 idle 상태 대기 타임아웃 (계속 진행)")
                 
