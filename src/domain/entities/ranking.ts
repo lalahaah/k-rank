@@ -7,6 +7,7 @@ export interface RankingItem {
     tags: string[];
     subcategory: string;
     trend: number;
+    buyUrl?: string;
 }
 
 export interface MediaRankingItem {
