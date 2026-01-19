@@ -140,18 +140,18 @@ async def scrape_olive_young_by_category(category_code: str = None, max_items: i
                 
                 soup = BeautifulSoup(content, 'html.parser')
                 
-                # 제품 아이템 찾기 - 올리브영 실제 구조
-                items = soup.select('ul.common_prd_list li')[:max_items]
+                # 제품 아이템 찾기 - 올리브영 새 구조: div.prd_info
+                items = soup.select('div.prd_info')[:max_items]
                 
                 # 디버깅: 다른 셀렉터도 시도
                 if len(items) == 0:
-                    print("⚠️  'ul.common_prd_list li' 로 제품을 찾지 못함")
-                    items = soup.select('.prd_info')[:max_items]
-                    print(f"   '.prd_info' 시도: {len(items)}개 발견")
+                    print("⚠️  'div.prd_info' 로 제품을 찾지 못함")
+                    items = soup.select('ul.common_prd_list li')[:max_items]
+                    print(f"   'ul.common_prd_list li' 시도: {len(items)}개 발견")
                 
                 if len(items) == 0:
-                    items = soup.select('li.flag')[:max_items]
-                    print(f"   'li.flag' 시도: {len(items)}개 발견")
+                    items = soup.select('.prd-item')[:max_items]
+                    print(f"   '.prd-item' 시도: {len(items)}개 발견")
                 
                 print(f"✅ {len(items)}개 제품 발견")
                 
@@ -169,19 +169,19 @@ async def scrape_olive_young_by_category(category_code: str = None, max_items: i
                 
                 for idx, item in enumerate(items, 1):
                     try:
-                        # 제품명 (.prd_name 안의 .tx_name에서 추출)
-                        name_elem = item.select_one('.prd_name .tx_name')
+                        # 제품명 (.prd_name 안의 .tx_name 또는 직접 p.tx_name에서 추출)
+                        name_elem = item.select_one('.prd_name .tx_name') or item.select_one('p.tx_name')
                         name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
                         
                         # 브랜드
                         brand_elem = item.select_one('.tx_brand')
                         brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
                         
-                        # 이미지 (src와 data-original 둘 다 확인)
-                        img_elem = item.select_one('.prd_thumb img')
+                        # 이미지 (prd_info 내부의 img 찾기)
+                        img_elem = item.select_one('img')
                         image_url = ''
                         if img_elem:
-                            image_url = img_elem.get('data-original', '') or img_elem.get('src', '')
+                            image_url = img_elem.get('src', '') or img_elem.get('data-original', '')
                         if image_url and not image_url.startswith('http'):
                             image_url = 'https:' + image_url
                         
@@ -191,8 +191,8 @@ async def scrape_olive_young_by_category(category_code: str = None, max_items: i
                         if price:
                             price = price + "원"
                         
-                        # 구매 링크 (상세 페이지 URL)
-                        link_elem = item.select_one('.prd_thumb a')
+                        # 구매 링크 (a 태그에서 가져오기)
+                        link_elem = item.select_one('a')
                         buy_url = link_elem.get('href', '') if link_elem else ''
                         if buy_url and not buy_url.startswith('http'):
                             buy_url = 'https://www.oliveyoung.co.kr' + buy_url
