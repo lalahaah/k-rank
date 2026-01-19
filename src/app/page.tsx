@@ -2,13 +2,48 @@
 
 import { Sparkles, ArrowRight, PlayCircle, Utensils, MapPin } from "lucide-react";
 import Link from "next/link";
+import Script from "next/script";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
+
 export default function LandingPage() {
+  // JSON-LD 구조화된 데이터 (SEO)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'K-Rank Leaderboard',
+    description: 'Real-time Korean trends rankings for Beauty, Media, Food, and Places',
+    url: 'https://k-rank.vercel.app',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: 'https://k-rank.vercel.app/search?q={search_term_string}'
+      },
+      'query-input': 'required name=search_term_string'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'K-Rank',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://k-rank.vercel.app/logo.png'
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F5F7FA] font-sans">
+      {/* JSON-LD for SEO */}
+      <Script
+        id="jsonld-website"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <Navbar />
+
 
       {/* Hero Section with Background Image */}
       <section className="relative flex-1 flex flex-col items-center justify-center px-4 py-24 text-center overflow-hidden">

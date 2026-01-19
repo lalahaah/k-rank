@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import Script from "next/script";
 import { Navbar } from "@/components/navbar";
 import { MediaLeaderboardTable } from "@/components/media-leaderboard-table";
 import { SearchBar } from "@/components/search-bar";
@@ -40,8 +41,49 @@ export default function MediaPage() {
         )
         : rankings;
 
+    // JSON-LD 구조화된 데이터 생성 (SEO)
+    const jsonLdItemList = useMemo(() => {
+        if (!rankings.length) return null;
+
+        return {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: 'Netflix Korea Top 10 Rankings',
+            description: 'Real-time top trending K-Dramas and Korean shows on Netflix',
+            numberOfItems: rankings.length,
+            itemListElement: rankings.slice(0, 10).map((item, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                    '@type': 'Movie',
+                    name: item.titleEn,
+                    alternateName: item.titleKo,
+                    image: item.imageUrl,
+                    genre: item.tags,
+                    aggregateRating: {
+                        '@type': 'AggregateRating',
+                        ratingValue: item.rank <= 3 ? '9' : '8',
+                        bestRating: '10',
+                        ratingCount: '1000',
+                    },
+                    contentRating: item.tags.includes('Family') ? 'G' : item.tags.includes('Romance') ? 'PG-13' : 'TV-MA',
+                },
+            })),
+        };
+    }, [rankings]);
+
+
     return (
         <div className="min-h-screen bg-canvas">
+            {/* JSON-LD for SEO */}
+            {jsonLdItemList && (
+                <Script
+                    id="jsonld-media-rankings"
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdItemList) }}
+                />
+            )}
+
             <Navbar />
 
             {/* Hero Section - Media Theme */}

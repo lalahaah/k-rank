@@ -10,8 +10,70 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "K-Rank Leaderboard",
-  description: "The OP.GG for K-Trends - Real-time Korean product rankings",
+  metadataBase: new URL('https://k-rank.vercel.app'),
+  title: {
+    default: "K-Rank Leaderboard | Real-time Korean Trends Rankings",
+    template: "%s | K-Rank"
+  },
+  description: "The OP.GG for K-Trends - Discover real-time rankings of K-Beauty, K-Media, K-Food, and K-Places. Track trending Korean products and content updated daily from Seoul.",
+  keywords: [
+    "K-Beauty Rankings",
+    "Korean Beauty Products",
+    "K-Drama Rankings",
+    "Netflix Korea",
+    "Korean Trends",
+    "Olive Young Rankings",
+    "K-Pop",
+    "Korean Culture",
+    "Seoul Trends",
+    "K-Rank"
+  ],
+  authors: [{ name: "K-Rank Team" }],
+  creator: "K-Rank",
+  publisher: "K-Rank",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'ko_KR',
+    alternateLocale: ['en_US'],
+    url: 'https://k-rank.vercel.app',
+    siteName: 'K-Rank Leaderboard',
+    title: 'K-Rank Leaderboard | Real-time Korean Trends Rankings',
+    description: 'The OP.GG for K-Trends - Discover real-time rankings of K-Beauty, K-Media, K-Food, and K-Places.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'K-Rank Leaderboard - Real-time Korean Trends',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'K-Rank Leaderboard | Real-time Korean Trends Rankings',
+    description: 'The OP.GG for K-Trends - Track trending Korean products and content updated daily from Seoul.',
+    images: ['/twitter-image.png'],
+    creator: '@krank',
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    // yandex: 'your-yandex-verification-code',
+    // bing: 'your-bing-verification-code',
+  },
+  alternates: {
+    canonical: 'https://k-rank.vercel.app',
+  },
 };
 
 export default function RootLayout({
