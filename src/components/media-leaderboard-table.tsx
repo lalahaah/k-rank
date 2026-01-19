@@ -2,17 +2,45 @@
 
 import { Play, TrendingUp, TrendingDown, Minus, Unlock } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 import type { MediaRankingItem } from "@/domain/entities/ranking";
 
 interface MediaLeaderboardTableProps {
     rankings: MediaRankingItem[];
 }
 
+const categories = [
+    { id: "TV Show", label: "TV Shows" },
+    { id: "Film", label: "Movies" },
+];
+
 export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) {
+    const [selectedCategory, setSelectedCategory] = useState<string>("TV Show");
+
+    // Filter rankings based on selected category
+    const filteredRankings = rankings.filter(item => item.type === selectedCategory);
+
     return (
         <div>
+            {/* Filter Bar */}
+            <div className="mb-4 overflow-x-auto">
+                <div className="flex gap-2 min-w-max pb-2">
+                    {categories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setSelectedCategory(cat.id)}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap ${selectedCategory === cat.id
+                                ? "bg-media-500 text-white shadow-md"
+                                : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                                }`}
+                        >
+                            {cat.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
             {/* Table */}
-            {rankings.length === 0 ? (
+            {filteredRankings.length === 0 ? (
                 <div className="bg-bg-surface rounded-lg shadow-lg overflow-hidden">
                     <div className="py-20 text-center text-gray-500">
                         <p>미디어 랭킹 데이터가 없습니다.</p>
@@ -52,7 +80,7 @@ export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) 
 
                     {/* Data Rows */}
                     <div className="divide-y divide-gray-100">
-                        {rankings.map((item) => (
+                        {filteredRankings.map((item) => (
                             <div
                                 key={item.rank}
                                 className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-red-50 transition-colors group"
@@ -84,9 +112,6 @@ export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) 
                                                 {item.titleKo}
                                             </div>
                                         )}
-                                        <span className="inline-block mt-1 bg-media-500 text-white text-[10px] px-2 py-0.5 rounded uppercase font-bold tracking-wider">
-                                            {item.type}
-                                        </span>
                                     </div>
                                 </div>
 

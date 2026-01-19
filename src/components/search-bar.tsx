@@ -5,9 +5,10 @@ import { useState } from "react";
 
 interface SearchBarProps {
     onSearch: (query: string) => void;
+    placeholder?: string;
 }
 
-export function SearchBar({ onSearch }: SearchBarProps) {
+export function SearchBar({ onSearch, placeholder = "Search..." }: SearchBarProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [isFocused, setIsFocused] = useState(false);
 
@@ -29,8 +30,8 @@ export function SearchBar({ onSearch }: SearchBarProps) {
                 onChange={(e) => handleChange(e.target.value)}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
-                placeholder="Search brands, spots, or dramas..."
-                className="w-full px-6 py-4 pr-24 rounded-full text-lg bg-brand-500 border-2 border-white/80 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
+                placeholder={placeholder}
+                className="w-full px-6 py-4 pr-24 rounded-full text-lg bg-transparent border-2 border-white/80 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white focus:border-white"
             />
 
             {/* Clear button */}

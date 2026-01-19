@@ -149,7 +149,7 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                                             {item.brand}
                                         </div>
                                         <div className="text-xs font-medium text-heading">
-                                            {item.price}
+                                            ₩{item.price.replace('원', '')}
                                         </div>
                                     </div>
                                 </div>

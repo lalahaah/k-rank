@@ -1,0 +1,49 @@
+name: Daily K-Rank Scraper
+
+on:
+  # 매일 한국 시간 오전 9시 (UTC 0시) 실행
+  schedule:
+    - cron: '0 0 * * *'
+  
+  # 수동 실행 가능
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r scripts/requirements.txt
+          playwright install chromium
+          playwright install-deps chromium
+      
+      - name: Create Firebase service account key
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > serviceAccountKey.json
+      
+      - name: Create .env file
+        run: |
+          echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
+      
+      - name: Run scraper (Beauty + Media)
+        run: |
+          python3 scripts/scraper.py all
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f serviceAccountKey.json
+          rm -f .env

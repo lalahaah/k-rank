@@ -1,4 +1,4 @@
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase/client';
 import { IRankingRepository } from '../../domain/repositories/ranking-repository';
 import { RankingItem, MediaRankingItem, DailyRanking, MediaDailyRanking } from '../../domain/entities/ranking';
@@ -6,33 +6,24 @@ import { RankingItem, MediaRankingItem, DailyRanking, MediaDailyRanking } from '
 export class FirebaseRankingRepository implements IRankingRepository {
     async getLatestRankings(category: string): Promise<RankingItem[]> {
         try {
-            const today = new Date().toISOString().split('T')[0];
             let firestoreCategory = 'beauty';
             if (category !== 'all') {
                 firestoreCategory = `beauty-${category}`;
             }
 
             const rankingsRef = collection(db, 'daily_rankings');
+            // 날짜 내림차순으로 정렬하여 가장 최신 데이터 1개를 가져옴
             const q = query(
                 rankingsRef,
                 where('category', '==', firestoreCategory),
-                where('date', '==', today)
+                orderBy('date', 'desc'),
+                limit(1)
             );
 
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
-                const fallbackQ = query(
-                    rankingsRef,
-                    where('category', '==', firestoreCategory)
-                );
-                const fallbackSnapshot = await getDocs(fallbackQ);
-
-                if (fallbackSnapshot.empty) return [];
-
-                const doc = fallbackSnapshot.docs[0];
-                const data = doc.data() as DailyRanking;
-                return data.items || [];
+                return [];
             }
 
             const doc = querySnapshot.docs[0];
@@ -46,28 +37,18 @@ export class FirebaseRankingRepository implements IRankingRepository {
 
     async getMediaRankings(): Promise<MediaRankingItem[]> {
         try {
-            const today = new Date().toISOString().split('T')[0];
             const rankingsRef = collection(db, 'daily_rankings');
             const q = query(
                 rankingsRef,
                 where('category', '==', 'media'),
-                where('date', '==', today)
+                orderBy('date', 'desc'),
+                limit(1)
             );
 
             const querySnapshot = await getDocs(q);
 
             if (querySnapshot.empty) {
-                const fallbackQ = query(
-                    rankingsRef,
-                    where('category', '==', 'media')
-                );
-                const fallbackSnapshot = await getDocs(fallbackQ);
-
-                if (fallbackSnapshot.empty) return [];
-
-                const doc = fallbackSnapshot.docs[0];
-                const data = doc.data() as MediaDailyRanking;
-                return data.items || [];
+                return [];
             }
 
             const doc = querySnapshot.docs[0];

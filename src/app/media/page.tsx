@@ -35,7 +35,8 @@ export default function MediaPage() {
     const filteredRankings = searchQuery.trim()
         ? rankings.filter((item) =>
             item.titleEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (item.titleKo && item.titleKo.toLowerCase().includes(searchQuery.toLowerCase()))
+            (item.titleKo && item.titleKo.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
         )
         : rankings;
 
@@ -54,7 +55,7 @@ export default function MediaPage() {
                     </p>
 
                     {/* Search Bar */}
-                    <SearchBar onSearch={setSearchQuery} />
+                    <SearchBar onSearch={setSearchQuery} placeholder="Search titles, tags..." />
                 </div>
             </div>
 

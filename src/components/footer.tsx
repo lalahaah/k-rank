@@ -13,6 +13,7 @@ import { Logo } from "./logo";
 
 const DATA_SOURCES = [
     { name: "Olive Young Korea", category: "Beauty", link: "https://www.oliveyoung.co.kr" },
+    { name: "Netflix Top 10 South Korea", category: "Media", link: "https://top10.netflix.com/south-korea" },
     // 추후 다른 소스 추가 예시:
     // { name: "Naver Shopping", category: "General", link: "https://shopping.naver.com" },
 ];
@@ -36,10 +37,10 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Explore</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li><Link href="/" className="hover:text-brand-500 transition-colors">K-Beauty</Link></li>
+                            <li><Link href="/beauty" className="hover:text-brand-500 transition-colors">K-Beauty</Link></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Food (Soon)</span></li>
                             <li><span className="opacity-50 cursor-not-allowed">K-Place (Soon)</span></li>
-                            <li><span className="opacity-50 cursor-not-allowed">K-Media (Soon)</span></li>
+                            <li><Link href="/media" className="hover:text-brand-500 transition-colors">K-Media</Link></li>
                         </ul>
                     </div>
 

@@ -440,11 +440,12 @@ JSON only.
     
     return products
 
-async def scrape_netflix(max_items: int = 10, max_retries: int = 3) -> List[Dict[str, Any]]:
+async def scrape_netflix(media_type: str = 'tv', max_items: int = 10, max_retries: int = 3) -> List[Dict[str, Any]]:
     """
-    Netflix Top 10 South Korea TV Shows 크롤링
+    Netflix Top 10 South Korea TV Shows/Films 크롤링
     
     Args:
+        media_type: 'tv' 또는 'film'
         max_items: 크롤링할 최대 아이템 수 (기본 10개)
         max_retries: 최대 재시도 횟수
         
@@ -468,8 +469,8 @@ async def scrape_netflix(max_items: int = 10, max_retries: int = 3) -> List[Dict
                 
                 page = await context.new_page()
                 
-                # Netflix Top 10 South Korea TV Shows
-                url = "https://top10.netflix.com/south-korea/tv"
+                # Netflix Top 10 URL (tv 또는 films)
+                url = f"https://top10.netflix.com/south-korea/{media_type}"
                 print(f"📄 페이지 로딩 중: {url}")
                 
                 await page.goto(url, wait_until='networkidle', timeout=60000)
@@ -518,16 +519,20 @@ async def scrape_netflix(max_items: int = 10, max_retries: int = 3) -> List[Dict
                         trailer_query = f"{title} trailer"
                         trailer_link = f"https://www.youtube.com/results?search_query={trailer_query.replace(' ', '+')}"
                         
+                        # media_type에 따라 type 설정
+                        item_type = 'TV Show' if media_type == 'tv' else 'Film'
+                        default_tag = 'K-Drama' if media_type == 'tv' else 'Korean Film'
+                        
                         item = {
                             'rank': int(rank_text) if rank_text.isdigit() else i,
                             'titleEn': title,
                             'titleKo': title,  # 이후 번역 단계에서 업데이트
                             'imageUrl': image_url,
                             'weeksInTop10': weeks,
-                            'type': 'TV Show',
+                            'type': item_type,
                             'trailerLink': trailer_link,
                             'vpnLink': 'https://nordvpn.com/ko/',
-                            'tags': [f"{weeks} Weeks in Top 10", "K-Drama"],
+                            'tags': [f"{weeks} Weeks in Top 10", default_tag],
                             'trend': 0
                         }
                         
@@ -740,15 +745,32 @@ async def main():
             print("🎬 MEDIA 카테고리 크롤링 (Netflix)")
             print("=" * 60)
             
-            # Netflix Top 10 크롤링
-            media_items = await scrape_netflix(max_items=10)
+            all_media_items = []
             
-            if media_items:
+            # Netflix TV Shows Top 10 크롤링
+            print("\n📺 Netflix TV Shows 크롤링 중...")
+            tv_items = await scrape_netflix(media_type='tv', max_items=10)
+            if tv_items:
+                all_media_items.extend(tv_items)
+                print(f"✅ TV Shows {len(tv_items)}개 수집 완료")
+            else:
+                print("⚠️ TV Shows 데이터를 찾지 못했습니다.")
+            
+            # Netflix Films Top 10 크롤링
+            print("\n🎬 Netflix Films 크롤링 중...")
+            film_items = await scrape_netflix(media_type='films', max_items=10)
+            if film_items:
+                all_media_items.extend(film_items)
+                print(f"✅ Films {len(film_items)}개 수집 완료")
+            else:
+                print("⚠️ Films 데이터를 찾지 못했습니다.")
+            
+            if all_media_items:
                 # 트렌드 계산
-                media_items = await calculate_media_trends(db, media_items)
+                all_media_items = await calculate_media_trends(db, all_media_items)
                 
                 # 한국어 제목 번역
-                media_items = await translate_media_titles(model, media_items)
+                all_media_items = await translate_media_titles(model, all_media_items)
                 
                 # Media 저장 로직
                 today = datetime.utcnow().strftime('%Y-%m-%d')
@@ -758,13 +780,15 @@ async def main():
                 data = {
                     'date': today,
                     'category': 'media',
-                    'items': media_items,
+                    'items': all_media_items,
                     'updatedAt': firestore.SERVER_TIMESTAMP
                 }
                 
                 doc_ref.set(data)
-                print(f"✅ {len(media_items)}개 타이틀을 {doc_id} 문서에 저장 완료")
-                total_products += len(media_items)
+                print(f"✅ {len(all_media_items)}개 타이틀을 {doc_id} 문서에 저장 완료")
+                print(f"   - TV Shows: {len(tv_items)}개")
+                print(f"   - Films: {len(film_items)}개")
+                total_products += len(all_media_items)
             else:
                 print("⚠️ Netflix에서 데이터를 찾지 못했습니다.")
         

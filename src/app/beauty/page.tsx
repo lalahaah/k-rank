@@ -36,7 +36,8 @@ export default function BeautyPage() {
     const filteredRankings = searchQuery.trim()
         ? rankings.filter((item) =>
             item.productName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.brand.toLowerCase().includes(searchQuery.toLowerCase())
+            item.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
         )
         : rankings;
 
@@ -55,7 +56,7 @@ export default function BeautyPage() {
                     </p>
 
                     {/* Search Bar */}
-                    <SearchBar onSearch={setSearchQuery} />
+                    <SearchBar onSearch={setSearchQuery} placeholder="Search brands, products, tags..." />
                 </div>
             </div>
 
