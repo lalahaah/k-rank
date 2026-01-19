@@ -8,14 +8,12 @@ import asyncio
 import os
 import sys
 import random
-import time
 from datetime import datetime
 from typing import List, Dict, Any
 import json
 
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
-import requests
 import firebase_admin
 from firebase_admin import credentials, firestore
 import google.generativeai as genai
@@ -53,59 +51,126 @@ def initialize_gemini():
     genai.configure(api_key=api_key)
     return genai.GenerativeModel('models/gemini-2.5-flash')
 
-def scrape_olive_young_by_category(category_code: str = None, max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
+async def scrape_olive_young_by_category(category_code: str = None, max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
     """
-    올리브영 카테고리별 베스트 제품 크롤링 (ScraperAPI 사용)
+    올리브영 카테고리별 베스트 제품 크롤링
     
     Args:
         category_code: 카테고리 코드 (예: '10000010001' for Skincare, None for All)
         max_items: 크롤링할 최대 아이템 수
-        max_retries: 요청 실패 시 최대 재시도 횟수
+        max_retries: Cloudflare 우회 실패 시 최대 재시도 횟수
         
     Returns:
         제품 데이터 리스트
     """
     products = []
     
-    # ScraperAPI 키 확인
-    scraperapi_key = os.getenv('SCRAPER_API_KEY')
-    if not scraperapi_key:
-        print("❌ SCRAPER_API_KEY not found in environment")
-        return products
-    
-    # URL 생성
-    if category_code:
-        target_url = f"https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&fltDispCatNo={category_code}&rowsPerPage=100"
-    else:
-        target_url = "https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&rowsPerPage=100"
-    
     for attempt in range(max_retries):
         try:
-            print(f"🌐 ScraperAPI로 페이지 요청 중... (시도 {attempt + 1}/{max_retries})")
-            print(f"📄 URL: {target_url}")
-            
-            # ScraperAPI 파라미터
-            params = {
-                'api_key': scraperapi_key,
-                'url': target_url,
-                'country_code': 'kr',  # 한국 IP 사용
-                'render': 'true'  # JavaScript 렌더링
-            }
-            
-            # 요청 전송
-            response = requests.get('http://api.scraperapi.com', params=params, timeout=60)
-            
-            if response.status_code == 200:
-                print("✅ ScraperAPI 요청 성공!")
-                soup = BeautifulSoup(response.text, 'html.parser')
+            async with async_playwright() as p:
+                print(f"🌐 브라우저 시작 중... (시도 {attempt + 1}/{max_retries})")
                 
-                # Cloudflare 체크
-                page_title = soup.title.string if soup.title else "No Title"
-                if "잠시만" in page_title or "Just a moment" in page_title:
-                    print(f"⚠️  여전히 Cloudflare 페이지 감지됨 (시도 {attempt + 1}/{max_retries})")
+                # 브라우저 설정: 더 많은 우회 옵션 추가
+                browser = await p.chromium.launch(
+                    headless=True,
+                    args=[
+                        '--disable-blink-features=AutomationControlled',
+                        '--disable-dev-shm-usage',
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-infobars',
+                        '--window-position=0,0',
+                        '--ignore-certificate-errors',
+                        '--ignore-certificate-errors-spki-list',
+                        '--disable-web-security',
+                        '--disable-features=IsolateOrigins,site-per-process'
+                    ]
+                )
+                
+                # 브라우저 컨텍스트 생성 with User-Agent 설정 및 추가 헤더
+                context = await browser.new_context(
+                    user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                    viewport={'width': 1920, 'height': 1080},
+                    locale='ko-KR',
+                    timezone_id='Asia/Seoul',
+                    extra_http_headers={
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                        'Cache-Control': 'max-age=0',
+                        'Connection': 'keep-alive',
+                        'Upgrade-Insecure-Requests': '1',
+                        'Sec-Fetch-Dest': 'document',
+                        'Sec-Fetch-Mode': 'navigate',
+                        'Sec-Fetch-Site': 'none',
+                        'Sec-Fetch-User': '?1'
+                    }
+                )
+                
+                # JavaScript로 webdriver 감지 우회 강화
+                await context.add_init_script("""
+                    // Webdriver 속성 제거
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    });
+                    
+                    // Chrome 객체 추가 (봇이 아님을 증명)
+                    window.chrome = {
+                        runtime: {}
+                    };
+                    
+                    // Permissions API 우회
+                    const originalQuery = window.navigator.permissions.query;
+                    window.navigator.permissions.query = (parameters) => (
+                        parameters.name === 'notifications' ?
+                            Promise.resolve({ state: Notification.permission }) :
+                            originalQuery(parameters)
+                    );
+                    
+                    // Plugin 배열 추가
+                    Object.defineProperty(navigator, 'plugins', {
+                        get: () => [1, 2, 3, 4, 5]
+                    });
+                    
+                    // Languages 설정
+                    Object.defineProperty(navigator, 'languages', {
+                        get: () => ['ko-KR', 'ko', 'en-US', 'en']
+                    });
+                """)
+                
+                page = await context.new_page()
+                
+                # 랜덤 지연 추가 (더 인간처럼 보이도록)
+                random_delay = random.uniform(2, 5)
+                await asyncio.sleep(random_delay)
+                
+                # 올리브영 베스트 랭킹 페이지 - 카테고리별 URL 생성
+                if category_code:
+                    url = f"https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&fltDispCatNo={category_code}&rowsPerPage=100"
+                else:
+                    url = "https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&rowsPerPage=100"
+                
+                print(f"📄 페이지 로딩 중: {url}")
+                await page.goto(url, wait_until='domcontentloaded', timeout=60000)
+                
+                # Cloudflare 챌린지 대기 및 통과 확인 - 대기 시간 증가
+                print("⏳ Cloudflare 챌린지 통과 대기 중...")
+                await page.wait_for_timeout(20000)  # 20초로 증가
+                
+                # 추가 네트워크 안정화 대기
+                try:
+                    await page.wait_for_load_state('networkidle', timeout=15000)
+                except:
+                    print("⚠️  네트워크 idle 상태 대기 타임아웃 (계속 진행)")
+                
+                # 페이지 제목으로 Cloudflare 페이지인지 확인
+                page_title = await page.title()
+                if "Just a moment" in page_title or "잠시만 기다려" in page_title:
+                    print(f"⚠️  Cloudflare 챌린지 페이지 감지됨 (시도 {attempt + 1}/{max_retries})")
+                    await browser.close()
                     if attempt < max_retries - 1:
                         print("🔄 재시도 중...")
-                        time.sleep(5)
+                        await asyncio.sleep(5)  # 재시도 전 5초 대기
                         continue
                     else:
                         print("❌ 최대 재시도 횟수 초과")
@@ -113,34 +178,54 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                 
                 print(f"✅ 페이지 로드 완료: {page_title}")
                 
-                # 제품 파싱
+                # HTML 가져오기
+                content = await page.content()
+                
+                # 디버깅: HTML 저장
+                with open('oliveyoung_debug.html', 'w', encoding='utf-8') as f:
+                    f.write(content)
+                print("💾 HTML 저장: oliveyoung_debug.html")
+                
+                soup = BeautifulSoup(content, 'html.parser')
+                
+                # 제품 아이템 찾기 - 올리브영 새 구조: div.prd_info
                 items = soup.select('div.prd_info')[:max_items]
                 
+                # 디버깅: 다른 셀렉터도 시도
                 if len(items) == 0:
-                    print("⚠️  'div.prd_info'로 제품을 찾지 못함")
+                    print("⚠️  'div.prd_info' 로 제품을 찾지 못함")
                     items = soup.select('ul.common_prd_list li')[:max_items]
+                    print(f"   'ul.common_prd_list li' 시도: {len(items)}개 발견")
+                
+                if len(items) == 0:
+                    items = soup.select('.prd-item')[:max_items]
+                    print(f"   '.prd-item' 시도: {len(items)}개 발견")
                 
                 print(f"✅ {len(items)}개 제품 발견")
                 
+                # 제품을 찾지 못한 경우 재시도
                 if len(items) == 0:
                     print(f"⚠️  제품을 찾지 못함 (시도 {attempt + 1}/{max_retries})")
+                    await browser.close()
                     if attempt < max_retries - 1:
                         print("🔄 재시도 중...")
-                        time.sleep(5)
+                        await asyncio.sleep(5)
                         continue
                     else:
                         print("❌ 최대 재시도 횟수 초과")
                         return products
                 
-                # 제품 정보 추출
                 for idx, item in enumerate(items, 1):
                     try:
+                        # 제품명 (.prd_name 안의 .tx_name 또는 직접 p.tx_name에서 추출)
                         name_elem = item.select_one('.prd_name .tx_name') or item.select_one('p.tx_name')
                         name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
                         
+                        # 브랜드
                         brand_elem = item.select_one('.tx_brand')
                         brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
                         
+                        # 이미지 (prd_info 내부의 img 찾기)
                         img_elem = item.select_one('img')
                         image_url = ''
                         if img_elem:
@@ -148,11 +233,13 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                         if image_url and not image_url.startswith('http'):
                             image_url = 'https:' + image_url
                         
+                        # 가격 (현재가)
                         price_elem = item.select_one('.tx_cur .tx_num')
                         price = price_elem.get_text(strip=True) if price_elem else "0"
                         if price:
                             price = price + "원"
                         
+                        # 구매 링크 (a 태그에서 가져오기)
                         link_elem = item.select_one('a')
                         buy_url = link_elem.get('href', '') if link_elem else ''
                         if buy_url and not buy_url.startswith('http'):
@@ -162,12 +249,12 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                             'rank': idx,
                             'productName': name,
                             'brand': brand,
-                            'imageUrl': image_url or "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
+                            'imageUrl': image_url or f"https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
                             'price': price,
                             'buyUrl': buy_url,
                             'tags': [],
-                            'subcategory': 'skincare',
-                            'trend': 0
+                            'subcategory': 'skincare',  # 기본값, Gemini로 분류 예정
+                            'trend': 0,  # 추후 계산
                         }
                         
                         products.append(product)
@@ -177,32 +264,17 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                         print(f"⚠️  제품 {idx} 파싱 오류: {e}")
                         continue
                 
+                await browser.close()
+                
+                # 성공적으로 제품을 수집한 경우 루프 종료
                 print("✅ 제품 크롤링 성공!")
                 break
-                
-            else:
-                print(f"❌ ScraperAPI 요청 실패: HTTP {response.status_code}")
-                if attempt < max_retries - 1:
-                    print("🔄 재시도 중...")
-                    time.sleep(5)
-                    continue
-                else:
-                    print("❌ 최대 재시도 횟수 초과")
-                    
-        except requests.exceptions.Timeout:
-            print(f"⏱️  요청 타임아웃 (시도 {attempt + 1}/{max_retries})")
-            if attempt < max_retries - 1:
-                print("🔄 재시도 중...")
-                time.sleep(5)
-                continue
-            else:
-                print("❌ 최대 재시도 횟수 초과")
                 
         except Exception as e:
             print(f"❌ 크롤링 오류 (시도 {attempt + 1}/{max_retries}): {e}")
             if attempt < max_retries - 1:
                 print("🔄 재시도 중...")
-                time.sleep(5)
+                await asyncio.sleep(5)
                 continue
             else:
                 print("❌ 최대 재시도 횟수 초과")
@@ -210,6 +282,7 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                 traceback.print_exc()
     
     return products
+
 async def calculate_trends(db, category_key: str, current_products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     이전 날짜 랭킹과 비교하여 트렌드 계산
@@ -692,7 +765,7 @@ async def main():
                 print("-" * 60)
                 
                 # 카테고리별 크롤링
-                products = scrape_olive_young_by_category(
+                products = await scrape_olive_young_by_category(
                     category_code=config['url_param'],
                     max_items=20
                 )
