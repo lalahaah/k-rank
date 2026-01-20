@@ -9,6 +9,7 @@ import os
 import sys
 import random
 import time
+import re
 from datetime import datetime
 from typing import List, Dict, Any
 import json
@@ -20,6 +21,8 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import google.generativeai as genai
 from dotenv import load_dotenv
+from hangul_romanize import Transliter
+from hangul_romanize.rule import academic
 
 # 환경변수 로드
 load_dotenv()
@@ -34,6 +37,51 @@ CATEGORY_MAPPING = {
     'haircare': {'url_param': '10000010004', 'firestore_category': 'beauty-haircare'},
     'bodycare': {'url_param': '10000010003', 'firestore_category': 'beauty-bodycare'},
 }
+
+# 브랜드명 영어 매핑
+BRAND_NAME_MAPPING = {
+    # 주요 브랜드
+    '메디큐브': 'Medicube',
+    '에스네이처': 'S.Nature',
+    '에스트라': 'AESTURA',
+    '이즈앤트리': 'Isntree',
+    '웰라쥬': 'Wellage',
+    '달바': "d'Alba",
+    '메디힐': 'Mediheal',
+    '설화수': 'Sulwhasoo',
+    '라로슈포제': 'La Roche-Posay',
+    '토리든': 'Torriden',
+    '아누아': 'Anua',
+    '차앤박': 'CHARMZONE',
+    '블랑네이처': 'BLANC NATURE',
+    '프리메라': 'Primera',
+    '한율': 'Hanyul',
+    '에이프릴스킨': 'April Skin',
+    '마녀공장': "Ma:nyo",
+    '헤라': 'HERA',
+    'ENHYPEN': 'ENHYPEN',
+    '스킨푸드': 'SKINFOOD',
+    '메노킨': 'Menoquin',
+    '쏘내추럴': 'So Natural',
+    '크런틴': 'Crunchteen',
+    '구달': 'GOODAL',
+    '닥터지': 'Dr.G',
+    '정샘물': 'JUNG SAEM MOOL',
+    '클리오': 'CLIO',
+    '롬앤': 'rom&nd',
+    '페리페라': 'peripera',
+    '어노브': 'UNOVE',
+    '닥터그루트': 'Dr. GROOT',
+    '미쟝센': 'MISE EN SCENE',
+    '일리윤': 'illiyoon',
+    '세타필': 'Cetaphil',
+    
+    # 글로벌 브랜드 (이미 영어인 경우도 포함)
+    '라로슈포제': 'La Roche-Posay',
+    
+    # 추가 브랜드 (필요시 계속 확장)
+}
+
 
 
 # Firebase 초기화
@@ -284,79 +332,100 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
         for product in current_products:
             product['trend'] = 0
         return current_products
-
-async def translate_to_english(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def auto_romanize_korean(text: str) -> str:
     """
-    Gemini AI로 제품명과 브랜드명을 영어로 번역
+    한글을 로마자로 자동 변환
     
     Args:
-        model: Gemini 모델
+        text: 한글 또는 영어 텍스트
+        
+    Returns:
+        로마자 변환된 텍스트 (이미 영어면 그대로 반환)
+    """
+    try:
+        # 한글이 포함되어 있는지 확인
+        has_korean = any('\u3131' <= c <= '\u3163' or '\uac00' <= c <= '\ud7a3' for c in text)
+        
+        if has_korean:
+            # Transliter 인스턴스 생성
+            transliter = Transliter(academic)
+            # 한글을 로마자로 변환
+            romanized = transliter.translit(text)
+            # 각 단어의 첫 글자를 대문자로 (Title Case)
+            return romanized.title()
+        else:
+            # 이미 영어인 경우 그대로 반환
+            return text
+    except Exception as e:
+        # 변환 실패 시 원본 반환
+        print(f"⚠️  Romanization 오류 ({text}): {e}")
+        return text
+
+
+def normalize_product_name(name: str) -> str:
+    """
+    제품명에서 불필요한 키워드 제거
+    
+    Args:
+        name: 원본 제품명
+        
+    Returns:
+        정규화된 제품명
+    """
+    # [기획], [단품], (증정) 등 제거
+    name = re.sub(r'\[.*?\]', '', name)
+    # 괄호 안 내용 제거 (일부만)
+    name = re.sub(r'\([^)]*기획[^)]*\)', '', name)
+    name = re.sub(r'\([^)]*증정[^)]*\)', '', name)
+    # +로 시작하는 부분 제거
+    name = re.sub(r'\+.*$', '', name)
+    # 여러 공백을 하나로
+    name = re.sub(r'\s+', ' ', name)
+    
+    return name.strip()
+
+def translate_brand_names(products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    브랜드명을 영어로 변환 (매핑 + 자동 romanization 하이브리드)
+    
+    Args:
         products: 제품 리스트
         
     Returns:
-        영어로 번역된 제품 리스트
+        브랜드명이 영어로 변환된 제품 리스트
     """
-    print("\n🌐 Gemini AI로 제품명 및 브랜드명 영어 번역 중...")
+    print("\n🌐 브랜드명 영어 변환 및 제품명 정규화 중...")
     
-    # 제품 이름 리스트 생성
-    product_names = [f"{p['rank']}. {p['brand']} - {p['productName']}" for p in products]
+    new_brands = {}
     
-    prompt = f"""
-Translate the following Korean beauty product brands and names to English.
-Romanize Korean brand names (e.g., 메디힐 → Mediheal, 어노브 → UNOVE).
-Remove special characters like [], 기획, 단품, etc.
-Make the names concise and clear.
-
-Products:
-{chr(10).join(product_names)}
-
-Response format (JSON):
-{{
-  "translations": [
-    {{"rank": 1, "brand": "English Brand Name", "product_name": "English Product Name"}},
-    {{"rank": 2, "brand": "English Brand Name", "product_name": "English Product Name"}},
-    ...
-  ]
-}}
-
-JSON only.
-"""
+    for product in products:
+        korean_brand = product['brand'].strip()
+        
+        # 1. 매핑 테이블에서 영어 브랜드명 찾기 (우선순위)
+        if korean_brand in BRAND_NAME_MAPPING:
+            product['brand'] = BRAND_NAME_MAPPING[korean_brand]
+        else:
+            # 2. 자동 romanization
+            romanized = auto_romanize_korean(korean_brand)
+            product['brand'] = romanized
+            new_brands[korean_brand] = romanized
+        
+        # 제품명 정규화 (불필요한 키워드 제거)
+        product['productName'] = normalize_product_name(product['productName'])
     
-    try:
-        response = model.generate_content(prompt)
-        result_text = response.text.strip()
-        
-        # JSON 파싱
-        # 마크다운 코드 블록 제거
-        if result_text.startswith('```'):
-            result_text = result_text.split('```')[1]
-            if result_text.startswith('json'):
-                result_text = result_text[4:]
-        
-        translations = json.loads(result_text)
-        
-        # 제품에 영어 이름 및 브랜드 적용
-        for item in translations.get('translations', []):
-            rank = item.get('rank')
-            english_brand = item.get('brand', '')
-            english_name = item.get('product_name', '')
-            
-            for product in products:
-                if product['rank'] == rank:
-                    # 한글 브랜드와 제품명을 영어로 완전히 교체
-                    if english_brand:
-                        product['brand'] = english_brand
-                    if english_name:
-                        product['productName'] = english_name
-                    break
-        
-        print("✅ 영어 번역 완료 (브랜드 + 제품명)")
-        
-    except Exception as e:
-        print(f"⚠️  Gemini 번역 오류: {e}")
-        print("한글 제품명 유지")
+    # 새로운 브랜드 로깅 (자동 변환된 브랜드)
+    if new_brands:
+        print(f"🆕 새로운 브랜드 자동 변환 ({len(new_brands)}개):")
+        for korean, english in list(new_brands.items())[:5]:
+            print(f"   - {korean} → {english}")
+        if len(new_brands) > 5:
+            print(f"   ... 외 {len(new_brands) - 5}개")
+    
+    print("✅ 브랜드명 변환 완료")
     
     return products
+
+# 이전 translate_to_english 함수는 위의 translate_brand_names로 대체됨
 
 async def generate_tags(model, products: List[Dict[str, Any]], category: str = 'all') -> List[Dict[str, Any]]:
     """
@@ -736,8 +805,8 @@ async def main():
                 # 트렌드 계산 (이전 날짜 데이터와 비교)
                 products = await calculate_trends(db, category_key, products)
                 
-                # 영어 번역 (브랜드 + 제품명)
-                products = await translate_to_english(model, products)
+                # 브랜드명 영어 변환  
+                products = translate_brand_names(products)
                 
                 # 태그 자동 생성
                 products = await generate_tags(model, products, category_key)
