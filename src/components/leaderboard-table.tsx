@@ -214,7 +214,7 @@ export function LeaderboardTable({ rankings: initialRankings }: LeaderboardTable
                                             title="Buy on Amazon"
                                         >
                                             <ShoppingCart size={14} className="md:w-3 md:h-3" />
-                                            Buy on Amazon
+                                            Buy
                                         </button>
                                     </a>
                                 </div>
