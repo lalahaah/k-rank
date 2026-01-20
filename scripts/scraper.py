@@ -84,12 +84,12 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
             print(f"🌐 ScraperAPI로 페이지 요청 중... (시도 {attempt + 1}/{max_retries})")
             print(f"📄 URL: {target_url}")
             
-            # ScraperAPI 파라미터
+            # ScraperAPI 파라미터 (render=false로 설정하여 JavaScript 실행 전 HTML 가져오기)
             params = {
                 'api_key': scraperapi_key,
                 'url': target_url,
                 'country_code': 'kr',  # 한국 IP 사용
-                'render': 'true'  # JavaScript 렌더링
+                'render': 'false'  # JavaScript 렌더링 하지 않음
             }
             
             # 요청 전송
@@ -141,12 +141,25 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                         brand_elem = item.select_one('.tx_brand')
                         brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
                         
+                        # 이미지 URL 추출 (다양한 속성 확인, data-original 우선)
                         img_elem = item.select_one('img')
                         image_url = ''
                         if img_elem:
-                            image_url = img_elem.get('src', '') or img_elem.get('data-original', '')
+                            # 여러 속성에서 이미지 URL 찾기 (우선순위: data-original > data-ref > data-src > src)
+                            image_url = (
+                                img_elem.get('data-original', '') or 
+                                img_elem.get('data-ref', '') or 
+                                img_elem.get('data-src', '') or 
+                                img_elem.get('src', '')
+                            )
+                        
+                        # placeholder 이미지 필터링
+                        if image_url and ('noimg' in image_url or 'placeholder' in image_url or 'loading' in image_url):
+                            image_url = ''
+                        
+                        # 상대경로를 절대경로로 변환
                         if image_url and not image_url.startswith('http'):
-                            image_url = 'https:' + image_url
+                            image_url = 'https:' + image_url if image_url.startswith('//') else 'https://www.oliveyoung.co.kr' + image_url
                         
                         price_elem = item.select_one('.tx_cur .tx_num')
                         price = price_elem.get_text(strip=True) if price_elem else "0"
@@ -172,6 +185,8 @@ def scrape_olive_young_by_category(category_code: str = None, max_items: int = 2
                         
                         products.append(product)
                         print(f"  {idx}. {brand} - {name} ({price})")
+                        if image_url:
+                            print(f"      Image: {image_url[:80]}...")
                         
                     except Exception as e:
                         print(f"⚠️  제품 {idx} 파싱 오류: {e}")
