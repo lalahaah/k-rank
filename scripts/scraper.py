@@ -51,7 +51,7 @@ def initialize_gemini():
     if not api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file")
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel('models/gemini-2.5-flash')
+    return genai.GenerativeModel('models/gemini-2.0-flash-exp')
 
 def scrape_olive_young_by_category(category_code: str = None, max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
     """
@@ -358,18 +358,30 @@ JSON only.
     
     return products
 
-async def generate_tags(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+async def generate_tags(model, products: List[Dict[str, Any]], category: str = 'all') -> List[Dict[str, Any]]:
     """
     Gemini AI로 제품별 태그 자동 생성
     
     Args:
         model: Gemini 모델
         products: 제품 리스트
+        category: 카테고리
         
     Returns:
         태그가 추가된 제품 리스트
     """
     print("\n🏷️  Gemini AI로 제품 태그 자동 생성 중...")
+    
+    # 카테고리별 기본 태그 매핑
+    category_tags = {
+        'all': ['Korean Beauty', 'Best Seller'],
+        'skincare': ['Skincare', 'K-Beauty'],
+        'suncare': ['Suncare', 'UV Protection'],
+        'masks': ['Face Mask', 'Sheet Mask'],
+        'makeup': ['Makeup', 'Cosmetics'],
+        'haircare': ['Haircare', 'Hair Treatment'],
+        'bodycare': ['Bodycare', 'Body Care']
+    }
     
     # 제품 이름 리스트 생성 (영어 번역된 이름 사용)
     product_info = [f"{p['rank']}. {p['brand']} - {p['productName']}" for p in products]
@@ -426,7 +438,12 @@ JSON only.
         
     except Exception as e:
         print(f"⚠️  Gemini 태그 생성 오류: {e}")
-        print("빈 태그 배열 유지")
+        print(f"기본 카테고리 태그 사용: {category}")
+        
+        # Gemini 실패 시 기본 카테고리 태그 사용
+        default_tags = category_tags.get(category, ['Korean Beauty', 'Trending'])
+        for product in products:
+            product['tags'] = default_tags.copy()
     
     return products
 
@@ -723,7 +740,7 @@ async def main():
                 products = await translate_to_english(model, products)
                 
                 # 태그 자동 생성
-                products = await generate_tags(model, products)
+                products = await generate_tags(model, products, category_key)
                 
                 # Firebase에 저장
                 save_to_firebase(db, category_key, products)
