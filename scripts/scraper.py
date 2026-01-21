@@ -104,8 +104,9 @@ def initialize_gemini():
     if not api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file")
     genai.configure(api_key=api_key)
-    # gemini-1.5-pro: 안정적이고 사용 가능한 모델 (구버전 SDK와 호환)
-    return genai.GenerativeModel('gemini-1.5-pro')
+    # models/gemini-2.0-flash: 최신 고성능 모델이며 할당량이 안정적임
+    return genai.GenerativeModel('models/gemini-2.0-flash')
+
 
 
 
@@ -520,11 +521,14 @@ JSON only.
         
     except Exception as e:
         print(f"⚠️ Gemini 번역 오류: {e}")
-        print("한글 제품명 유지")
-        import traceback
-        traceback.print_exc()
+        print("💡 폴백: 자동 로마자 변환(Romanization) 시도")
+        # AI 번역 실패 시 로마자 변환으로 대체하여 한글 노출 방지
+        for product in products:
+            if any('\u3131' <= c <= '\u3163' or '\uac00' <= c <= '\ud7a3' for c in product['productName']):
+                product['productName'] = auto_romanize_korean(product['productName'])
     
     return products
+
 
 async def generate_tags(model, products: List[Dict[str, Any]], category: str = 'all') -> List[Dict[str, Any]]:
     """
