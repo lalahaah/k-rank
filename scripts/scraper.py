@@ -88,7 +88,12 @@ BRAND_NAME_MAPPING = {
 def initialize_firebase():
     """Firebase Admin SDK 초기화"""
     if not firebase_admin._apps:
-        cred = credentials.Certificate('serviceAccountKey.json')
+        # 스크립트 위치와 상관없이 프로젝트 루트의 serviceAccountKey.json 사용
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        project_root = os.path.dirname(script_dir)
+        key_path = os.path.join(project_root, 'serviceAccountKey.json')
+        
+        cred = credentials.Certificate(key_path)
         firebase_admin.initialize_app(cred)
     return firestore.client()
 
@@ -99,7 +104,10 @@ def initialize_gemini():
     if not api_key:
         raise ValueError("GEMINI_API_KEY not found in .env file")
     genai.configure(api_key=api_key)
-    return genai.GenerativeModel('models/gemini-2.0-flash-exp')
+    # gemini-1.5-pro: 안정적이고 사용 가능한 모델 (구버전 SDK와 호환)
+    return genai.GenerativeModel('gemini-1.5-pro')
+
+
 
 def scrape_olive_young_by_category(category_code: str = None, max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
     """
@@ -293,19 +301,25 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
         firestore_category = CATEGORY_MAPPING[category_key]['firestore_category']
         doc_id = f"{yesterday}_{firestore_category}"
         
+        print(f"\n📊 트렌드 계산 중... (어제: {yesterday}, 카테고리: {firestore_category})")
+        
         # 어제 데이터 가져오기
         doc_ref = db.collection('daily_rankings').document(doc_id)
         doc = doc_ref.get()
         
         if not doc.exists:
+            print(f"⚠️  어제 데이터 없음 (문서 ID: {doc_id})")
+            print("💡 첫 실행이거나 어제 데이터가 없습니다. 트렌드 0으로 설정")
             # 어제 데이터 없으면 트렌드 0
             for product in current_products:
                 product['trend'] = 0
             return current_products
         
         yesterday_items = doc.to_dict().get('items', [])
+        print(f"✅ 어제 데이터 {len(yesterday_items)}개 발견")
         
         # 제품명으로 매칭하여 순위 변동 계산
+        trend_changes = []
         for current_item in current_products:
             current_rank = current_item['rank']
             product_name = current_item['productName']
@@ -319,15 +333,29 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
             
             if yesterday_rank:
                 # 트렌드 = 어제 순위 - 오늘 순위 (양수면 상승)
-                current_item['trend'] = yesterday_rank - current_rank
+                trend = yesterday_rank - current_rank
+                current_item['trend'] = trend
+                trend_symbol = '+' if trend > 0 else ''
+                trend_changes.append(f"  {product_name}: {yesterday_rank}위 → {current_rank}위 (변동: {trend_symbol}{trend})")
             else:
                 # 신규 진입
                 current_item['trend'] = 0
+                trend_changes.append(f"  {product_name}: 신규 진입 (변동: NEW)")
+        
+        # 트렌드 변화 로그 출력 (처음 5개만)
+        if trend_changes:
+            print("📈 트렌드 변화:")
+            for change in trend_changes[:5]:
+                print(change)
+            if len(trend_changes) > 5:
+                print(f"   ... 외 {len(trend_changes) - 5}개")
         
         return current_products
         
     except Exception as e:
         print(f"⚠️  트렌드 계산 오류: {e}")
+        import traceback
+        traceback.print_exc()
         # 오류 발생 시 트렌드 0으로 설정
         for product in current_products:
             product['trend'] = 0
@@ -427,6 +455,77 @@ def translate_brand_names(products: List[Dict[str, Any]]) -> List[Dict[str, Any]
 
 # 이전 translate_to_english 함수는 위의 translate_brand_names로 대체됨
 
+async def translate_product_names_batch(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Gemini AI로 제품명을 일괄 번역 (Batch Processing)
+    
+    Args:
+        model: Gemini 모델
+        products: 제품 리스트
+        
+    Returns:
+        제품명이 영어로 번역된 제품 리스트
+    """
+    print("\n🌐 Gemini AI로 제품명 일괄 번역 중...")
+    
+    # 제품명 리스트 생성
+    product_names = [f"{p['rank']}. {p['productName']}" for p in products]
+    
+    prompt = f"""
+Translate the following Korean beauty product names into English.
+Keep brand names as they are (already in English).
+Focus on translating the product description/name part accurately.
+Use professional beauty industry terminology.
+
+Product Names:
+{chr(10).join(product_names)}
+
+Response format (JSON):
+{{
+  "translations": [
+    {{"rank": 1, "productName": "English Product Name"}},
+    {{"rank": 2, "productName": "English Product Name"}},
+    ...
+  ]
+}}
+
+JSON only.
+"""
+    
+    try:
+        response = model.generate_content(prompt)
+        result_text = response.text.strip()
+        
+        # JSON 파싱 (마크다운 코드 블록 제거)
+        if result_text.startswith('```'):
+            result_text = result_text.split('```')[1]
+            if result_text.startswith('json'):
+                result_text = result_text[4:]
+        
+        translations = json.loads(result_text)
+        
+        # 번역 적용
+        translated_count = 0
+        for trans in translations.get('translations', []):
+            rank = trans.get('rank')
+            product_name = trans.get('productName')
+            
+            for product in products:
+                if product['rank'] == rank:
+                    product['productName'] = product_name
+                    translated_count += 1
+                    break
+        
+        print(f"✅ 제품명 번역 완료 ({translated_count}/{len(products)}개)")
+        
+    except Exception as e:
+        print(f"⚠️ Gemini 번역 오류: {e}")
+        print("한글 제품명 유지")
+        import traceback
+        traceback.print_exc()
+    
+    return products
+
 async def generate_tags(model, products: List[Dict[str, Any]], category: str = 'all') -> List[Dict[str, Any]]:
     """
     Gemini AI로 제품별 태그 자동 생성
@@ -456,14 +555,21 @@ async def generate_tags(model, products: List[Dict[str, Any]], category: str = '
     product_info = [f"{p['rank']}. {p['brand']} - {p['productName']}" for p in products]
     
     prompt = f"""
-Generate 2-3 relevant tags for each beauty product.
-Tags should describe product benefits, type, or main features.
-Use English tags only. Keep them short and concise.
+Analyze each beauty product and generate 2-3 unique, relevant tags based on the product's actual characteristics.
+
+IMPORTANT: Each product must have DIFFERENT tags based on its name and brand.
+- Identify product type (mask, serum, cream, sunscreen, toner, cleanser, ampoule, essence, etc.)
+- Identify key benefits (hydrating, brightening, anti-aging, pore care, soothing, acne care, firming, etc.)
+- Identify special features (vegan, dermatologist-tested, sensitive skin, natural ingredients, etc.)
+
+DO NOT use generic tags like "Korean Beauty" or "Best Seller" for all products.
+Each product should have unique tags that describe what it actually is.
 
 Examples:
-- Mask Pack → ["Hydrating", "Soothing", "Sheet Mask"]
-- Hair Treatment → ["Damage Repair", "Moisturizing"]
-- Sunscreen → ["UV Protection", "Tone Up"]
+- "Medicube Collagen Jelly Cream" → ["Anti-Aging", "Firming", "Collagen Boost"]
+- "Isntree Hyaluronic Acid Toner" → ["Hydrating Toner", "Hyaluronic Acid", "Moisture"]
+- "Mediheal Tea Tree Mask Pack 10" → ["Sheet Mask", "Acne Care", "Tea Tree"]
+- "AESTURA Atobarrier 365 Cream 80ml" → ["Barrier Cream", "Sensitive Skin", "Moisturizing"]
 
 Products:
 {chr(10).join(product_info)}
@@ -471,13 +577,14 @@ Products:
 Response format (JSON):
 {{
   "tags": [
-    {{"rank": 1, "tags": ["Hydrating", "Soothing", "Sheet Mask"]}},
-    {{"rank": 2, "tags": ["Damage Repair", "Moisturizing"]}},
+    {{"rank": 1, "tags": ["Hydrating Toner", "Hyaluronic Acid", "Moisture"]}},
+    {{"rank": 2, "tags": ["Anti-Aging Serum", "Wrinkle Care", "Peptide"]}},
+    {{"rank": 3, "tags": ["Sheet Mask", "Brightening", "Vitamin C"]}},
     ...
   ]
 }}
 
-JSON only.
+JSON only. Make sure each product has DIFFERENT tags that reflect its actual characteristics.
 """
     
     try:
@@ -807,6 +914,9 @@ async def main():
                 
                 # 브랜드명 영어 변환  
                 products = translate_brand_names(products)
+                
+                # 제품명 영어 번역 (Batch Processing)
+                products = await translate_product_names_batch(model, products)
                 
                 # 태그 자동 생성
                 products = await generate_tags(model, products, category_key)
