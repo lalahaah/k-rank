@@ -136,7 +136,7 @@ export function MediaLeaderboardTable({ rankings }: MediaLeaderboardTableProps) 
                                         ) : (
                                             <span className="flex items-center gap-1 text-xs font-bold text-trend-stable bg-gray-50 px-2 py-1 rounded">
                                                 <Minus size={14} />
-                                                NEW
+                                                
                                             </span>
                                         )}
                                     </div>
