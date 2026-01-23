@@ -1021,11 +1021,11 @@ async def main():
                 print("⚠️ Films 데이터를 찾지 못했습니다.")
             
             if all_media_items:
-                # 트렌드 계산
-                all_media_items = await calculate_media_trends(db, all_media_items)
-                
-                # 한국어 제목 번역
+                # 한국어 제목 번역 (먼저 실행)
                 all_media_items = await translate_media_titles(model, all_media_items)
+                
+                # 트렌드 계산 (번역 후 실행하여 영어/한국어 제목으로 매칭)
+                all_media_items = await calculate_media_trends(db, all_media_items)
                 
                 # Media 저장 로직
                 today = datetime.utcnow().strftime('%Y-%m-%d')
