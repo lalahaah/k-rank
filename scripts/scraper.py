@@ -286,10 +286,12 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
     """
     이전 날짜 랭킹과 비교하여 트렌드 계산
     
+    NOTE: 이 함수는 제품명이 영어로 번역된 후 호출되어야 합니다!
+    
     Args:
         db: Firestore 클라이언트
         category_key: 카테고리 키
-        current_products: 현재 제품 리스트
+        current_products: 현재 제품 리스트 (영어 번역 완료된 상태)
         
     Returns:
         트렌드가 추가된 제품 리스트
@@ -321,27 +323,48 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
         
         # 제품명으로 매칭하여 순위 변동 계산
         trend_changes = []
+        matched_count = 0
+        new_count = 0
+        
         for current_item in current_products:
             current_rank = current_item['rank']
             product_name = current_item['productName']
+            brand = current_item.get('brand', '')
             
-            # 어제 순위 찾기
+            # 1차: 제품명으로 정확히 매칭
             yesterday_rank = None
             for old_item in yesterday_items:
-                if old_item['productName'] == product_name:
-                    yesterday_rank = old_item['rank']
+                if old_item.get('productName') == product_name:
+                    yesterday_rank = old_item.get('rank')
                     break
+            
+            # 2차: 제품명이 매칭 안되면 브랜드 + 순위 범위로 보조 매칭
+            if yesterday_rank is None and brand:
+                for old_item in yesterday_items:
+                    # 브랜드가 같고 순위 차이가 ±3 이내
+                    if (old_item.get('brand') == brand and 
+                        abs(old_item.get('rank', 999) - current_rank) <= 3):
+                        # 제품명 일부 유사성 체크 (간단한 단어 매칭)
+                        old_name_words = set(old_item.get('productName', '').lower().split())
+                        new_name_words = set(product_name.lower().split())
+                        common_words = old_name_words & new_name_words
+                        if len(common_words) >= 2:  # 2개 이상 단어 일치
+                            yesterday_rank = old_item.get('rank')
+                            print(f"  🔍 보조 매칭: {product_name[:30]}... (rank {current_rank} ≈ {yesterday_rank})")
+                            break
             
             if yesterday_rank:
                 # 트렌드 = 어제 순위 - 오늘 순위 (양수면 상승)
                 trend = yesterday_rank - current_rank
                 current_item['trend'] = trend
                 trend_symbol = '+' if trend > 0 else ''
-                trend_changes.append(f"  {product_name}: {yesterday_rank}위 → {current_rank}위 (변동: {trend_symbol}{trend})")
+                trend_changes.append(f"  {product_name[:40]}: {yesterday_rank}위 → {current_rank}위 (변동: {trend_symbol}{trend})")
+                matched_count += 1
             else:
                 # 신규 진입
                 current_item['trend'] = 0
-                trend_changes.append(f"  {product_name}: 신규 진입 (변동: NEW)")
+                trend_changes.append(f"  {product_name[:40]}: 신규 진입 (변동: NEW)")
+                new_count += 1
         
         # 트렌드 변화 로그 출력 (처음 5개만)
         if trend_changes:
@@ -350,6 +373,8 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
                 print(change)
             if len(trend_changes) > 5:
                 print(f"   ... 외 {len(trend_changes) - 5}개")
+        
+        print(f"📊 매칭 결과: 기존 {matched_count}개, 신규 {new_count}개")
         
         return current_products
         
@@ -811,26 +836,66 @@ async def calculate_media_trends(db, current_items: List[Dict[str, Any]]) -> Lis
         yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
         doc_id = f"{yesterday}_media"
         
+        print(f"\n📊 Media 트렌드 계산 중... (어제: {yesterday})")
+        
         doc_ref = db.collection('daily_rankings').document(doc_id)
         doc = doc_ref.get()
         
         if not doc.exists:
+            print(f"⚠️  어제 Media 데이터 없음 (문서 ID: {doc_id})")
+            print("💡 첫 실행이거나 어제 데이터가 없습니다. 트렌드 0으로 설정")
+            for item in current_items:
+                item['trend'] = 0
             return current_items
         
         yesterday_items = doc.to_dict().get('items', [])
+        print(f"✅ 어제 Media 데이터 {len(yesterday_items)}개 발견")
+        
+        trend_changes = []
+        matched_count = 0
+        new_count = 0
         
         for current in current_items:
-            title = current['titleEn']
-            yesterday_rank = next((item['rank'] for item in yesterday_items if item['titleEn'] == title), None)
+            title_en = current.get('titleEn', '')
+            title_ko = current.get('titleKo', '')
+            current_rank = current['rank']
+            
+            # 영어 제목 또는 한국어 제목으로 매칭
+            yesterday_rank = None
+            for old_item in yesterday_items:
+                if (old_item.get('titleEn') == title_en or 
+                    old_item.get('titleKo') == title_ko):
+                    yesterday_rank = old_item.get('rank')
+                    break
             
             if yesterday_rank:
-                current['trend'] = yesterday_rank - current['rank']
+                trend = yesterday_rank - current_rank
+                current['trend'] = trend
+                trend_symbol = '+' if trend > 0 else ''
+                trend_changes.append(f"  {title_ko or title_en}: {yesterday_rank}위 → {current_rank}위 (변동: {trend_symbol}{trend})")
+                matched_count += 1
             else:
                 current['trend'] = 0
+                trend_changes.append(f"  {title_ko or title_en}: 신규 진입 (변동: NEW)")
+                new_count += 1
+        
+        # 트렌드 변화 로그 출력
+        if trend_changes:
+            print("📈 Media 트렌드 변화:")
+            for change in trend_changes[:5]:
+                print(change)
+            if len(trend_changes) > 5:
+                print(f"   ... 외 {len(trend_changes) - 5}개")
+        
+        print(f"📊 매칭 결과: 기존 {matched_count}개, 신규 {new_count}개")
                 
         return current_items
     except Exception as e:
         print(f"⚠️ 미디어 트렌드 계산 오류: {e}")
+        import traceback
+        traceback.print_exc()
+        for item in current_items:
+            item['trend'] = 0
         return current_items
 
 
@@ -906,21 +971,21 @@ async def main():
                 # 카테고리별 크롤링
                 products = scrape_olive_young_by_category(
                     category_code=config['url_param'],
-                    max_items=20
+                    max_items=100  # 100개로 증가
                 )
                 
                 if not products:
                     print(f"⚠️  {category_key} 카테고리에서 제품을 찾지 못했습니다.")
                     continue
                 
-                # 트렌드 계산 (이전 날짜 데이터와 비교)
-                products = await calculate_trends(db, category_key, products)
-                
-                # 브랜드명 영어 변환  
+                # 브랜드명 영어 변환 (먼저 실행)
                 products = translate_brand_names(products)
                 
                 # 제품명 영어 번역 (Batch Processing)
                 products = await translate_product_names_batch(model, products)
+                
+                # 트렌드 계산 (번역 후 실행하여 영어 제품명으로 매칭)
+                products = await calculate_trends(db, category_key, products)
                 
                 # 태그 자동 생성
                 products = await generate_tags(model, products, category_key)
