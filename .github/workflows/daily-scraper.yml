@@ -24,7 +24,7 @@ jobs:
       
       - name: Install dependencies
         run: |
-          pip install playwright python-dotenv firebase-admin google-generativeai beautifulsoup4 requests hangul-romanize
+          pip install playwright python-dotenv firebase-admin google-generativeai beautifulsoup4 requests hangul-romanize googlemaps
           playwright install chromium
           playwright install-deps chromium
       
@@ -36,6 +36,7 @@ jobs:
         run: |
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
           echo "SCRAPER_API_KEY=${{ secrets.SCRAPER_API_KEY }}" >> .env
+          echo "GOOGLE_PLACES_API_KEY=${{ secrets.GOOGLE_PLACES_API_KEY }}" >> .env
       
       - name: Run scraper (Beauty + Media)
         run: |
@@ -43,6 +44,13 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
+      
+      - name: Run Food scraper (Google Places)
+        run: |
+          python3 scripts/scraper_food_google_places.py
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       
       - name: Cleanup
         if: always()

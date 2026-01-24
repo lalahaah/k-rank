@@ -19,6 +19,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "assets.nflxext.com",
       },
+      {
+        protocol: "https",
+        hostname: "places.googleapis.com",
+      },
     ],
   },
 };

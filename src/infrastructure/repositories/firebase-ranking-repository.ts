@@ -1,7 +1,8 @@
 import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase/client';
 import { IRankingRepository } from '../../domain/repositories/ranking-repository';
-import { RankingItem, MediaRankingItem, DailyRanking, MediaDailyRanking } from '../../domain/entities/ranking';
+import { RankingItem, MediaRankingItem, FoodRankingItem, DailyRanking, MediaDailyRanking, FoodDailyRanking, RestaurantRankingItem, RestaurantDailyRanking } from '../../domain/entities/ranking';
+
 
 export class FirebaseRankingRepository implements IRankingRepository {
     async getLatestRankings(category: string): Promise<RankingItem[]> {
@@ -60,6 +61,31 @@ export class FirebaseRankingRepository implements IRankingRepository {
         }
     }
 
+    async getFoodRankings(): Promise<FoodRankingItem[]> {
+        try {
+            const rankingsRef = collection(db, 'daily_rankings');
+            const q = query(
+                rankingsRef,
+                where('category', '==', 'food'),
+                orderBy('date', 'desc'),
+                limit(1)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+
+            const doc = querySnapshot.docs[0];
+            const data = doc.data() as FoodDailyRanking;
+            return data.items || [];
+        } catch (error) {
+            console.error('Error fetching food rankings from Firebase:', error);
+            return [];
+        }
+    }
+
     async getRankingsByDate(date: string, category: string): Promise<RankingItem[]> {
         try {
             const rankingsRef = collection(db, 'daily_rankings');
@@ -78,6 +104,31 @@ export class FirebaseRankingRepository implements IRankingRepository {
             return data.items || [];
         } catch (error) {
             console.error('Error fetching rankings by date from Firebase:', error);
+            return [];
+        }
+    }
+
+    async getRestaurantRankings(): Promise<RestaurantRankingItem[]> {
+        try {
+            const rankingsRef = collection(db, 'daily_rankings');
+            const q = query(
+                rankingsRef,
+                where('category', '==', 'restaurants'),
+                orderBy('date', 'desc'),
+                limit(1)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+
+            const doc = querySnapshot.docs[0];
+            const data = doc.data() as RestaurantDailyRanking;
+            return data.items || [];
+        } catch (error) {
+            console.error('Error fetching restaurant rankings from Firebase:', error);
             return [];
         }
     }

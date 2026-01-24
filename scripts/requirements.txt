@@ -10,5 +10,9 @@ firebase-admin==6.5.0
 google-generativeai==0.8.3
 python-dotenv==1.0.1
 
+# Google Places API
+googlemaps==4.10.0
+
 # Data Processing
 pandas==2.2.3
+hangul-romanize==0.1.0

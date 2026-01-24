@@ -23,6 +23,20 @@ export interface MediaRankingItem {
     trend: number;
 }
 
+export interface FoodRankingItem {
+    rank: number;
+    productName: string;
+    brand: string;
+    imageUrl: string;
+    price: string;
+    category: 'Ramen' | 'Snack' | 'Beverage';
+    tags: string[];
+    spicyLevel?: number; // 1-5
+    isVegan?: boolean;
+    trend: number;
+    buyUrl?: string; // Amazon affiliate link
+}
+
 export interface DailyRanking {
     date: string;
     category: string;
@@ -34,5 +48,54 @@ export interface MediaDailyRanking {
     date: string;
     category: string;
     items: MediaRankingItem[];
+    updatedAt: any;
+}
+
+export interface FoodDailyRanking {
+    date: string;
+    category: string;
+    items: FoodRankingItem[];
+    updatedAt: any;
+}
+
+export interface RestaurantRankingItem {
+    rank: number;
+    name: string;                    // 레스토랑명 (영문)
+    nameKo?: string;                 // 레스토랑명 (한글)
+    location: string;                // 지역 (예: "Dosan, Seoul")
+    category: string;                // 카테고리 (예: "Bakery / Cafe", "K-BBQ (Pork)")
+    imageUrl: string;                // 대표 이미지 URL
+    images?: string[];               // 추가 이미지 URL 배열
+    waitTime?: string;               // 평균 대기 시간 (예: "120 min")
+    hypeScore: number;               // NIK Index (0-100)
+    status: 'Available' | 'Queueing' | 'Hard to Book' | 'Reservations Only';
+    latitude?: number;               // 위도 (지도 표시용)
+    longitude?: number;              // 경도 (지도 표시용)
+    rating?: number;                 // 평점 (0-5)
+    reviews?: number;                // 리뷰 수
+    aiInsight?: {
+        summary: string;             // AI가 생성한 인사이트
+        tips?: string;               // 주문 팁
+        tags: string[];              // 해시태그 (예: ["Aesthetic", "Viral", "Must Visit"])
+    };
+    details?: {
+        address?: string;            // 상세 주소
+        phone?: string;              // 전화번호
+        hours?: string;              // 영업 시간
+        priceRange?: string;         // 가격대 (예: "₩₩")
+        mustTry?: string[];          // 추천 메뉴
+    };
+    links?: {
+        reservation?: string;        // 캐치테이블 예약 링크
+        map?: string;                // 구글 맵 링크
+    };
+    trend: number;                   // 순위 변동 (-N: 하락, +N: 상승, 0: 유지)
+}
+
+
+export interface RestaurantDailyRanking {
+    date: string;
+    category: string;                // 'restaurants'
+    items: RestaurantRankingItem[];
     updatedAt: any;
 }
