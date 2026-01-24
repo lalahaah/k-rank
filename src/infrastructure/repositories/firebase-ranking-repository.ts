@@ -1,7 +1,7 @@
 import { collection, query, where, getDocs, orderBy, limit } from 'firebase/firestore';
 import { db } from '../firebase/client';
 import { IRankingRepository } from '../../domain/repositories/ranking-repository';
-import { RankingItem, MediaRankingItem, FoodRankingItem, DailyRanking, MediaDailyRanking, FoodDailyRanking, RestaurantRankingItem, RestaurantDailyRanking } from '../../domain/entities/ranking';
+import { RankingItem, MediaRankingItem, FoodRankingItem, DailyRanking, MediaDailyRanking, FoodDailyRanking, RestaurantRankingItem, RestaurantDailyRanking, PlaceRankingItem, PlaceDailyRanking } from '../../domain/entities/ranking';
 
 
 export class FirebaseRankingRepository implements IRankingRepository {
@@ -129,6 +129,31 @@ export class FirebaseRankingRepository implements IRankingRepository {
             return data.items || [];
         } catch (error) {
             console.error('Error fetching restaurant rankings from Firebase:', error);
+            return [];
+        }
+    }
+
+    async getPlaceRankings(): Promise<PlaceRankingItem[]> {
+        try {
+            const rankingsRef = collection(db, 'daily_rankings');
+            const q = query(
+                rankingsRef,
+                where('category', '==', 'place'),
+                orderBy('date', 'desc'),
+                limit(1)
+            );
+
+            const querySnapshot = await getDocs(q);
+
+            if (querySnapshot.empty) {
+                return [];
+            }
+
+            const doc = querySnapshot.docs[0];
+            const data = doc.data() as PlaceDailyRanking;
+            return data.items || [];
+        } catch (error) {
+            console.error('Error fetching place rankings from Firebase:', error);
             return [];
         }
     }
