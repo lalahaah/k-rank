@@ -93,16 +93,16 @@ export default function FoodPage() {
                 </div>
             </section>
 
-            {/* Filters & Control Bar */}
-            <div className="max-w-6xl mx-auto px-4 -mt-8 relative z-20">
-                <div className="bg-white rounded-2xl shadow-xl shadow-food-500/5 p-2 flex flex-wrap gap-2 border border-gray-100">
+            {/* Navigation & Search Bar */}
+            <div className="sticky top-16 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+                <div className="max-w-6xl mx-auto px-4 h-20 flex items-center gap-4">
                     {/* View Toggle */}
-                    <div className="flex gap-1 bg-gray-100 rounded-xl p-1 mr-2">
+                    <div className="flex gap-1 bg-gray-100 rounded-xl p-1 shrink-0">
                         <button
                             onClick={() => setViewMode('list')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${viewMode === 'list'
-                                    ? 'bg-white text-food-600 shadow-sm'
-                                    : 'text-gray-400 hover:text-gray-600'
+                                ? 'bg-white text-food-600 shadow-sm'
+                                : 'text-gray-400 hover:text-gray-600'
                                 }`}
                         >
                             <List className="w-4 h-4" />
@@ -111,8 +111,8 @@ export default function FoodPage() {
                         <button
                             onClick={() => setViewMode('map')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${viewMode === 'map'
-                                    ? 'bg-white text-food-600 shadow-sm'
-                                    : 'text-gray-400 hover:text-gray-600'
+                                ? 'bg-white text-food-600 shadow-sm'
+                                : 'text-gray-400 hover:text-gray-600'
                                 }`}
                         >
                             <Map className="w-4 h-4" />
@@ -121,33 +121,32 @@ export default function FoodPage() {
                     </div>
 
                     {/* Area Filters */}
-                    {AREAS.map((area) => (
-                        <button
-                            key={area}
-                            onClick={() => setActiveArea(area)}
-                            className={`px-6 py-3 rounded-xl text-sm font-bold transition-all ${activeArea === area
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                        {AREAS.map((area) => (
+                            <button
+                                key={area}
+                                onClick={() => setActiveArea(area)}
+                                className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeArea === area
                                     ? 'bg-food-500 text-white shadow-lg shadow-food-500/30'
-                                    : 'text-gray-400 hover:bg-gray-50'
-                                }`}
-                        >
-                            {area}
-                        </button>
-                    ))}
-                    <div className="ml-auto hidden md:flex items-center gap-4 px-4 text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                        Last Updated: Just Now
+                                    : 'text-gray-400 hover:text-gray-900'
+                                    }`}
+                            >
+                                {area}
+                            </button>
+                        ))}
                     </div>
-                </div>
 
-                {/* Search Bar */}
-                <div className="mt-4 relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search restaurants, locations, or tags..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-food-500 focus:border-transparent font-medium text-gray-900 placeholder-gray-400"
-                    />
+                    {/* Search Bar */}
+                    <div className="flex-1 hidden md:flex relative max-w-sm ml-auto">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
+                        <input
+                            type="text"
+                            placeholder="Search restaurants..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-gray-50 border-none rounded-2xl py-3 pl-12 pr-4 text-xs font-bold focus:ring-2 focus:ring-food-500/20"
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -193,35 +192,36 @@ export default function FoodPage() {
                 )}
             </main>
 
-            {/* Waitlist Section (PRD 5.3) */}
-            <section className="bg-food-500 py-20 relative overflow-hidden">
-                <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-                    <Bell className="w-12 h-12 text-white/50 mx-auto mb-6" />
-                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
-                        GET EARLY ACCESS TO <br /> NEW HOTSPOTS.
-                    </h2>
-                    <p className="text-orange-100 mb-10 max-w-lg mx-auto font-medium">
-                        Be the first to know when a new restaurant hits the Top 10. Subscribe to our Weekly Seoul Pulse.
-                    </p>
-                    <form
-                        onSubmit={handleWaitlistSubmit}
-                        className="flex flex-col md:flex-row gap-3 max-w-md mx-auto"
-                    >
-                        <input
-                            type="email"
-                            placeholder="Your Email Address"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="flex-1 px-6 py-4 rounded-2xl bg-white focus:outline-none font-bold text-gray-900"
-                        />
-                        <button
-                            type="submit"
-                            className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-black transition-colors"
+            {/* Gourmet Booking Essentials */}
+            <section className="max-w-6xl mx-auto px-6 mb-20">
+                <div className="bg-gray-900 rounded-[3rem] p-10 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-food-500 rounded-full blur-[120px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="relative z-10">
+                        <h3 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
+                            HUNGRY FOR <br /> <span className="text-food-500">THE BEST?</span>
+                        </h3>
+                        <p className="text-gray-400 font-medium text-sm md:text-base">
+                            Book your table at Korea's most hyped restaurants.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 relative z-10">
+                        <a
+                            href="https://www.catchtable.net/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-food-500 hover:text-white transition-all shadow-xl"
                         >
-                            Join Waitlist
-                        </button>
-                    </form>
+                            CatchTable Global
+                        </a>
+                        <a
+                            href="https://www.creatrip.com/en/blog/614"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-food-500 hover:text-white transition-all shadow-xl"
+                        >
+                            Dining Guide
+                        </a>
+                    </div>
                 </div>
             </section>
 

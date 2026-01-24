@@ -4,28 +4,23 @@ import { useState, useEffect, useMemo } from "react";
 import Script from "next/script";
 import { Navbar } from "@/components/navbar";
 import { LeaderboardTable } from "@/components/leaderboard-table";
-import { SearchBar } from "@/components/search-bar";
 import { FirebaseRankingRepository } from "@/infrastructure/repositories/firebase-ranking-repository";
 import type { RankingItem } from "@/domain/entities/ranking";
-import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
-
-// 페이지 메타데이터는 layout.tsx 또는 별도의 metadata export로 처리
-// "use client" 페이지에서는 직접 export 불가능하므로 별도 파일 필요
-
 
 export default function BeautyPage() {
     const [rankings, setRankings] = useState<RankingItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
-    const category: string = "all"; // Default category for beauty page
+    const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-    // Initial data fetch
+    // Initial and Category data fetch
     useEffect(() => {
-        async function fetchInitialData() {
+        async function fetchRankingData() {
+            setLoading(true);
             try {
                 const repository = new FirebaseRankingRepository();
-                const data = await repository.getLatestRankings('all');
+                const data = await repository.getLatestRankings(selectedCategory);
                 setRankings(data);
             } catch (error) {
                 console.error('Error fetching rankings:', error);
@@ -34,8 +29,8 @@ export default function BeautyPage() {
             }
         }
 
-        fetchInitialData();
-    }, []);
+        fetchRankingData();
+    }, [selectedCategory]);
 
     // Filter rankings based on search query
     const filteredRankings = searchQuery.trim()
@@ -83,7 +78,6 @@ export default function BeautyPage() {
         };
     }, [rankings]);
 
-
     return (
         <div className="min-h-screen bg-canvas">
             {/* JSON-LD for SEO */}
@@ -97,35 +91,112 @@ export default function BeautyPage() {
 
             <Navbar />
 
-            {/* Hero Section */}
-            <div className="w-full bg-beauty-500">
-                <div className="mx-auto max-w-[1020px] px-4 py-16">
-                    <h1 className="text-4xl font-bold text-white mb-3">
-                        Real-time K-Beauty Leaderboard
-                    </h1>
-                    <p className="text-white/90 text-lg mb-8">
-                        Track the top performing beauty products in Korea. Updated daily.
-                    </p>
+            {/* Hero Section - Beauty Theme (Aligned with Food Style) */}
+            <section className="bg-white py-16 md:py-24 overflow-hidden relative">
+                <div className="max-w-6xl mx-auto px-4 relative z-10">
+                    <div className="max-w-2xl">
+                        <div className="inline-flex items-center gap-2 bg-beauty-50 text-beauty-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6">
+                            <span className="flex h-2 w-2 rounded-full bg-beauty-500 animate-pulse"></span>
+                            Real-time Data from Olive Young
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-6">
+                            DECODE K-BEAUTY <br />
+                            <span className="text-beauty-500">TRENDS NOW.</span>
+                        </h1>
+                        <p className="text-lg text-gray-500 font-medium leading-relaxed">
+                            The definitive guide to what's actually trending in Korea's beauty capital. We analyze daily sales data from Olive Young to show you the real winners.
+                        </p>
+                    </div>
+                </div>
+                <div className="absolute top-1/2 -right-20 -translate-y-1/2 text-[20rem] font-black text-gray-50 select-none -z-0">
+                    BEAUTY
+                </div>
+            </section>
+
+            {/* Navigation & Search Bar */}
+            <div className="sticky top-16 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+                <div className="max-w-6xl mx-auto px-4 h-20 flex items-center gap-4">
+                    {/* Category Filters */}
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
+                        {[
+                            { id: "all", label: "All" },
+                            { id: "skincare", label: "Skincare" },
+                            { id: "suncare", label: "Suncare" },
+                            { id: "masks", label: "Masks" },
+                            { id: "makeup", label: "Makeup" },
+                            { id: "haircare", label: "Haircare" },
+                            { id: "bodycare", label: "Bodycare" }
+                        ].map((cat) => (
+                            <button
+                                key={cat.id}
+                                onClick={() => setSelectedCategory(cat.id)}
+                                className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${selectedCategory === cat.id
+                                    ? 'bg-beauty-500 text-white shadow-lg shadow-beauty-500/30'
+                                    : 'text-gray-400 hover:text-gray-900'
+                                    }`}
+                            >
+                                {cat.label}
+                            </button>
+                        ))}
+                    </div>
 
                     {/* Search Bar */}
-                    <SearchBar onSearch={setSearchQuery} placeholder="Search brands, products, tags..." />
+                    <div className="flex-1 hidden md:flex relative max-w-sm ml-auto">
+                        <input
+                            type="text"
+                            placeholder="Search beauty..."
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-gray-50 border-none rounded-2xl py-3 pl-12 pr-4 text-xs font-bold focus:ring-2 focus:ring-beauty-500/20"
+                        />
+                        <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
                 </div>
             </div>
 
             {/* Main Content */}
-            <div className="mx-auto max-w-[1020px] px-4 py-8">
+            <div className="mx-auto max-w-6xl px-4 py-12">
                 {loading ? (
                     <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-white border-r-transparent opacity-50"></div>
+                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-beauty-500 border-r-transparent"></div>
                         <p className="mt-4 text-gray-500">Loading rankings...</p>
                     </div>
                 ) : (
-                    <LeaderboardTable rankings={filteredRankings} />
+                    <LeaderboardTable rankings={filteredRankings} isCategoryHidden={true} />
                 )}
             </div>
 
-            {/* CTA Section */}
-            <CtaSection />
+            {/* Beauty Shopping Essentials */}
+            <section className="max-w-6xl mx-auto px-6 mb-20">
+                <div className="bg-gray-900 rounded-[3rem] p-10 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-beauty-500 rounded-full blur-[120px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
+                    <div className="relative z-10">
+                        <h3 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
+                            WANT THESE <br /> <span className="text-beauty-500">GLOW GEMS?</span>
+                        </h3>
+                        <p className="text-gray-400 font-medium text-sm md:text-base">
+                            Shop the latest K-Beauty trends with international shipping.
+                        </p>
+                    </div>
+                    <div className="flex flex-wrap gap-3 relative z-10">
+                        <a
+                            href="https://global.oliveyoung.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-beauty-500 hover:text-white transition-all shadow-xl"
+                        >
+                            Olive Young Global
+                        </a>
+                        <a
+                            href="https://www.yesstyle.com/en/beauty.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-beauty-500 hover:text-white transition-all shadow-xl"
+                        >
+                            YesStyle Beauty
+                        </a>
+                    </div>
+                </div>
+            </section>
 
             {/* Footer */}
             <Footer />

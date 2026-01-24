@@ -142,11 +142,20 @@ export default function LandingPage() {
             </Link>
 
             {/* Card 4: Place (Bottom Right 2) */}
-            <Link href="/place" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-place-500/50 hover:bg-place-600 border border-white/20 transition-all block text-white shadow-xl">
-              <div className="absolute inset-0 flex flex-col items-center justify-center transition-colors">
-                <MapPin className="w-8 h-8 mb-2" />
-                <span className="font-bold text-sm uppercase">K-Place</span>
-                <span className="text-[9px] bg-white/20 text-white px-2 py-0.5 rounded-full mt-2 backdrop-blur-sm border border-white/20">Coming Soon</span>
+            <Link href="/place" className="group col-span-1 md:row-span-1 relative h-40 md:h-auto rounded-3xl overflow-hidden bg-place-500/50 hover:bg-place-600 border border-white/20 transition-all shadow-2xl hover:-translate-y-1 block">
+              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1517154421773-0529f29ea451?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-30 transition-opacity"></div>
+
+              <div className="absolute inset-0 p-6 flex justify-between items-center">
+                <div className="text-left relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-white text-place-500 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Travel Guide</span>
+                  </div>
+                  <h3 className="text-2xl font-black text-white mb-1">K-PLACE</h3>
+                  <p className="text-emerald-100 text-xs font-medium">Local Favorites.</p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md p-3 rounded-full text-white border border-white/10">
+                  <MapPin className="w-8 h-8" />
+                </div>
               </div>
             </Link>
 

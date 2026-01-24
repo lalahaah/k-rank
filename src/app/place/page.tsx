@@ -61,25 +61,30 @@ export default function PlacePage() {
         <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-place-500 selection:text-white pb-20">
             <Navbar />
 
-            {/* Header Section */}
-            <header className="bg-white border-b border-gray-100">
-                <div className="max-w-6xl mx-auto px-6 py-16 text-center">
-                    <div className="inline-flex items-center gap-2 bg-place-50 text-place-500 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 border border-place-100">
-                        <span className="flex h-2 w-2 rounded-full bg-place-500 animate-pulse"></span>
-                        Verified Data from VisitKorea
+            {/* Header Section - Place Theme (Aligned with Food Style) */}
+            <section className="bg-white py-16 md:py-24 overflow-hidden relative">
+                <div className="max-w-6xl mx-auto px-4 relative z-10">
+                    <div className="max-w-2xl">
+                        <div className="inline-flex items-center gap-2 bg-place-50 text-place-500 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6">
+                            <span className="flex h-2 w-2 rounded-full bg-place-500 animate-pulse"></span>
+                            Verified Data from VisitKorea
+                        </div>
+                        <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-6">
+                            EXPLORE KOREA <br />
+                            <span className="text-place-500">LIKE A LOCAL.</span>
+                        </h1>
+                        <p className="text-lg text-gray-500 font-medium leading-relaxed">
+                            Stop visiting tourist traps. We use local visitation data to show you where Koreans actually spend their weekends.
+                        </p>
                     </div>
-                    <h1 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter leading-[0.85] mb-6">
-                        EXPLORE KOREA <br />
-                        <span className="text-place-500">LIKE A LOCAL.</span>
-                    </h1>
-                    <p className="max-w-xl mx-auto text-gray-400 font-medium text-lg leading-relaxed">
-                        Stop visiting tourist traps. We use local visitation data to show you where Koreans actually spend their weekends.
-                    </p>
                 </div>
-            </header>
+                <div className="absolute top-1/2 -right-20 -translate-y-1/2 text-[20rem] font-black text-gray-50 select-none -z-0">
+                    PLACE
+                </div>
+            </section>
 
             {/* Navigation & Search */}
-            <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+            <div className="sticky top-16 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
                 <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
                         {CATEGORIES.map(cat => (
@@ -87,8 +92,8 @@ export default function PlacePage() {
                                 key={cat}
                                 onClick={() => setActiveTab(cat)}
                                 className={`px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === cat
-                                        ? 'bg-place-500 text-white shadow-lg shadow-place-500/30'
-                                        : 'text-gray-400 hover:text-gray-900'
+                                    ? 'bg-place-500 text-white shadow-lg shadow-place-500/30'
+                                    : 'text-gray-400 hover:text-gray-900'
                                     }`}
                             >
                                 {cat}
@@ -166,9 +171,30 @@ export default function PlacePage() {
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-3 relative z-10">
-                        <button className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-place-500 hover:text-white transition-all">Get eSIM</button>
-                        <button className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-place-500 hover:text-white transition-all">T-money Card</button>
-                        <button className="bg-place-500 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-gray-900 transition-all">All Passes</button>
+                        <a
+                            href="https://www.klook.com/en-US/search?query=korea%20esim"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-place-500 hover:text-white transition-all"
+                        >
+                            Get eSIM
+                        </a>
+                        <a
+                            href="https://www.klook.com/en-US/search?query=t-money"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-place-500 hover:text-white transition-all"
+                        >
+                            T-money Card
+                        </a>
+                        <a
+                            href="https://www.klook.com/en-US/search?query=korea%20pass"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-place-500 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-gray-900 transition-all font-sans"
+                        >
+                            All Passes
+                        </a>
                     </div>
                 </div>
             </section>

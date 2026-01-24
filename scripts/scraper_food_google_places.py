@@ -63,20 +63,7 @@ def calculate_hype_score(rating: float, user_ratings_total: int, recency_boost: 
     return min(100, score)
 
 
-def estimate_wait_time(hype_score: int) -> str:
-    """Hype Score 기반 대기 시간 추정"""
-    if hype_score >= 95:
-        return "120 min"
-    elif hype_score >= 90:
-        return "90 min"
-    elif hype_score >= 80:
-        return "60 min"
-    elif hype_score >= 70:
-        return "45 min"
-    elif hype_score >= 60:
-        return "30 min"
-    else:
-        return "20 min"
+# estimate_wait_time 함수 제거 (불확실한 추정치 방지)
 
 
 def get_status(hype_score: int) -> str:
@@ -206,7 +193,6 @@ def scrape_google_places_new(api_key: str, max_per_area: int = 3) -> List[Dict[s
                     'rating': rating,
                     'reviews': reviews,
                     'hypeScore': hype_score,
-                    'waitTime': estimate_wait_time(hype_score),
                     'status': get_status(hype_score),
                     'latitude': latitude,
                     'longitude': longitude,

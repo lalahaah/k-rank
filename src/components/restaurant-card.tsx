@@ -54,17 +54,6 @@ export function RestaurantCard({ item }: RestaurantCardProps) {
 
                     {/* 핵심 수치 (Social Signals) */}
                     <div className="flex items-center gap-4 my-4 flex-wrap">
-                        {item.waitTime && (
-                            <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
-                                <Clock className="w-4 h-4 text-food-500" />
-                                <div>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase leading-none">
-                                        Wait Time
-                                    </p>
-                                    <p className="text-sm font-black text-gray-800">{item.waitTime}</p>
-                                </div>
-                            </div>
-                        )}
                         <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
                             <Star className="w-4 h-4 text-food-500 fill-current" />
                             <div>
@@ -76,8 +65,8 @@ export function RestaurantCard({ item }: RestaurantCardProps) {
                         </div>
                         <div
                             className={`ml-auto px-3 py-1 rounded-full text-[10px] font-bold uppercase border ${item.status === 'Available'
-                                    ? 'bg-green-50 text-green-600 border-green-100'
-                                    : 'bg-red-50 text-red-600 border-red-100'
+                                ? 'bg-green-50 text-green-600 border-green-100'
+                                : 'bg-red-50 text-red-600 border-red-100'
                                 }`}
                         >
                             {item.status}

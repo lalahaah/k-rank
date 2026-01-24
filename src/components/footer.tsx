@@ -14,8 +14,8 @@ import { Logo } from "./logo";
 const DATA_SOURCES = [
     { name: "Olive Young Korea", category: "Beauty", link: "https://www.oliveyoung.co.kr" },
     { name: "Netflix Top 10 South Korea", category: "Media", link: "https://top10.netflix.com/south-korea" },
-    // 추후 다른 소스 추가 예시:
-    // { name: "Naver Shopping", category: "General", link: "https://shopping.naver.com" },
+    { name: "Google Places API", category: "Food", link: "https://mapsplatform.google.com/maps-products/places/" },
+    { name: "VisitKorea TourAPI", category: "Place", link: "https://api.visitkorea.or.kr" },
 ];
 
 export function Footer() {
@@ -28,8 +28,7 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1">
                         <Logo variant="brand" className="mb-4" size="lg" />
                         <p className="text-sm text-gray-500 leading-relaxed">
-                            Your data-driven guide to real-time Korean trends.
-                            We track daily rankings to help you shop smart.
+                            The data-driven heartbeat of K-Culture. We decode the latest signals from Seoul to bring you daily rankings in Beauty, Media, Food, and Places.
                         </p>
                     </div>
 
@@ -38,8 +37,8 @@ export function Footer() {
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Explore</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
                             <li><Link href="/beauty" className="hover:text-brand-500 transition-colors">K-Beauty</Link></li>
-                            <li><span className="opacity-50 cursor-not-allowed">K-Food (Soon)</span></li>
-                            <li><span className="opacity-50 cursor-not-allowed">K-Place (Soon)</span></li>
+                            <li><Link href="/food" className="hover:text-brand-500 transition-colors">K-Food</Link></li>
+                            <li><Link href="/place" className="hover:text-brand-500 transition-colors">K-Place</Link></li>
                             <li><Link href="/media" className="hover:text-brand-500 transition-colors">K-Media</Link></li>
                         </ul>
                     </div>

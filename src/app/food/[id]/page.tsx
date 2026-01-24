@@ -189,12 +189,6 @@ export default function RestaurantDetailPage() {
                                     <MapPin className="w-5 h-5 text-food-500" />
                                     <span className="text-gray-700 font-medium">{restaurant.location}</span>
                                 </div>
-                                {restaurant.waitTime && (
-                                    <div className="flex items-center gap-2">
-                                        <Clock className="w-5 h-5 text-food-500" />
-                                        <span className="text-gray-700 font-medium">Wait: {restaurant.waitTime}</span>
-                                    </div>
-                                )}
                                 <div className="flex items-center gap-2">
                                     <Star className="w-5 h-5 text-food-500 fill-current" />
                                     <span className="text-gray-700 font-medium">Hype Score: {restaurant.hypeScore}%</span>
@@ -205,8 +199,8 @@ export default function RestaurantDetailPage() {
                             <div className="mt-4">
                                 <span
                                     className={`inline-block px-4 py-2 rounded-full text-sm font-bold ${restaurant.status === 'Available'
-                                            ? 'bg-green-50 text-green-600'
-                                            : 'bg-red-50 text-red-600'
+                                        ? 'bg-green-50 text-green-600'
+                                        : 'bg-red-50 text-red-600'
                                         }`}
                                 >
                                     {restaurant.status}
