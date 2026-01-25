@@ -400,9 +400,11 @@ async def main():
     print("🍜 K-Rank Food Scraper (Google Places API New)")
     print("=" * 60)
     
-    api_key = os.getenv('GOOGLE_PLACES_API_KEY')
+    # API 키 확인 (GOOGLE_PLACES_API_KEY가 없으면 GOOGLE_MAPS_API_KEY 시도)
+    api_key = os.getenv('GOOGLE_PLACES_API_KEY') or os.getenv('GOOGLE_MAPS_API_KEY')
+    
     if not api_key:
-        print("❌ GOOGLE_PLACES_API_KEY not found in environment")
+        print("❌ GOOGLE_PLACES_API_KEY 또는 GOOGLE_MAPS_API_KEY를 찾을 수 없습니다.")
         sys.exit(1)
     
     db = initialize_firebase()
