@@ -7,6 +7,7 @@ import { LeaderboardTable } from "@/components/leaderboard-table";
 import { FirebaseRankingRepository } from "@/infrastructure/repositories/firebase-ranking-repository";
 import type { RankingItem } from "@/domain/entities/ranking";
 import { Footer } from "@/components/footer";
+import { BillboardAd, SidebarAd } from "@/components/ads";
 
 export default function BeautyPage() {
     const [rankings, setRankings] = useState<RankingItem[]>([]);
@@ -91,6 +92,9 @@ export default function BeautyPage() {
 
             <Navbar />
 
+            {/* Billboard Ad (Header Bottom) */}
+            <BillboardAd />
+
             {/* Hero Section - Beauty Theme (Aligned with Food Style) */}
             <section className="bg-white py-16 md:py-24 overflow-hidden relative">
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -107,9 +111,6 @@ export default function BeautyPage() {
                             The definitive guide to what's actually trending in Korea's beauty capital. We analyze daily sales data from Olive Young to show you the real winners.
                         </p>
                     </div>
-                </div>
-                <div className="absolute top-1/2 -right-20 -translate-y-1/2 text-[20rem] font-black text-gray-50 select-none -z-0">
-                    BEAUTY
                 </div>
             </section>
 
@@ -151,22 +152,31 @@ export default function BeautyPage() {
                         <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Main Content */}
-            <div className="mx-auto max-w-6xl px-4 py-12">
-                {loading ? (
-                    <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-beauty-500 border-r-transparent"></div>
-                        <p className="mt-4 text-gray-500">Loading rankings...</p>
+            < div className="mx-auto max-w-6xl px-4 py-12" >
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="lg:col-span-2">
+                        {loading ? (
+                            <div className="text-center py-12">
+                                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-beauty-500 border-r-transparent"></div>
+                                <p className="mt-4 text-gray-500">Loading rankings...</p>
+                            </div>
+                        ) : (
+                            <LeaderboardTable rankings={filteredRankings} isCategoryHidden={true} />
+                        )}
                     </div>
-                ) : (
-                    <LeaderboardTable rankings={filteredRankings} isCategoryHidden={true} />
-                )}
-            </div>
+
+                    {/* Sidebar Sticky Ad */}
+                    <div className="hidden lg:block">
+                        <SidebarAd />
+                    </div>
+                </div>
+            </div >
 
             {/* Beauty Shopping Essentials */}
-            <section className="max-w-6xl mx-auto px-6 mb-20">
+            < section className="max-w-6xl mx-auto px-6 mb-20" >
                 <div className="bg-gray-900 rounded-[3rem] p-10 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-beauty-500 rounded-full blur-[120px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
                     <div className="relative z-10">
@@ -196,10 +206,11 @@ export default function BeautyPage() {
                         </a>
                     </div>
                 </div>
-            </section>
+            </section >
+
 
             {/* Footer */}
-            <Footer />
-        </div>
+            < Footer />
+        </div >
     );
 }

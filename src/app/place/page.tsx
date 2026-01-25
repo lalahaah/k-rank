@@ -78,9 +78,6 @@ export default function PlacePage() {
                         </p>
                     </div>
                 </div>
-                <div className="absolute top-1/2 -right-20 -translate-y-1/2 text-[20rem] font-black text-gray-50 select-none -z-0">
-                    PLACE
-                </div>
             </section>
 
             {/* Navigation & Search */}
@@ -111,10 +108,10 @@ export default function PlacePage() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" />
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Main Ranking Grid */}
-            <main className="max-w-6xl mx-auto px-6 py-12">
+            < main className="max-w-6xl mx-auto px-6 py-12" >
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
                         <TrendingUp className="w-6 h-6 text-place-500" /> Monthly Local Choice
@@ -125,41 +122,43 @@ export default function PlacePage() {
                     </div>
                 </div>
 
-                {loading ? (
-                    <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-place-500 border-r-transparent"></div>
-                        <p className="mt-4 text-gray-500">Loading places...</p>
-                    </div>
-                ) : filteredRankings.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">
-                            {searchQuery || activeTab !== 'All'
-                                ? 'No places found. Try adjusting your filters.'
-                                : 'No place data available yet. Coming soon!'}
-                        </p>
-                    </div>
-                ) : (
-                    <>
-                        <div className="space-y-4">
-                            {filteredRankings.map(item => (
-                                <PlaceCard key={item.rank} item={item} />
-                            ))}
+                {
+                    loading ? (
+                        <div className="text-center py-12">
+                            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-place-500 border-r-transparent"></div>
+                            <p className="mt-4 text-gray-500">Loading places...</p>
                         </div>
-
-                        {/* Explore More CTA */}
-                        {filteredRankings.length >= 10 && (
-                            <div className="mt-12 text-center">
-                                <button className="px-12 py-5 bg-white border-2 border-gray-100 rounded-3xl font-black text-xs uppercase tracking-[0.2em] text-gray-400 hover:border-place-500 hover:text-place-500 transition-all group">
-                                    Explore 50+ More Places <ChevronRight className="inline-block w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </button>
+                    ) : filteredRankings.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">
+                                {searchQuery || activeTab !== 'All'
+                                    ? 'No places found. Try adjusting your filters.'
+                                    : 'No place data available yet. Coming soon!'}
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="space-y-4">
+                                {filteredRankings.map(item => (
+                                    <PlaceCard key={item.rank} item={item} />
+                                ))}
                             </div>
-                        )}
-                    </>
-                )}
-            </main>
+
+                            {/* Explore More CTA */}
+                            {filteredRankings.length >= 10 && (
+                                <div className="mt-12 text-center">
+                                    <button className="px-12 py-5 bg-white border-2 border-gray-100 rounded-3xl font-black text-xs uppercase tracking-[0.2em] text-gray-400 hover:border-place-500 hover:text-place-500 transition-all group">
+                                        Explore 50+ More Places <ChevronRight className="inline-block w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )
+                }
+            </main >
 
             {/* Travel Essentials Banner */}
-            <section className="max-w-6xl mx-auto px-6 mb-20">
+            < section className="max-w-6xl mx-auto px-6 mb-20" >
                 <div className="bg-gray-900 rounded-[3rem] p-10 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-place-500 rounded-full blur-[120px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
                     <div className="relative z-10">
@@ -197,10 +196,10 @@ export default function PlacePage() {
                         </a>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* Footer */}
-            <Footer />
-        </div>
+            < Footer />
+        </div >
     );
 }

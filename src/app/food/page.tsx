@@ -88,9 +88,6 @@ export default function FoodPage() {
                         </p>
                     </div>
                 </div>
-                <div className="absolute top-1/2 -right-20 -translate-y-1/2 text-[20rem] font-black text-gray-50 select-none -z-0">
-                    FOOD
-                </div>
             </section>
 
             {/* Navigation & Search Bar */}
@@ -148,52 +145,54 @@ export default function FoodPage() {
                         />
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Main Grid */}
-            <main className="max-w-6xl mx-auto px-4 py-12">
-                {loading ? (
-                    <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-food-500 border-r-transparent"></div>
-                        <p className="mt-4 text-gray-500">Loading restaurants...</p>
-                    </div>
-                ) : filteredRankings.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">
-                            {searchQuery || activeArea !== 'All'
-                                ? 'No restaurants found. Try adjusting your filters.'
-                                : 'No restaurant data available yet.'}
-                        </p>
-                    </div>
-                ) : (
-                    <>
-                        {/* Map or List View */}
-                        {viewMode === 'map' ? (
-                            <MapView restaurants={filteredRankings} />
-                        ) : (
-                            <>
-                                <div className="grid grid-cols-1 gap-8">
-                                    {filteredRankings.map((item) => (
-                                        <RestaurantCard key={item.rank} item={item} />
-                                    ))}
-                                </div>
-
-                                {/* Explore More */}
-                                {filteredRankings.length >= 10 && (
-                                    <div className="mt-16 text-center">
-                                        <button className="px-10 py-5 bg-white border-2 border-gray-100 rounded-2xl font-bold text-gray-900 hover:border-food-500 hover:text-food-500 transition-all shadow-sm">
-                                            Load Top 50 Restaurants
-                                        </button>
+            < main className="max-w-6xl mx-auto px-4 py-12" >
+                {
+                    loading ? (
+                        <div className="text-center py-12" >
+                            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-food-500 border-r-transparent"></div>
+                            <p className="mt-4 text-gray-500">Loading restaurants...</p>
+                        </div>
+                    ) : filteredRankings.length === 0 ? (
+                        <div className="text-center py-12">
+                            <p className="text-gray-500 text-lg">
+                                {searchQuery || activeArea !== 'All'
+                                    ? 'No restaurants found. Try adjusting your filters.'
+                                    : 'No restaurant data available yet.'}
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Map or List View */}
+                            {viewMode === 'map' ? (
+                                <MapView restaurants={filteredRankings} />
+                            ) : (
+                                <>
+                                    <div className="grid grid-cols-1 gap-8">
+                                        {filteredRankings.map((item) => (
+                                            <RestaurantCard key={item.rank} item={item} />
+                                        ))}
                                     </div>
-                                )}
-                            </>
-                        )}
-                    </>
-                )}
-            </main>
+
+                                    {/* Explore More */}
+                                    {filteredRankings.length >= 10 && (
+                                        <div className="mt-16 text-center">
+                                            <button className="px-10 py-5 bg-white border-2 border-gray-100 rounded-2xl font-bold text-gray-900 hover:border-food-500 hover:text-food-500 transition-all shadow-sm">
+                                                Load Top 50 Restaurants
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    )
+                }
+            </main >
 
             {/* Gourmet Booking Essentials */}
-            <section className="max-w-6xl mx-auto px-6 mb-20">
+            < section className="max-w-6xl mx-auto px-6 mb-20" >
                 <div className="bg-gray-900 rounded-[3rem] p-10 md:p-16 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-food-500 rounded-full blur-[120px] opacity-20 -translate-y-1/2 translate-x-1/2"></div>
                     <div className="relative z-10">
@@ -223,9 +222,9 @@ export default function FoodPage() {
                         </a>
                     </div>
                 </div>
-            </section>
+            </section >
 
             <Footer />
-        </div>
+        </div >
     );
 }

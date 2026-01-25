@@ -106,9 +106,6 @@ export default function MediaPage() {
                         </p>
                     </div>
                 </div>
-                <div className="absolute top-1/2 -right-20 -translate-y-1/2 text-[20rem] font-black text-gray-50 select-none -z-0">
-                    MEDIA
-                </div>
             </section>
 
             {/* Navigation & Search Bar */}
@@ -144,25 +141,27 @@ export default function MediaPage() {
                         <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
                 </div>
-            </div>
+            </div >
 
             {/* Main Content */}
-            <div className="mx-auto max-w-6xl px-6 py-12">
-                {loading ? (
-                    <div className="text-center py-12">
-                        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-media-500 border-r-transparent"></div>
-                        <p className="mt-4 text-gray-500">Loading rankings...</p>
-                    </div>
-                ) : (
-                    <MediaLeaderboardTable rankings={filteredRankings} isCategoryHidden={true} />
-                )}
-            </div>
+            < div className="mx-auto max-w-6xl px-6 py-12" >
+                {
+                    loading ? (
+                        <div className="text-center py-12" >
+                            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-media-500 border-r-transparent"></div>
+                            <p className="mt-4 text-gray-500">Loading rankings...</p>
+                        </div>
+                    ) : (
+                        <MediaLeaderboardTable rankings={filteredRankings} isCategoryHidden={true} />
+                    )
+                }
+            </div >
 
             {/* VPN CTA */}
-            <VpnCta />
+            < VpnCta />
 
             {/* Footer */}
-            <Footer />
-        </div>
+            < Footer />
+        </div >
     );
 }
