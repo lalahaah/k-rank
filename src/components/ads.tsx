@@ -6,9 +6,10 @@ import {
     Sparkles,
     Gift,
     Bell,
-    ArrowRight,
     ShoppingBag,
-    X
+    X,
+    Plane,
+    ArrowRight as ArrowRightIcon
 } from 'lucide-react';
 
 /**
@@ -40,6 +41,23 @@ export const AD_CONFIG = {
         buttonText: "Check Amazon Price",
         linkUrl: "https://www.amazon.com/Medicube-Zero-Pore-Pads-Dual-Textured/dp/B09V7Z4TJG?ref_=ast_sto_dp&th=1?tag=nextidealab-20",
         image: "https://m.media-amazon.com/images/I/618ang-TWOL._AC_SL1500_.jpg" // 나중에 이미지 주소가 생기면 여기에 넣으세요.
+    }
+};
+
+/**
+ * 🗺️ K-Place 전용 광고 설정
+ */
+export const PLACE_AD_CONFIG = {
+    billboard: {
+        badge: "Travel Essential",
+        text: "Don't get lost! Get your unlimited 5G eSIM & T-Money card at 15% off.",
+        linkUrl: "https://www.klook.com/en-US/search?query=korea+esim",
+    },
+    inFeed: {
+        title: "Planning a trip beyond Seoul?",
+        description: "Discover the hidden gems of Jeju Island and Gyeongju with our verified local guides.",
+        buttonText: "Explore Day Tours",
+        linkUrl: "https://www.klook.com/en-US/search?query=jeju+tour",
     }
 };
 
@@ -98,7 +116,7 @@ export const InFeedAd = () => {
                 <div className="flex-shrink-0 w-full md:w-auto">
                     <a href={data.linkUrl} target="_blank" rel="noopener noreferrer">
                         <button className="w-full md:w-auto bg-gray-900 hover:bg-orange-600 text-white px-8 py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-2 shadow-xl shadow-gray-200">
-                            {data.buttonText} <ArrowRight size={14} />
+                            {data.buttonText} <ArrowRightIcon size={14} />
                         </button>
                     </a>
                 </div>
@@ -177,3 +195,55 @@ export const FooterAd = () => {
         </div>
     );
 };
+// 5. Place Billboard Ad (여행 섹션 상단용)
+export const PlaceBillboardAd = () => (
+    <div className="w-full bg-emerald-50 border-y border-emerald-100 py-4 px-6 mb-10 rounded-3xl">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+                <div className="bg-[#10B981] text-white p-2 rounded-xl shadow-lg shadow-emerald-200">
+                    <Plane size={20} />
+                </div>
+                <p className="text-sm font-bold text-emerald-900 leading-tight">
+                    <span className="bg-white px-2 py-0.5 rounded text-[10px] font-black uppercase text-[#10B981] mr-2 border border-emerald-100">
+                        {PLACE_AD_CONFIG.billboard.badge}
+                    </span>
+                    {PLACE_AD_CONFIG.billboard.text}
+                </p>
+            </div>
+            <a href={PLACE_AD_CONFIG.billboard.linkUrl} target="_blank" className="flex items-center gap-2 text-xs font-black text-[#10B981] uppercase tracking-widest hover:underline whitespace-nowrap">
+                Book Now <ExternalLink size={14} />
+            </a>
+        </div>
+    </div>
+);
+
+// 6. Place In-Feed Ad (여행 리스트 중간용)
+export const PlaceInFeedAd = () => (
+    <div className="my-12 p-1 bg-gradient-to-r from-[#10B981] via-teal-400 to-emerald-600 rounded-[3rem] shadow-xl shadow-emerald-100">
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-inner">
+            <div className="flex-1 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 text-[#10B981] text-[10px] font-black uppercase tracking-widest rounded-full border border-emerald-100 mb-4">
+                    <Gift size={12} /> Special Experience
+                </div>
+                <h3 className="text-3xl md:text-4xl font-black text-gray-900 mb-3 tracking-tighter leading-none">
+                    {PLACE_AD_CONFIG.inFeed.title}
+                </h3>
+                <p className="text-gray-500 font-medium mb-6 max-w-md italic">
+                    "{PLACE_AD_CONFIG.inFeed.description}"
+                </p>
+                <div className="flex justify-center md:justify-start">
+                    <a href={PLACE_AD_CONFIG.inFeed.linkUrl} target="_blank" className="text-xs font-black text-gray-900 border-b-2 border-[#10B981] pb-1 hover:text-[#10B981] transition-all">
+                        View All Recommendations
+                    </a>
+                </div>
+            </div>
+            <div className="flex-shrink-0 w-full md:w-auto">
+                <a href={PLACE_AD_CONFIG.inFeed.linkUrl} target="_blank">
+                    <button className="w-full md:w-auto bg-gray-900 hover:bg-[#10B981] text-white px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3 shadow-2xl shadow-gray-200 active:scale-95">
+                        {PLACE_AD_CONFIG.inFeed.buttonText} <ArrowRightIcon size={16} />
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+);

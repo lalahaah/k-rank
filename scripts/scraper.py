@@ -13,6 +13,7 @@ import re
 from datetime import datetime
 from typing import List, Dict, Any
 import json
+import math
 
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
@@ -799,34 +800,314 @@ Response format (JSON):
 JSON only.
 """
     
-    try:
-        response = model.generate_content(prompt)
-        result_text = response.text.strip()
-        
-        # JSON 파싱 (마크다운 코드 블록 제거)
-        if result_text.startswith('```'):
-            result_text = result_text.split('```')[1]
-            if result_text.startswith('json'):
-                result_text = result_text[4:]
-        
-        translations = json.loads(result_text)
-        
-        # 번역 적용
-        for trans in translations.get('translations', []):
-            rank = trans.get('rank')
-            title_ko = trans.get('titleKo')
-            
-            for item in items:
-                if item['rank'] == rank:
-                    item['titleKo'] = title_ko
-                    break
-        
-        print("✅ 미디어 제목 번역 완료")
-        
-    except Exception as e:
-        print(f"⚠️ Gemini 번역 오류: {e}")
-    
     return items
+
+def get_google_place_stats(name: str, address: str) -> Dict[str, Any]:
+    """
+    Google Places API (New)를 사용하여 장소의 상세 통계(평점, 리뷰 수)를 가져옴
+    """
+    api_key = os.getenv('GOOGLE_PLACES_API_KEY') or os.getenv('GOOGLE_MAPS_API_KEY')
+    if not api_key:
+        return {}
+        
+    url = "https://places.googleapis.com/v1/places:searchText"
+    headers = {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": api_key,
+        "X-Goog-FieldMask": "places.id,places.displayName,places.rating,places.userRatingCount,places.googleMapsUri,places.photos"
+    }
+    
+    # "장소명 + 주소(일부)"로 검색하여 정확도 높임
+    search_query = f"{name} {address.split()[:2]}" 
+    data = {
+        "textQuery": search_query,
+        "languageCode": "en",
+        "maxResultCount": 1
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=data, timeout=10)
+        if response.status_code == 200:
+            places = response.json().get("places", [])
+            if places:
+                p = places[0]
+                return {
+                    "rating": p.get("rating", 0),
+                    "userRatingCount": p.get("userRatingCount", 0),
+                    "googleMapsUri": p.get("googleMapsUri", ""),
+                    "photo_name": p.get("photos", [{}])[0].get("name", "") if p.get("photos") else ""
+                }
+    except Exception as e:
+        print(f"⚠️ Google Places API 검색 중 오류 ({name}): {e}")
+        
+    return {}
+
+async def scrape_tour_api(max_items: int = 50) -> List[Dict[str, Any]]:
+    """
+    한국관광공사 TourAPI를 통해 인기 여행지 정보 수집
+    """
+    api_key = os.getenv('TOUR_API_KEY')
+    if not api_key:
+        print("❌ TOUR_API_KEY not found in environment")
+        return []
+
+    # areaBasedList2 엔드포인트 (국문 서비스가 데이터가 가장 풍부함)
+    base_url = "https://apis.data.go.kr/B551011/KorService2/areaBasedList2"
+    
+    # 공통 파라미터 (arrange=B: 인기순)
+    common_params = f"&numOfRows={max_items}&pageNo=1&MobileOS=ETC&MobileApp=KRank&_type=json&arrange=B"
+
+    content_types = [12, 14, 15]
+    all_places = []
+    
+    for c_type in content_types:
+        try:
+            print(f"🌐 TourAPI 요청 중 (contentTypeId: {c_type})...")
+            # serviceKey를 직접 포함한 URL 생성 (Double Encoding 방지)
+            url = f"{base_url}?serviceKey={api_key}{common_params}&contentTypeId={c_type}"
+            
+            response = requests.get(url, timeout=15)
+            if response.status_code == 200:
+                try:
+                    data = response.json()
+                except Exception:
+                    print(f"❌ JSON 파싱 실패: {response.text[:200]}")
+                    continue
+
+                if not isinstance(data, dict):
+                    print(f"❌ 예상치 못한 응답 형식: {data}")
+                    continue
+
+                # 안전하게 중첩된 데이터 추출
+                response_obj = data.get("response", {})
+                if not isinstance(response_obj, dict):
+                    print(f"❌ TourAPI 응답 오류 (response가 dict 아님): {response_obj}")
+                    continue
+                
+                body = response_obj.get("body", {})
+                if not isinstance(body, dict):
+                    if "resultCode" in data:
+                        print(f"❌ TourAPI 비즈니스 오류: {data.get('resultMsg')} (Code: {data.get('resultCode')})")
+                    else:
+                        print(f"❌ TourAPI 응답 오류 (body가 dict 아님): {body}")
+                    continue
+                
+                items_obj = body.get("items", {})
+                items = []
+                if isinstance(items_obj, dict):
+                    items = items_obj.get("item", [])
+                elif isinstance(items_obj, str) and not items_obj:
+                    items = []
+                
+                if not items:
+                    print(f"⚠️ contentTypeId {c_type}에 데이터가 없습니다.")
+                    continue
+
+                if isinstance(items, dict):
+                    items = [items]
+                
+                for item in items:
+                    title = item.get("title")
+                    if not title: continue
+                    
+                    place = {
+                        "name_ko": title,
+                        "name_en": title, # Gemini 단계에서 번역됨
+                        "address_ko": item.get("addr1", ""),
+                        "location": item.get("addr1", "").split()[0] if item.get("addr1") else "Unknown",
+                        "imageUrl": item.get("firstimage") or "https://images.unsplash.com/photo-1544273677-277914bd9466?w=800&fit=crop",
+                        "mapx": item.get("mapx"),
+                        "mapy": item.get("mapy"),
+                        "content_id": item.get("contentid"),
+                        "content_type": c_type,
+                        "views": "N/A",  # TourAPI에서 직접 제공되지 않음
+                        "category": "Culture", # Gemini 단계에서 업데이트 가능
+                    }
+                    all_places.append(place)
+            else:
+                print(f"❌ TourAPI 요청 실패 (HTTP {response.status_code})")
+        except Exception as e:
+            print(f"❌ TourAPI 오류: {e}")
+
+    # 통합 후 조회수 기반으로 다시 정렬하거나 섞어서 상위 N개 추출 (여기서는 단순히 합침)
+    # 실제로는 국문 서비스에서 조회수를 가져와야 정확하지만, 
+    # EngService의 arrange=B도 어느 정도 작동함.
+    return all_places[:max_items]
+
+async def enrich_place_data(model, places: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Gemini AI로 장소 정보 강화 (영문 번역, AI Story, Photo Spot, Klook Keyword)
+    """
+    if not places:
+        return []
+
+    print("\n🤖 Gemini AI로 장소 정보 강화 중...")
+    
+    enriched_places = []
+    
+    for i, place in enumerate(places, 1):
+        prompt = f"""
+Analyze this South Korean tourist spot: "{place['name_en']}" (Address: {place['address_ko']})
+Generate the following information in JSON format:
+1. "name_en": Official or well-known English name.
+2. "ai_story": A fascinating 2-line story about its historical or cultural context.
+3. "photo_spot": A specific tip for the best "Pro Photo Spot" angle (Instagrammable).
+4. "tags": An array of 3 short keywords representing the vibe (e.g., ["Nature", "Hiking", "Autumn"]).
+5. "category": One of these three categories: "Culture" (for palaces, temples, history), "Nature" (for mountains, beaches, parks), or "Modern" (for shopping, cafes, urban).
+6. "hype_score": A score from 1-100 based on current SNS trend, Naver Map "Saves" level, and global search volume.
+7. "klook_keyword": A search keyword for Klook (e.g., "Nami Island Tour").
+8. "image_query": A high-quality English search keyword to find a representative photo of this place (e.g., "Gyeongbokgung Palace", "Myeongdong Night").
+
+JSON only.
+"""
+        try:
+            response = model.generate_content(prompt)
+            result_text = response.text.strip()
+            
+            if result_text.startswith('```'):
+                result_text = result_text.split('```')[1]
+                if result_text.startswith('json'):
+                    result_text = result_text[4:]
+            
+            ai_data = json.loads(result_text)
+            
+            place["name_en"] = ai_data.get("name_en", place["name_en"])
+            place["ai_story"] = ai_data.get("ai_story", "")
+            place["photo_spot"] = ai_data.get("photo_spot", "")
+            place["tags"] = ai_data.get("tags", ["Must Visit", "South Korea", "Trending"])
+            place["category"] = ai_data.get("category", "Culture")
+            ai_hype_score = ai_data.get("hype_score", 50)
+            # 2. Hybrid Verification with Google Places Data
+            google_data = get_google_place_stats(place["name_en"], place["address_ko"])
+            
+            if google_data:
+                g_rating = google_data.get("rating", 0)
+                g_reviews = google_data.get("userRatingCount", 0)
+                # Google Hype Score = (Rating/5) * log10(Reviews+1) * 20 
+                # (최대 점수를 약 100으로 수렴하게 설계)
+                google_hype = (g_rating / 5.0) * min(5, math.log10(g_reviews + 1)) * 20
+                final_hype_score = int((google_hype * 0.7) + (ai_hype_score * 0.3))
+                place["google_maps_url"] = google_data.get("googleMapsUri", "")
+                print(f"    🔍 Google Verified: Rating {g_rating}, Reviews {g_reviews} -> Score: {int(google_hype)}")
+            else:
+                final_hype_score = ai_hype_score # Fallback to AI estimation
+            
+            # Commercial Match Bonus
+            commercial_keywords = ["Palace", "Nami Island", "DMZ", "Seongsu", "Hannam", "Lotte World", "Everland"]
+            commercial_bonus = 20 if any(kw.lower() in place["name_en"].lower() for kw in commercial_keywords) else 0
+            
+            # Final Score Calculation (Mixed Engine)
+            # FinalScore = (TourAPI_Views_Index * 0.4) + (Hybrid_Hype_Score * 0.4) + (Commercial_Bonus * 0.2)
+            try:
+                base_views = int(place.get("views", 0)) if place.get("views") != "N/A" else 0
+            except:
+                base_views = 0
+            
+            # Normalize views index (relative)
+            # 10,000 views -> approx 40 points in weighting
+            views_weight = min(40, (base_views / 10000.0) * 40)
+            
+            place["final_score"] = views_weight + (final_hype_score * 0.4) + (commercial_bonus)
+            place["hype_score"] = final_hype_score
+
+            # Link & Data Generation
+            klook_keyword = ai_data.get("klook_keyword", place["name_en"])
+            place["klook_url"] = f"https://www.klook.com/en-US/search?query={klook_keyword.replace(' ', '%20')}&action=search"
+            place["creatrip_url"] = f"https://www.creatrip.com/en/search?keyword={place['name_en'].replace(' ', '%20')}"
+            
+            # Determine priority_platform
+            if place["category"] == "Culture":
+                place["priority_platform"] = "Creatrip"
+                place["booking_url"] = place["creatrip_url"]
+            else:
+                place["priority_platform"] = "Klook"
+                place["booking_url"] = place["klook_url"]
+
+            # Image logic enhancement: Use Google Photo > TourAPI > AI Fallback
+            api_key = os.getenv('GOOGLE_PLACES_API_KEY') or os.getenv('GOOGLE_MAPS_API_KEY')
+            
+            # 1. Check if Google has a real photo
+            if google_data and google_data.get("photo_name") and api_key:
+                photo_ref = google_data["photo_name"]
+                place["imageUrl"] = f"https://places.googleapis.com/v1/{photo_ref}/media?maxWidthPx=1200&maxHeightPx=800&key={api_key}"
+                print(f"    📸 Image Source: Google Places (Verified)")
+            # 2. If no Google photo, Check if TourAPI is valid
+            elif not place.get("imageUrl") or "photo-1544273677-277914bd9466" in place["imageUrl"]:
+                # 3. Last Resort: AI Guided category fallback
+                print(f"    ⚠️ Image Source: AI Category Fallback (TourAPI/Google missing)")
+                category_id_map = {
+                    "Culture": "1544273677-277914bd9466",
+                    "Nature": "1538332152395-65715509746e",
+                    "Modern": "1538485399081-7191377e8241"
+                }
+                cid = category_id_map.get(place["category"], "1544273677-277914bd9466")
+                place["imageUrl"] = f"https://images.unsplash.com/photo-{cid}?w=800&fit=crop"
+            else:
+                print(f"    🖼️ Image Source: TourAPI (External)")
+
+            place["verified_by_mix"] = True
+            enriched_places.append(place)
+            print(f"  ✅ {i}. {place['name_en']} 강화 완료 (Hype: {ai_hype_score}, Bonus: {commercial_bonus})")
+        except Exception as e:
+            print(f"⚠️ {place['name_en']} 강화 중 오류: {e}")
+            place["ai_story"] = "Discover the hidden gem of Korea."
+            place["photo_spot"] = "Best captured at golden hour."
+            place["tags"] = ["Must Visit", "South Korea"]
+            place["booking_url"] = f"https://www.klook.com/en-US/search?query={place['name_en'].replace(' ', '%20')}&action=search"
+            place["hype_score"] = 50
+            place["final_score"] = 50
+            place["verified_by_mix"] = False
+            enriched_places.append(place)
+            enriched_places.append(place)
+
+    # Sort by final_score descending
+    enriched_places.sort(key=lambda x: x.get("final_score", 0), reverse=True)
+    
+    # Re-assign rank
+    for i, place in enumerate(enriched_places, 1):
+        place["rank"] = i
+        
+    return enriched_places
+
+async def calculate_place_trends(db, current_items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Place 랭킹 트렌드 계산"""
+    from datetime import timedelta
+    
+    try:
+        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+        doc_id = f"{yesterday}_place"
+        
+        print(f"\n📊 Place 트렌드 계산 중... (어제: {yesterday})")
+        
+        doc_ref = db.collection('daily_rankings').document(doc_id)
+        doc = doc_ref.get()
+        
+        if not doc.exists:
+            for item in current_items:
+                item['trend'] = 0
+            return current_items
+        
+        yesterday_items = doc.to_dict().get('items', [])
+        
+        for current in current_items:
+            # 이름으로 매칭
+            yesterday_rank = None
+            for old_item in yesterday_items:
+                if old_item.get('name_en') == current.get('name_en'):
+                    yesterday_rank = old_item.get('rank')
+                    break
+            
+            if yesterday_rank:
+                current['trend'] = yesterday_rank - current['rank']
+            else:
+                current['trend'] = 0
+                
+        return current_items
+    except Exception as e:
+        print(f"⚠️ Place 트렌드 계산 오류: {e}")
+        for item in current_items:
+            item['trend'] = 0
+        return current_items
 
 async def calculate_media_trends(db, current_items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """미디어 랭킹 트렌드 계산"""
@@ -942,7 +1223,7 @@ async def main():
     print("=" * 60)
     
     # 커맨드 라인 인자 확인
-    run_mode = sys.argv[1] if len(sys.argv) > 1 else "all"  # "beauty", "media", "all"
+    run_mode = sys.argv[1] if len(sys.argv) > 1 else "all"  # "beauty", "media", "place", "all"
     
     try:
         # 1. Firebase 초기화
@@ -1046,6 +1327,40 @@ async def main():
                 total_products += len(all_media_items)
             else:
                 print("⚠️ Netflix에서 데이터를 찾지 못했습니다.")
+
+        # 5. Place 카테고리 크롤링
+        if run_mode in ["place", "all"]:
+            print("\n" + "=" * 60)
+            print("🗺️  PLACE 카테고리 크롤링 (TourAPI)")
+            print("=" * 60)
+            
+            # TourAPI 수집
+            place_items = await scrape_tour_api(max_items=50)
+            
+            if place_items:
+                # Gemini AI 강화
+                place_items = await enrich_place_data(model, place_items)
+                
+                # 트렌드 계산
+                place_items = await calculate_place_trends(db, place_items)
+                
+                # 저장
+                today = datetime.utcnow().strftime('%Y-%m-%d')
+                doc_id = f"{today}_place"
+                doc_ref = db.collection('daily_rankings').document(doc_id)
+                
+                data = {
+                    'date': today,
+                    'category': 'place',
+                    'items': place_items,
+                    'updatedAt': firestore.SERVER_TIMESTAMP
+                }
+                
+                doc_ref.set(data)
+                print(f"✅ {len(place_items)}개 명소를 {doc_id} 문서에 저장 완료")
+                total_products += len(place_items)
+            else:
+                print("⚠️ TourAPI에서 데이터를 찾지 못했습니다.")
         
         print("\n" + "=" * 60)
         print("✅ 모든 크롤링 완료!")

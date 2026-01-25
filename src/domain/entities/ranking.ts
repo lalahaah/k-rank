@@ -8,6 +8,14 @@ export interface RankingItem {
     subcategory: string;
     trend: number;
     buyUrl?: string;
+    // Fields for Travel
+    name_ko?: string;
+    name_en?: string;
+    ai_story?: string;
+    photo_spot?: string;
+    address_ko?: string;
+    booking_url?: string;
+    views?: string;
 }
 
 export interface MediaRankingItem {
@@ -102,20 +110,26 @@ export interface RestaurantDailyRanking {
 
 export interface PlaceRankingItem {
     rank: number;
-    name: string;                    // 여행지명 (영문)
-    nameKo: string;                  // 여행지명 (한글)
+    name_en: string;                 // 여행지명 (영문)
+    name_ko: string;                 // 여행지명 (한글)
     location: string;                // 지역 (예: "Jongno, Seoul")
-    category: 'Culture' | 'Nature' | 'Modern';  // 카테고리
+    category: string;                // 카테고리
     imageUrl: string;                // 대표 이미지 URL
     views: string;                   // 조회수 (예: "1.2M")
-    likes: string;                   // 좋아요 수 (예: "85k")
-    aiStory: string;                 // AI Cultural Guide (역사적 맥락, 방문 시간대)
-    photoSpot: string;               // Pro Photo Spot (사진 촬영 팁)
+    likes?: string;                   // 좋아요 수 (예: "85k")
+    ai_story: string;                // AI Cultural Guide (역사적 맥락, 방문 시간대)
+    photo_spot: string;              // Pro Photo Spot (사진 촬영 팁)
     tags: string[];                  // 해시태그 (예: ["Royal Heritage", "Must Visit"])
-    address: string;                 // 한국어 주소 (택시용)
-    bookingUrl?: string;             // Klook 예약 링크
-    latitude?: number;               // 위도
-    longitude?: number;              // 경도
+    address_ko: string;              // 한국어 주소 (택시용)
+    booking_url?: string;            // 우선순위 예약 링크
+    klook_url?: string;              // Klook 예약 링크
+    creatrip_url?: string;            // Creatrip 예약 링크
+    priority_platform?: string;       // 우선순위 플랫폼 (Klook/Creatrip)
+    hype_score?: number;             // AI Hype Score (1-100)
+    verified_by_mix?: boolean;       // 3-Source 혼합 검증 여부
+    mapx?: string;
+    mapy?: string;
+    content_id?: string;
     trend: number;                   // 순위 변동 (-N: 하락, +N: 상승, 0: 유지)
 }
 

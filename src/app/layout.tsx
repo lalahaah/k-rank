@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
+import { ScrollToTop } from "@/components/scroll-to-top";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -105,6 +106,7 @@ export default function RootLayout({
         )}
 
         {children}
+        <ScrollToTop />
 
         {/* Vercel Analytics */}
         <Analytics />

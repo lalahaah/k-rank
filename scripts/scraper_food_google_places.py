@@ -226,9 +226,9 @@ def scrape_google_places_new(api_key: str, max_per_area: int = 3) -> List[Dict[s
             print(f"   ❌ {area['name']} 검색 오류: {e}")
             continue
     
-    # Hype Score로 정렬 후 Top 10
+    # Hype Score로 정렬 후 Top 30
     all_restaurants.sort(key=lambda x: x['hypeScore'], reverse=True)
-    top_restaurants = all_restaurants[:10]
+    top_restaurants = all_restaurants[:30]
     
     # 순위 부여
     for idx, restaurant in enumerate(top_restaurants, 1):
@@ -418,7 +418,7 @@ async def main():
         model = None
     
     # 1. Google Places에서 레스토랑 수집
-    restaurants = scrape_google_places_new(api_key, max_per_area=3)
+    restaurants = scrape_google_places_new(api_key, max_per_area=7)
     
     if len(restaurants) == 0:
         print("❌ 레스토랑을 찾지 못했습니다")

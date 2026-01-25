@@ -176,14 +176,6 @@ export default function FoodPage() {
                                         ))}
                                     </div>
 
-                                    {/* Explore More */}
-                                    {filteredRankings.length >= 10 && (
-                                        <div className="mt-16 text-center">
-                                            <button className="px-10 py-5 bg-white border-2 border-gray-100 rounded-2xl font-bold text-gray-900 hover:border-food-500 hover:text-food-500 transition-all shadow-sm">
-                                                Load Top 50 Restaurants
-                                            </button>
-                                        </div>
-                                    )}
                                 </>
                             )}
                         </>

@@ -8,7 +8,9 @@ export class FirebaseRankingRepository implements IRankingRepository {
     async getLatestRankings(category: string): Promise<RankingItem[]> {
         try {
             let firestoreCategory = 'beauty';
-            if (category !== 'all') {
+            if (category === 'place') {
+                firestoreCategory = 'place';
+            } else if (category !== 'all') {
                 firestoreCategory = `beauty-${category}`;
             }
 
