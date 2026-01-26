@@ -1,4 +1,4 @@
-name: Weekly K-Rank Scraper (Food & Place)
+name: Weekly K-Rank Scraper (Media, Food & Place)
 
 on:
   # 매주 일요일 한국 시간 오전 9시 (UTC 0시) 실행
@@ -39,6 +39,13 @@ jobs:
           echo "GOOGLE_PLACES_API_KEY=${{ secrets.GOOGLE_PLACES_API_KEY }}" >> .env
           echo "GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}" >> .env
           echo "TOUR_API_KEY=${{ secrets.TOUR_API_KEY }}" >> .env
+      
+      - name: Run Media Scraper
+        run: |
+          python3 scripts/scraper.py media
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
       
       - name: Run Place scraper (TourAPI)
         run: |

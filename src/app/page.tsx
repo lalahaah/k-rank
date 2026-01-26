@@ -5,6 +5,8 @@ import Link from "next/link";
 import Script from "next/script";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { SeoContent } from "@/components/seo-content";
+import { TrendSummary } from "@/components/trend-summary";
 
 
 export default function LandingPage() {
@@ -52,7 +54,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1538485399081-7191377e8241?q=80&w=2000&auto=format&fit=crop"
-            alt="Seoul Cityscape"
+            alt="Korea Cityscape"
             className="w-full h-full object-cover"
           />
           {/* Dark Overlay for Readability */}
@@ -67,7 +69,7 @@ export default function LandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
-            Live Data from Seoul
+            Live Data from Korea
           </div>
 
           {/* Main Typography */}
@@ -163,6 +165,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <TrendSummary />
+      <SeoContent />
       <Footer />
     </div>
   );

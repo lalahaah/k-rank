@@ -1,4 +1,4 @@
-name: Daily Scraper (Beauty & Media)
+name: Daily Scraper (Beauty)
 
 on:
   # 매일 한국 시간 오전 9시 (UTC 0시) 실행
@@ -40,13 +40,6 @@ jobs:
       - name: Run Beauty Scraper
         run: |
           python3 scripts/scraper.py beauty
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
-      
-      - name: Run Media Scraper
-        run: |
-          python3 scripts/scraper.py media
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}

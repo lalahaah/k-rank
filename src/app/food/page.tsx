@@ -77,10 +77,10 @@ export default function FoodPage() {
                     <div className="max-w-2xl">
                         <div className="inline-flex items-center gap-2 bg-food-50 text-food-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6">
                             <span className="flex h-2 w-2 rounded-full bg-food-500 animate-pulse"></span>
-                            Live Social Signal from Seoul
+                            Live Social Signal from Korea
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-gray-900 leading-[0.9] mb-6">
-                            WHERE SEOUL <br />
+                            WHERE KOREA <br />
                             <span className="text-food-500">EATS NOW.</span>
                         </h1>
                         <p className="text-lg text-gray-500 font-medium leading-relaxed">
