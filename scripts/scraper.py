@@ -31,15 +31,39 @@ project_root = os.path.dirname(script_dir)
 env_path = os.path.join(project_root, '.env')
 load_dotenv(env_path)
 
-# 카테고리 매핑 정의 (무신사 뷰티 기준)
+# 개발 모드 및 제한 설정
+DEV_MODE = os.getenv('DEV_MODE', 'false').lower() == 'true'
+DEV_LIMIT = 5  # 개발 모드일 때 처리할 아이템 수
+CACHE_FILE = os.path.join(script_dir, 'product_cache.json')
+WRITE_TO_FIRESTORE = os.getenv('WRITE_TO_FIRESTORE', 'true').lower() == 'true'
+
+# 캐시 로드/저장 함수
+def load_cache():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"⚠️  캐시 로드 실패: {e}")
+    return {}
+
+def save_cache(cache_data):
+    try:
+        with open(CACHE_FILE, 'w', encoding='utf-8') as f:
+            json.dump(cache_data, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"⚠️  캐시 저장 실패: {e}")
+
+# 카테고리 매핑 정의 (화해 글로벌 기준)
+# Theme IDs: All=2, Skincare=4, Suncare=34, Masks=25, Makeup=41, Haircare=82, Bodycare=68
 CATEGORY_MAPPING = {
-    'all': {'url_param': '', 'firestore_category': 'beauty'},
-    'skincare': {'url_param': '104001', 'firestore_category': 'beauty-skincare'},
-    'suncare': {'url_param': '104002', 'firestore_category': 'beauty-suncare'},
-    'masks': {'url_param': '104013', 'firestore_category': 'beauty-masks'},
-    'makeup': {'url_param': '104014', 'firestore_category': 'beauty-makeup'},
-    'haircare': {'url_param': '104006', 'firestore_category': 'beauty-haircare'},
-    'bodycare': {'url_param': '104007', 'firestore_category': 'beauty-bodycare'},
+    'all': {'url_param': '2', 'firestore_category': 'beauty'},
+    'skincare': {'url_param': '4', 'firestore_category': 'beauty-skincare'},
+    'suncare': {'url_param': '34', 'firestore_category': 'beauty-suncare'},
+    'masks': {'url_param': '25', 'firestore_category': 'beauty-masks'},
+    'makeup': {'url_param': '41', 'firestore_category': 'beauty-makeup'},
+    'haircare': {'url_param': '82', 'firestore_category': 'beauty-haircare'},
+    'bodycare': {'url_param': '68', 'firestore_category': 'beauty-bodycare'},
 }
 
 # 브랜드명 영어 매핑
@@ -56,34 +80,37 @@ BRAND_NAME_MAPPING = {
     '라로슈포제': 'La Roche-Posay',
     '토리든': 'Torriden',
     '아누아': 'Anua',
-    '차앤박': 'CHARMZONE',
+    '차앤박': 'CNP Laboratory',
     '블랑네이처': 'BLANC NATURE',
     '프리메라': 'Primera',
     '한율': 'Hanyul',
     '에이프릴스킨': 'April Skin',
-    '마녀공장': "Ma:nyo",
+    '마녀공장': "Ma:nyo Factory",
     '헤라': 'HERA',
     'ENHYPEN': 'ENHYPEN',
     '스킨푸드': 'SKINFOOD',
-    '메노킨': 'Menoquin',
+    '메노킨': 'Menokin',
     '쏘내추럴': 'So Natural',
-    '크런틴': 'Crunchteen',
-    '구달': 'GOODAL',
+    '구달': 'goodal',
     '닥터지': 'Dr.G',
     '정샘물': 'JUNG SAEM MOOL',
     '클리오': 'CLIO',
     '롬앤': 'rom&nd',
     '페리페라': 'peripera',
     '어노브': 'UNOVE',
-    '닥터그루트': 'Dr. GROOT',
+    '닥터그루트': 'Dr.Groot',
     '미쟝센': 'MISE EN SCENE',
     '일리윤': 'illiyoon',
     '세타필': 'Cetaphil',
-    
-    # 글로벌 브랜드 (이미 영어인 경우도 포함)
-    '라로슈포제': 'La Roche-Posay',
-    
-    # 추가 브랜드 (필요시 계속 확장)
+    '라운드랩': 'Round Lab',
+    '닥터포헤어': 'Dr.FORHAIR',
+    '비플레인': 'beplain',
+    '코스알엑스': 'COSRX',
+    '조선미녀': 'Beauty of Joseon',
+    '오드타입': 'ODE TYPE',
+    '브링그린': 'BRING GREEN',
+    '바이오더마': 'BIODERMA',
+    '유리아쥬': 'URIAGE',
 }
 
 
@@ -146,108 +173,136 @@ async def get_amazon_image(query: str) -> str:
 
 
 
-def scrape_musinsa_beauty_by_category(category_code: str = '', max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
+async def scrape_hwahae_global(url: str, max_items: int = 20) -> List[Dict[str, Any]]:
     """
-    무신사 뷰티 카테고리별 베스트 제품 크롤링 (WebScraping.ai 사용)
-    법적 안전성을 위해 상위 20개 제품만 수집합니다.
+    화해 글로벌 사이트를 스크래핑하여 제품 정보를 수집합니다.
+    영문 사이트에서 한글 리뷰를 포함하여 수집합니다.
     """
     products = []
-    
-    api_key = os.getenv('WEBSCRAPING_AI_API_KEY')
-    if not api_key:
-        print("❌ WEBSCRAPING_AI_API_KEY not found in environment")
-        return products
-    # URL 생성 (무신사 뷰티 랭킹 페이지)
-    if category_code:
-        target_url = f"https://www.musinsa.com/main/beauty/ranking?categoryCode={category_code}"
-    else:
-        target_url = "https://www.musinsa.com/main/beauty/ranking"
-    
-    for attempt in range(max_retries):
-        try:
-            print(f"🌐 WebScraping.ai로 무신사 페이지 요청 중... (시도 {attempt + 1}/{max_retries})")
+    try:
+        async with async_playwright() as p:
+            print(f"🌐 화해 글로벌 접속 중: {url}")
+            # 디버깅을 위해 일시적으로 headless=False 시도 가능 (필요시)
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(
+                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                locale='en-US' # 글로벌 사이트이므로 en-US 우선 시도
+            )
+            page = await context.new_page()
             
-            params = {
-                'api_key': api_key,
-                'url': target_url,
-                'proxy': 'residential',
-                'country': 'kr',
-                'js_render': 'true', 
-                'wait_for': '.gtm-select-item'
-            }
+            await page.goto(url, wait_until='domcontentloaded', timeout=60000)
+            print("⏳ 페이지 로드 완료, 대기 중...")
+            await asyncio.sleep(5) # 넉넉하게 대기
             
-            response = requests.get('https://api.webscraping.ai/html', params=params, timeout=120)
+            # 지연 로딩 및 20개 이상 로드되도록 스크롤
+            print("📜 스크롤 중...")
+            for _ in range(2):
+                await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+                await asyncio.sleep(2)
             
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                
-                # 제품 파싱 (CSS 선택자 기반)
-                # 무신사 뷰티 랭킹의 카드 컨테이너를 찾습니다.
-                items = soup.select('div[class*="UIProductColumn__Wrap"]')[:max_items]
-                
-                if len(items) == 0:
-                    # 백업 선택자 시도 (리뉴얼 대응)
-                    items = soup.select('div[class*="UIProductColumn"]')[:max_items]
-                
-                if len(items) == 0:
-                    # 최후의 수단: gtm 클래스 사용
-                    items = soup.select('.gtm-select-item')[:max_items]
-                
-                print(f"✅ {len(items)}개 제품 발견")
-                
-                for idx, item in enumerate(items, 1):
-                    try:
-                        # 브랜드명
-                        brand_elem = item.select_one('a.gtm-click-brand p') or item.select_one('a[class*="gtm-click-brand"] p')
-                        brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
-                        
-                        # 상품명
-                        name_elem = item.select_one('a.gtm-select-item p') or item.select_one('a[class*="gtm-select-item"] p')
-                        name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
-                        
-                        # 가격 (정규표현식으로 추출)
-                        price_elem = item.select_one('span[class*="UIProductColumn__PriceText"]') or item.select_one('span.text-body_13px_semi')
-                        price = price_elem.get_text(strip=True) if price_elem else "0원"
-                        
-                        # 이미지 (무신사 썸네일 수집 - 아마존 검색 실패 시 폴백용)
-                        img_elem = item.select_one('img')
-                        musinsa_img = ""
-                        if img_elem:
-                            musinsa_img = img_elem.get('src') or img_elem.get('data-src') or img_elem.get('lazy-src')
-                        
-                        product = {
-                            'rank': idx,
-                            'productName': name,
-                            'brand': brand,
-                            'imageUrl': musinsa_img or "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
-                            'price': price,
-                            'buyUrl': f"https://www.amazon.com/s?k={brand}+{name}",
-                            'tags': [],
-                            'subcategory': 'beauty',
-                            'trend': 0,
-                            'nikIndex': 0,
-                            'culturalContext': ""
-                        }
-                        
-                        products.append(product)
-                        
-                    except Exception as e:
-                        print(f"⚠️  제품 {idx} 파싱 오류: {e}")
+            # 제품 리스트 파싱
+            content = await page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            
+            # 화해 글로벌 랭킹 아이템 셀렉터 (브라우저 분석 결과 기반)
+            # 각 제품은 li 태그 내에 존재
+            items = soup.select('li.mt-16.bg-white')[:max_items]
+            
+            print(f"🔍 발견된 제품 컨테이너 수: {len(items)}")
+            
+            for idx, item in enumerate(items, 1):
+                try:
+                    # 메인 링크 및 데이터 영역
+                    link_elem = item.select_one('a.flex.items-center[href*="/en/products/"]')
+                    if not link_elem:
                         continue
-                
-                if products:
-                    print("✅ 무신사 제품 데이터 추출 완료")
-                    break
+                        
+                    # 1. 순위 추출 (1-3위 메달 아이콘 vs 4위 이하 텍스트)
+                    rank = idx
+                    rank_container = link_elem.select_one('div:first-child')
+                    if rank_container:
+                        medal_img = rank_container.select_one('img[src*="medal"]')
+                        if medal_img:
+                            src = medal_img.get('src', '')
+                            if 'medal_1' in src: rank = 1
+                            elif 'medal_2' in src: rank = 2
+                            elif 'medal_3' in src: rank = 3
+                        else:
+                            # 4위 이하 텍스트 추출
+                            rank_text = rank_container.get_text(strip=True)
+                            if rank_text.isdigit():
+                                rank = int(rank_text)
+
+                    # 2. 브랜드 및 상품명 추출 (h3 태그 내 span들)
+                    h3_elem = link_elem.select_one('h3')
+                    spans = h3_elem.select('span') if h3_elem else []
+                    brand = spans[0].get_text(strip=True) if len(spans) > 0 else "Unknown"
+                    name = spans[1].get_text(strip=True) if len(spans) > 1 else f"Product {idx}"
                     
-            else:
-                print(f"❌ WebScraping.ai 요청 실패: HTTP {response.status_code}")
-                time.sleep(10)
+                    # 3. 이미지 URL (img 태그)
+                    img_elem = link_elem.select_one('img.rounded-4') or link_elem.select_one('img[src*="image"]')
+                    musinsa_img = img_elem.get('src', '') if img_elem else ""
                     
-        except Exception as e:
-            print(f"❌ 크롤링 오류: {e}")
-            time.sleep(5)
-    
+                    # 4. 가격 (현재 분석된 DOM에서 클래스명이 가변적이므로 유연하게 대처)
+                    price_elem = link_elem.select_one('div.text-14.font-bold') or link_elem.select_one('div[class*="font-bold"]')
+                    price = price_elem.get_text(strip=True) if price_elem else "N/A"
+                    
+                    detail_url = "https://www.hwahae.com" + link_elem.get('href')
+                    
+                    product = {
+                        'rank': rank,
+                        'productName': name,
+                        'brand': brand,
+                        'imageUrl': musinsa_img, # 아마존 검색 실패 시 사용할 폴백 이미지
+                        'price': price,
+                        'buyUrl': f"https://www.amazon.com/s?k={brand}+{name}",
+                        'detailUrl': detail_url,
+                        'tags': [],
+                        'subcategory': 'beauty',
+                        'trend': 0,
+                        'nikIndex': 0,
+                        'culturalContext': ""
+                    }
+                    products.append(product)
+                except Exception as e:
+                    print(f"⚠️  제품 {idx} 파싱 오류: {e}")
+                    continue
+            
+            await browser.close()
+            print(f"✅ 총 {len(products)}개 제품 추출 완료")
+                    
+    except Exception as e:
+        print(f"❌ 화해 글로벌 스크래핑 오류: {e}")
+        
     return products
+
+async def fetch_hwahae_reviews(url: str, max_reviews: int = 5) -> List[str]:
+    """제품 상세 페이지에서 한국어 리뷰를 수집합니다."""
+    reviews = []
+    try:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(locale='ko-KR')
+            page = await context.new_page()
+            
+            # 리뷰 탭으로 직접 이동 시도 또는 클릭
+            await page.goto(url, wait_until='networkidle', timeout=30000)
+            
+            # 리뷰 섹션 로드 대기
+            await page.evaluate("window.scrollTo(0, 1000)")
+            await asyncio.sleep(1)
+            
+            content = await page.content()
+            soup = BeautifulSoup(content, 'html.parser')
+            
+            # 리뷰 텍스트 셀렉터 (분석 결과 기반)
+            review_elems = soup.select('div._review_text_1k2l9_1')[:max_reviews]
+            reviews = [r.get_text(strip=True) for r in review_elems]
+            
+            await browser.close()
+    except Exception as e:
+        print(f"⚠️  리뷰 수집 오류 ({url}): {e}")
+    return reviews
 async def calculate_trends(db, category_key: str, current_products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     이전 날짜 랭킹과 비교하여 트렌드 계산
@@ -430,8 +485,11 @@ def translate_brand_names(products: List[Dict[str, Any]]) -> List[Dict[str, Any]
             product['brand'] = romanized
             new_brands[korean_brand] = romanized
         
-        # 제품명 정규화 (불필요한 키워드 제거)
-        product['productName'] = normalize_product_name(product['productName'])
+        # 제품명 정규화 (불필요한 키워드 제거) 및 한글명 보존
+        original_name = product['productName']
+        normalized_name = normalize_product_name(original_name)
+        product['productName'] = normalized_name
+        product['productNameKo'] = original_name
     
     # 새로운 브랜드 로깅 (자동 변환된 브랜드)
     if new_brands:
@@ -460,8 +518,40 @@ async def translate_product_names_batch(model, products: List[Dict[str, Any]]) -
     """
     print("\n🌐 Gemini AI로 제품명 일괄 번역 중...")
     
+    # 캐시 로드
+    cache = load_cache()
+    
+    # 번역이 필요한 제품 필터링
+    to_translate = []
+    success_indices = []
+    for i, p in enumerate(products):
+        # ProductNameKo가 없으면 현재 productName(한글)을 저장
+        if 'productNameKo' not in p:
+            p['productNameKo'] = p['productName']
+            
+        cache_key = f"{p['brand']}_{p['productName']}"
+        if cache_key in cache and 'translatedName' in cache[cache_key]:
+            data = cache[cache_key]
+            p['productName'] = data['translatedName'] # 영문명으로 교체
+            p['nikIndex'] = data.get('nikIndex', 90.0)
+            p['culturalContext'] = data.get('culturalContext', "")
+            if 'buyUrl' in data:
+                p['buyUrl'] = data['buyUrl']
+            print(f"  📦 캐시 사용: {p['productName']}")
+        else:
+            to_translate.append(p)
+            success_indices.append(i)
+    
+    if not to_translate:
+        print("✅ 모든 제품이 캐시에 존재합니다.")
+        return products
+
+    # Gemini 호출 제한 (Free Tier RPM)
+    if not DEV_MODE:
+        time.sleep(4)
+
     # 제품명 리스트 생성
-    product_names = [f"{p['rank']}. {p['productName']}" for p in products]
+    product_names = [f"{p['rank']}. {p['productName']}" for p in to_translate]
     
     prompt = f"""
 Translate the following Korean beauty product names into English.
@@ -481,7 +571,7 @@ Response format (JSON):
 {{
   "translations": [
     {{
-      "rank": 1, 
+      "rank": {to_translate[0]['rank'] if to_translate else 1}, 
       "productName": "English Product Name", 
       "nikIndex": 98.5, 
       "culturalContext": "Explanation",
@@ -508,37 +598,120 @@ JSON only.
         
         # 번역 및 AI 데이터 적용
         translated_count = 0
-        for trans in translations.get('translations', []):
-            rank = trans.get('rank')
-            product_name = trans.get('productName')
-            nik_index = trans.get('nikIndex', 0)
-            cultural_context = trans.get('culturalContext', "")
-            image_query = trans.get('imageQuery', "")
-            
-            for product in products:
-                if product['rank'] == rank:
-                    product['productName'] = product_name
-                    product['nikIndex'] = nik_index
-                    product['culturalContext'] = cultural_context
-                    # image_query는 나중에 아마존 검색용으로 사용 가능
-                    if image_query:
-                        product['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'krank-20')}"
-                    
-                    translated_count += 1
-                    break
+        updated_cache = False
         
-        print(f"✅ 제품명 번역 완료 ({translated_count}/{len(products)}개)")
+        if translations and len(translations.get('translations', [])) > 0:
+            for entry in translations.get('translations', []):
+                rank = entry.get('rank')
+                # 해당 rank를 가진 제품 찾기
+                for i, p in enumerate(products):
+                    if p['rank'] == rank and i in success_indices:
+                        product_name_en = entry.get('productName')
+                        nik_index = entry.get('nikIndex', 90.0)
+                        cultural_context = entry.get('culturalContext', "")
+                        image_query = entry.get('imageQuery', "")
+
+                        # 데이터 유효성 검사: productName이 비어있거나 "Product" 같은 플레이스홀더인 경우 스킵
+                        if not product_name_en or "Product" in product_name_en or "English Product Name" in product_name_en:
+                            print(f"  ⚠️ AI 번역 품질 낮음, 스킵: {p['productName']}")
+                            continue
+                        
+                        # 영문명으로 교체 및 인덱스/컨텍스트 적용
+                        p['productName'] = product_name_en
+                        p['nikIndex'] = nik_index
+                        p['culturalContext'] = cultural_context
+                        
+                        if image_query:
+                            p['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'krank-20')}"
+                        
+                        # 캐시 저장 - 원본 한글명(productNameKo)을 키로 사용
+                        cache_key = f"{p['brand']}_{p.get('productNameKo', p['productName'])}"
+                        cache[cache_key] = {
+                            'translatedName': p['productName'],
+                            'nikIndex': p['nikIndex'],
+                            'culturalContext': p['culturalContext'],
+                            'buyUrl': p.get('buyUrl', ""),
+                            'updatedAt': datetime.now().isoformat()
+                        }
+                        updated_cache = True
+                        translated_count += 1
+                        break
+        
+        if updated_cache:
+            save_cache(cache)
+            
+        print(f"✅ 제품명 번역 완료 ({translated_count}/{len(to_translate)}개)")
         
     except Exception as e:
         print(f"⚠️ Gemini 번역 오류: {e}")
         print("💡 폴백: 자동 로마자 변환(Romanization) 시도")
         # AI 번역 실패 시 로마자 변환으로 대체하여 한글 노출 방지
         for product in products:
+            # 아직 영문명이 아닌 경우 (한글이 포함된 경우)
             if any('\u3131' <= c <= '\u3163' or '\uac00' <= c <= '\ud7a3' for c in product['productName']):
                 product['productName'] = auto_romanize_korean(product['productName'])
     
     return products
 
+
+async def summarize_reviews_batch(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Gemini AI를 사용하여 수집된 한국어 리뷰들을 영어 한 문장으로 요약합니다."""
+    print("\n📝 Gemini AI로 한국어 리뷰 요약 및 인사이트 생성 중...")
+    
+    to_summarize = [p for p in products if p.get('rawReviews')]
+    if not to_summarize:
+        print("💡 요약할 리뷰가 없습니다.")
+        return products
+
+    # 리뷰 데이터를 포함한 프롬프트 생성
+    review_data = []
+    for p in to_summarize:
+        reviews_str = "\n".join([f"- {r}" for r in p['rawReviews']])
+        review_data.append(f"Rank {p['rank']} ({p['brand']} {p['productName']}):\n{reviews_str}")
+    
+    prompt = f"""
+    Summarize the following Korean customer reviews for each beauty product into a single, catchy, and insightful English sentence.
+    The summary should explain why people like it or what its main benefit is (e.g., "Loved for its deep hydration and non-sticky finish").
+    
+    Products and Reviews:
+    {chr(10).join(review_data)}
+    
+    Response format (JSON):
+    {{
+      "summaries": [
+        {{"rank": 1, "insight": "Summary sentence"}},
+        ...
+      ]
+    }}
+    
+    JSON only.
+    """
+    
+    try:
+        response = await model.generate_content_async(prompt)
+        result_text = response.text.strip()
+        
+        if result_text.startswith('```'):
+            result_text = result_text.split('```')[1]
+            if result_text.startswith('json'):
+                result_text = result_text[4:]
+        
+        summary_data = json.loads(result_text)
+        
+        for item in summary_data.get('summaries', []):
+            rank = item.get('rank')
+            insight = item.get('insight')
+            for p in products:
+                if p['rank'] == rank:
+                    p['culturalContext'] = insight # 기존 culturalContext 필드 재활용 (인사이트로 사용)
+                    break
+        
+        print(f"✅ 리뷰 요약 완료 ({len(summary_data.get('summaries', []))}개)")
+        
+    except Exception as e:
+        print(f"⚠️  리뷰 요약 중 오류: {e}")
+        
+    return products
 
 async def generate_tags(model, products: List[Dict[str, Any]], category: str = 'all') -> List[Dict[str, Any]]:
     """
@@ -554,19 +727,31 @@ async def generate_tags(model, products: List[Dict[str, Any]], category: str = '
     """
     print("\n🏷️  Gemini AI로 제품 태그 자동 생성 중...")
     
-    # 카테고리별 기본 태그 매핑
-    category_tags = {
-        'all': ['Korean Beauty', 'Best Seller'],
-        'skincare': ['Skincare', 'K-Beauty'],
-        'suncare': ['Suncare', 'UV Protection'],
-        'masks': ['Face Mask', 'Sheet Mask'],
-        'makeup': ['Makeup', 'Cosmetics'],
-        'haircare': ['Haircare', 'Hair Treatment'],
-        'bodycare': ['Bodycare', 'Body Care']
-    }
+    # 캐시 로드
+    cache = load_cache()
     
+    # 태그 생성이 필요한 제품 필터링
+    to_tag = []
+    success_indices = [] # products 리스트에서의 인덱스를 저장
+    for i, p in enumerate(products):
+        cache_key = f"{p['brand']}_{p['productName']}"
+        if cache_key in cache and 'tags' in cache[cache_key] and cache[cache_key]['tags']:
+            p['tags'] = cache[cache_key]['tags']
+            print(f"  🏷️ 캐시 사용: {p['productName']} (Tags: {', '.join(p['tags'])})")
+        else:
+            to_tag.append(p)
+            success_indices.append(i) # 원본 products 리스트의 인덱스 저장
+            
+    if not to_tag:
+        print("✅ 모든 제품 태그가 캐시에 존재합니다.")
+        return products
+
+    # Gemini 호출 제한 (Free Tier RPM)
+    if not DEV_MODE:
+        time.sleep(4)
+
     # 제품 이름 리스트 생성 (영어 번역된 이름 사용)
-    product_info = [f"{p['rank']}. {p['brand']} - {p['productName']}" for p in products]
+    product_info = [f"{p['rank']}. {p['brand']} - {p.get('productNameEn', p['productName'])}" for p in to_tag]
     
     prompt = f"""
 Analyze each beauty product and generate 2-3 unique, relevant tags based on the product's actual characteristics.
@@ -591,9 +776,7 @@ Products:
 Response format (JSON):
 {{
   "tags": [
-    {{"rank": 1, "tags": ["Hydrating Toner", "Hyaluronic Acid", "Moisture"]}},
-    {{"rank": 2, "tags": ["Anti-Aging Serum", "Wrinkle Care", "Peptide"]}},
-    {{"rank": 3, "tags": ["Sheet Mask", "Brightening", "Vitamin C"]}},
+    {{"rank": {to_tag[0]['rank'] if to_tag else 1}, "tags": ["Hydrating Toner", "Hyaluronic Acid", "Moisture"]}},
     ...
   ]
 }}
@@ -602,11 +785,10 @@ JSON only. Make sure each product has DIFFERENT tags that reflect its actual cha
 """
     
     try:
-        response = model.generate_content(prompt)
+        response = await model.generate_content_async(prompt)
         result_text = response.text.strip()
         
         # JSON 파싱
-        # 마크다운 코드 블록 제거
         if result_text.startswith('```'):
             result_text = result_text.split('```')[1]
             if result_text.startswith('json'):
@@ -615,19 +797,38 @@ JSON only. Make sure each product has DIFFERENT tags that reflect its actual cha
         tag_data = json.loads(result_text)
         
         # 제품에 태그 적용
-        for item in tag_data.get('tags', []):
-            rank = item.get('rank')
-            tags = item.get('tags', [])
-            
-            for product in products:
-                if product['rank'] == rank:
-                    product['tags'] = tags
-                    break
+        updated_cache = False
+        tag_count = 0
+        if tag_data and len(tag_data.get('tags', [])) > 0:
+            for item in tag_data.get('tags', []):
+                rank = item.get('rank')
+                tags = item.get('tags', [])
+                
+                for i, p in enumerate(products):
+                    if p['rank'] == rank and i in success_indices:
+                        # 데이터 유효성 검사: 태그가 비어있거나 유효하지 않은 경우 스킵
+                        if not tags or not isinstance(tags, list) or any(not t or "tag" in t.lower() for t in tags):
+                            print(f"  ⚠️ AI 태그 품질 낮음, 스킵: {p['productName']}")
+                            continue
+
+                        p['tags'] = tags
+                        
+                        # 캐시 업데이트 - 한글명(productNameKo)을 키로 사용
+                        cache_key = f"{p['brand']}_{p.get('productNameKo', p['productName'])}"
+                        if cache_key not in cache:
+                            cache[cache_key] = {}
+                        cache[cache_key]['tags'] = p['tags']
+                        updated_cache = True
+                        tag_count += 1
+                        break
         
-        print("✅ 태그 생성 완료")
+        if updated_cache:
+            save_cache(cache)
+            
+        print(f"✅ 태그 생성 완료 ({tag_count}/{len(to_tag)}개)")
         
     except Exception as e:
-        print(f"⚠️  Gemini 태그 생성 오류: {e}")
+        print(f"⚠️ Gemini 태그 생성 오류: {e}")
         print(f"기본 카테고리 태그 사용: {category}")
         
         # Gemini 실패 시 기본 카테고리 태그 사용
@@ -1223,6 +1424,15 @@ def save_to_firebase(db, category_key: str, products: List[Dict[str, Any]]):
     }
     
     # 저장
+    if DEV_MODE and not os.getenv('FORCE_SAVE', 'false').lower() == 'true':
+        print(f"🧪  [DEV_MODE] Firebase 저장을 건너뜁니다. (데이터 미리보기)")
+        
+        # JSON 직렬화가 안 되는 SERVER_TIMESTAMP 처리
+        preview_data = data.copy()
+        preview_data['updatedAt'] = "SERVER_TIMESTAMP"
+        print(json.dumps(preview_data, ensure_ascii=False, indent=2)[:1000] + "...")
+        return
+
     doc_ref.set(data)
     
     print(f"✅ {len(products)}개 제품을 {doc_id} 문서에 저장 완료")
@@ -1262,10 +1472,13 @@ async def main():
                 print(f"📦 {category_key.upper()} 카테고리 크롤링 시작")
                 print("-" * 60)
                 
-                # 카테고리별 크롤링 (무신사 뷰티 상위 20개)
-                products = scrape_musinsa_beauty_by_category(
-                    category_code=config['url_param'],
-                    max_items=20
+                # 카테고리별 크롤링 (화해 글로벌 상위 20개)
+                actual_limit = DEV_LIMIT if DEV_MODE else 20
+                target_hwahae_url = f"https://www.hwahae.com/en/rankings?english_name=category&theme_id={config['url_param']}"
+                
+                products = await scrape_hwahae_global(
+                    url=target_hwahae_url,
+                    max_items=actual_limit
                 )
                 
                 if not products:
@@ -1275,12 +1488,21 @@ async def main():
                 # 브랜드명 영어 변환 (먼저 실행)
                 products = translate_brand_names(products)
                 
-                # 제품명 영어 번역 (Batch Processing)
+                # 제품명 영어 번역 및 트렌드 데이터 준비 (Batch Processing)
                 products = await translate_product_names_batch(model, products)
                 
+                # AI 리뷰 요약 (인사이트 생성)
+                products = await summarize_reviews_batch(model, products)
+
                 # 아마존 이미지 연동
                 print("\n📸 아마존에서 제품 이미지 검색 중...")
                 for product in products:
+                    # 개발 모드이고 이미 이미지가 있다면 건너뜀
+                    if DEV_MODE and product.get('imageUrl') and not product['imageUrl'].startswith('https://images.unsplash.com'):
+                         print(f"  ⏭️ {product['rank']}위 이미지 이미 존재함")
+                         continue
+
+                    # 브랜드와 제품명을 조합하여 검색
                     search_query = f"{product['brand']} {product['productName']}"
                     amazon_img = await get_amazon_image(search_query)
                     if amazon_img:
@@ -1309,7 +1531,8 @@ async def main():
             
             # Netflix TV Shows Top 10 크롤링
             print("\n📺 Netflix TV Shows 크롤링 중...")
-            tv_items = await scrape_netflix(media_type='tv', max_items=10)
+            actual_limit = DEV_LIMIT if DEV_MODE else 10
+            tv_items = await scrape_netflix(media_type='tv', max_items=actual_limit)
             if tv_items:
                 all_media_items.extend(tv_items)
                 print(f"✅ TV Shows {len(tv_items)}개 수집 완료")
@@ -1318,7 +1541,7 @@ async def main():
             
             # Netflix Films Top 10 크롤링
             print("\n🎬 Netflix Films 크롤링 중...")
-            film_items = await scrape_netflix(media_type='films', max_items=10)
+            film_items = await scrape_netflix(media_type='films', max_items=actual_limit)
             if film_items:
                 all_media_items.extend(film_items)
                 print(f"✅ Films {len(film_items)}개 수집 완료")

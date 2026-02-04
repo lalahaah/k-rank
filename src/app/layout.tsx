@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     "K-Drama Rankings",
     "Netflix Korea",
     "Korean Trends",
-    "Olive Young Rankings",
+    "Hwahae Global Rankings",
     "K-Pop",
     "Korean Culture",
     "Seoul Trends",

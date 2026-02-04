@@ -15,12 +15,12 @@ interface LeaderboardTableProps {
 
 const categories = [
     { id: "all", label: "All" },
-    { id: "104001", label: "Skincare" },
-    { id: "104002", label: "Suncare" },
-    { id: "104013", label: "Masks" },
-    { id: "104014", label: "Makeup" },
-    { id: "104006", label: "Haircare" },
-    { id: "104007", label: "Bodycare" },
+    { id: "beauty-skincare", label: "Skincare" },
+    { id: "beauty-suncare", label: "Suncare" },
+    { id: "beauty-masks", label: "Masks" },
+    { id: "beauty-makeup", label: "Makeup" },
+    { id: "beauty-haircare", label: "Haircare" },
+    { id: "beauty-bodycare", label: "Bodycare" },
 ];
 
 export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden = false }: LeaderboardTableProps) {
@@ -56,7 +56,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
         <div>
             {/* Data Source Citation */}
             <div className="mb-4 text-[10px] text-gray-400 italic">
-                Data Sourced from Musinsa Beauty as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                Data Sourced from Hwahae Global as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
 
             {/* Filter Bar */}
@@ -166,7 +166,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                     {item.brand}
                                                 </div>
                                                 <div className="text-sm md:text-xs font-medium text-heading mt-1">
-                                                    ₩{item.price.replace('원', '')}
+                                                    {item.price === "N/A" ? "Global Price" : `₩${item.price.replace('원', '')}`}
                                                 </div>
                                                 {item.nikIndex && (
                                                     <div className="mt-2 flex items-center gap-2">

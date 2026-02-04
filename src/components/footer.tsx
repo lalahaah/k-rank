@@ -12,7 +12,7 @@ import {
 import { Logo } from "./logo";
 
 const DATA_SOURCES = [
-    { name: "Musinsa Beauty", category: "Beauty", link: "https://www.musinsa.com/main/beauty/ranking" },
+    { name: "Hwahae Global", category: "Beauty", link: "https://www.hwahae.com/en" },
     { name: "Netflix Top 10 South Korea", category: "Media", link: "https://top10.netflix.com/south-korea" },
     { name: "Google Places API", category: "Food", link: "https://mapsplatform.google.com/maps-products/places/" },
     { name: "VisitKorea TourAPI", category: "Place", link: "https://api.visitkorea.or.kr" },
@@ -100,9 +100,9 @@ export function Footer() {
                                 We may earn commissions on qualifying purchases made through our links at no extra cost to you.
                             </p>
                             <div className="pt-2 border-t border-gray-200">
-                                <h5 className="text-[10px] font-bold text-gray-700 uppercase mb-1">Musinsa Data Usage</h5>
+                                <h5 className="text-[10px] font-bold text-gray-700 uppercase mb-1">Hwahae Global Data Usage</h5>
                                 <p className="text-[10px] text-gray-400 leading-tight">
-                                    K-RANK is an independent curator and is not officially affiliated with, endorsed by, or sponsored by MUSINSA.
+                                    K-RANK is an independent curator and is not officially affiliated with, endorsed by, or sponsored by Hwahae (BirdView).
                                     All brand names and logos are trademarks of their respective owners.
                                 </p>
                             </div>
