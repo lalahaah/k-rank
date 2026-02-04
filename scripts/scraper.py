@@ -10,7 +10,7 @@ import sys
 import random
 import time
 import re
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import List, Dict, Any
 import json
 import math
@@ -26,17 +26,20 @@ from hangul_romanize import Transliter
 from hangul_romanize.rule import academic
 
 # 환경변수 로드
-load_dotenv()
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
+env_path = os.path.join(project_root, '.env')
+load_dotenv(env_path)
 
-# 카테고리 매핑 정의
+# 카테고리 매핑 정의 (무신사 뷰티 기준)
 CATEGORY_MAPPING = {
-    'all': {'url_param': None, 'firestore_category': 'beauty'},
-    'skincare': {'url_param': '10000010001', 'firestore_category': 'beauty-skincare'},
-    'suncare': {'url_param': '10000010011', 'firestore_category': 'beauty-suncare'},
-    'masks': {'url_param': '10000010009', 'firestore_category': 'beauty-masks'},
-    'makeup': {'url_param': '10000010002', 'firestore_category': 'beauty-makeup'},
-    'haircare': {'url_param': '10000010004', 'firestore_category': 'beauty-haircare'},
-    'bodycare': {'url_param': '10000010003', 'firestore_category': 'beauty-bodycare'},
+    'all': {'url_param': '', 'firestore_category': 'beauty'},
+    'skincare': {'url_param': '104001', 'firestore_category': 'beauty-skincare'},
+    'suncare': {'url_param': '104002', 'firestore_category': 'beauty-suncare'},
+    'masks': {'url_param': '104013', 'firestore_category': 'beauty-masks'},
+    'makeup': {'url_param': '104014', 'firestore_category': 'beauty-makeup'},
+    'haircare': {'url_param': '104006', 'firestore_category': 'beauty-haircare'},
+    'bodycare': {'url_param': '104007', 'firestore_category': 'beauty-bodycare'},
 }
 
 # 브랜드명 영어 매핑
@@ -98,6 +101,7 @@ def initialize_firebase():
         firebase_admin.initialize_app(cred)
     return firestore.client()
 
+
 # Gemini API 초기화
 def initialize_gemini():
     """Gemini API 초기화"""
@@ -109,178 +113,139 @@ def initialize_gemini():
     return genai.GenerativeModel('models/gemini-2.0-flash')
 
 
-
-
-def scrape_olive_young_by_category(category_code: str = None, max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
+async def get_amazon_image(query: str) -> str:
     """
-    올리브영 카테고리별 베스트 제품 크롤링 (ScraperAPI 사용)
+    아마존 검색을 통해 제품 이미지 URL을 가져옵니다. (WebScraping.ai 사용)
+    """
+    api_key = os.getenv('WEBSCRAPING_AI_API_KEY')
+    if not api_key:
+        return ""
     
-    Args:
-        category_code: 카테고리 코드 (예: '10000010001' for Skincare, None for All)
-        max_items: 크롤링할 최대 아이템 수
-        max_retries: 요청 실패 시 최대 재시도 횟수
+    search_url = f"https://www.amazon.com/s?k={query.replace(' ', '+')}"
+    
+    try:
+        params = {
+            'api_key': api_key,
+            'url': search_url,
+            'proxy': 'residential',
+            'country': 'us'
+        }
         
-    Returns:
-        제품 데이터 리스트
+        response = requests.get('https://api.webscraping.ai/html', params=params, timeout=60)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            # 아마존 검색 결과 이미지 선택자
+            img_elem = soup.select_one('div[data-component-type="s-search-result"] img.s-image')
+            if img_elem:
+                return img_elem.get('src', '')
+    except Exception as e:
+        print(f"⚠️ Amazon 이미지 검색 오류 ({query}): {e}")
+    
+    return ""
+
+
+
+
+def scrape_musinsa_beauty_by_category(category_code: str = '', max_items: int = 20, max_retries: int = 3) -> List[Dict[str, Any]]:
+    """
+    무신사 뷰티 카테고리별 베스트 제품 크롤링 (WebScraping.ai 사용)
+    법적 안전성을 위해 상위 20개 제품만 수집합니다.
     """
     products = []
     
-    # ScraperAPI 키 확인
-    scraperapi_key = os.getenv('SCRAPER_API_KEY')
-    if not scraperapi_key:
-        print("❌ SCRAPER_API_KEY not found in environment")
+    api_key = os.getenv('WEBSCRAPING_AI_API_KEY')
+    if not api_key:
+        print("❌ WEBSCRAPING_AI_API_KEY not found in environment")
         return products
-    
-    # URL 생성
+    # URL 생성 (무신사 뷰티 랭킹 페이지)
     if category_code:
-        target_url = f"https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&fltDispCatNo={category_code}&rowsPerPage=100"
+        target_url = f"https://www.musinsa.com/main/beauty/ranking?categoryCode={category_code}"
     else:
-        target_url = "https://www.oliveyoung.co.kr/store/main/getBestList.do?dispCatNo=900000100100001&rowsPerPage=100"
+        target_url = "https://www.musinsa.com/main/beauty/ranking"
     
     for attempt in range(max_retries):
         try:
-            print(f"🌐 ScraperAPI로 페이지 요청 중... (시도 {attempt + 1}/{max_retries})")
-            print(f"📄 URL: {target_url}")
+            print(f"🌐 WebScraping.ai로 무신사 페이지 요청 중... (시도 {attempt + 1}/{max_retries})")
             
-            # ScraperAPI 파라미터 (render=false로 설정하여 JavaScript 실행 전 HTML 가져오기)
             params = {
-                'api_key': scraperapi_key,
+                'api_key': api_key,
                 'url': target_url,
-                'country_code': 'kr',  # 한국 IP 사용
-                'render': 'false'  # JavaScript 렌더링 하지 않음
+                'proxy': 'residential',
+                'country': 'kr',
+                'js_render': 'true', 
+                'wait_for': '.gtm-select-item'
             }
             
-            # 요청 전송
-            response = requests.get('http://api.scraperapi.com', params=params, timeout=60)
+            response = requests.get('https://api.webscraping.ai/html', params=params, timeout=120)
             
             if response.status_code == 200:
-                print("✅ ScraperAPI 요청 성공!")
                 soup = BeautifulSoup(response.text, 'html.parser')
                 
-                # Cloudflare 체크
-                page_title = soup.title.string if soup.title else "No Title"
-                if "잠시만" in page_title or "Just a moment" in page_title:
-                    print(f"⚠️  여전히 Cloudflare 페이지 감지됨 (시도 {attempt + 1}/{max_retries})")
-                    if attempt < max_retries - 1:
-                        print("🔄 재시도 중...")
-                        time.sleep(5)
-                        continue
-                    else:
-                        print("❌ 최대 재시도 횟수 초과")
-                        return products
-                
-                print(f"✅ 페이지 로드 완료: {page_title}")
-                
-                # 제품 파싱
-                items = soup.select('div.prd_info')[:max_items]
+                # 제품 파싱 (CSS 선택자 기반)
+                # 무신사 뷰티 랭킹의 카드 컨테이너를 찾습니다.
+                items = soup.select('div[class*="UIProductColumn__Wrap"]')[:max_items]
                 
                 if len(items) == 0:
-                    print("⚠️  'div.prd_info'로 제품을 찾지 못함")
-                    items = soup.select('ul.common_prd_list li')[:max_items]
+                    # 백업 선택자 시도 (리뉴얼 대응)
+                    items = soup.select('div[class*="UIProductColumn"]')[:max_items]
+                
+                if len(items) == 0:
+                    # 최후의 수단: gtm 클래스 사용
+                    items = soup.select('.gtm-select-item')[:max_items]
                 
                 print(f"✅ {len(items)}개 제품 발견")
                 
-                if len(items) == 0:
-                    print(f"⚠️  제품을 찾지 못함 (시도 {attempt + 1}/{max_retries})")
-                    if attempt < max_retries - 1:
-                        print("🔄 재시도 중...")
-                        time.sleep(5)
-                        continue
-                    else:
-                        print("❌ 최대 재시도 횟수 초과")
-                        return products
-                
-                # 제품 정보 추출
                 for idx, item in enumerate(items, 1):
                     try:
-                        name_elem = item.select_one('.prd_name .tx_name') or item.select_one('p.tx_name')
-                        name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
-                        
-                        brand_elem = item.select_one('.tx_brand')
+                        # 브랜드명
+                        brand_elem = item.select_one('a.gtm-click-brand p') or item.select_one('a[class*="gtm-click-brand"] p')
                         brand = brand_elem.get_text(strip=True) if brand_elem else "Unknown"
                         
-                        # 이미지 URL 추출 (다양한 속성 확인, data-original 우선)
+                        # 상품명
+                        name_elem = item.select_one('a.gtm-select-item p') or item.select_one('a[class*="gtm-select-item"] p')
+                        name = name_elem.get_text(strip=True) if name_elem else f"Product {idx}"
+                        
+                        # 가격 (정규표현식으로 추출)
+                        price_elem = item.select_one('span[class*="UIProductColumn__PriceText"]') or item.select_one('span.text-body_13px_semi')
+                        price = price_elem.get_text(strip=True) if price_elem else "0원"
+                        
+                        # 이미지 (무신사 썸네일 수집 - 아마존 검색 실패 시 폴백용)
                         img_elem = item.select_one('img')
-                        image_url = ''
+                        musinsa_img = ""
                         if img_elem:
-                            # 여러 속성에서 이미지 URL 찾기 (우선순위: data-original > data-ref > data-src > src)
-                            image_url = (
-                                img_elem.get('data-original', '') or 
-                                img_elem.get('data-ref', '') or 
-                                img_elem.get('data-src', '') or 
-                                img_elem.get('src', '')
-                            )
-                        
-                        # placeholder 이미지 필터링
-                        if image_url and ('noimg' in image_url or 'placeholder' in image_url or 'loading' in image_url):
-                            image_url = ''
-                        
-                        # 상대경로를 절대경로로 변환
-                        if image_url and not image_url.startswith('http'):
-                            image_url = 'https:' + image_url if image_url.startswith('//') else 'https://www.oliveyoung.co.kr' + image_url
-                        
-                        price_elem = item.select_one('.tx_cur .tx_num')
-                        price = price_elem.get_text(strip=True) if price_elem else "0"
-                        if price:
-                            price = price + "원"
-                        
-                        link_elem = item.select_one('a')
-                        buy_url = link_elem.get('href', '') if link_elem else ''
-                        if buy_url and not buy_url.startswith('http'):
-                            buy_url = 'https://www.oliveyoung.co.kr' + buy_url
+                            musinsa_img = img_elem.get('src') or img_elem.get('data-src') or img_elem.get('lazy-src')
                         
                         product = {
                             'rank': idx,
                             'productName': name,
                             'brand': brand,
-                            'imageUrl': image_url or "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
+                            'imageUrl': musinsa_img or "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&h=100&fit=crop",
                             'price': price,
-                            'buyUrl': buy_url,
+                            'buyUrl': f"https://www.amazon.com/s?k={brand}+{name}",
                             'tags': [],
-                            'subcategory': 'skincare',
-                            'trend': 0
+                            'subcategory': 'beauty',
+                            'trend': 0,
+                            'nikIndex': 0,
+                            'culturalContext': ""
                         }
                         
                         products.append(product)
-                        print(f"  {idx}. {brand} - {name} ({price})")
-                        if image_url:
-                            print(f"      Image: {image_url[:80]}...")
                         
                     except Exception as e:
                         print(f"⚠️  제품 {idx} 파싱 오류: {e}")
                         continue
                 
-                print("✅ 제품 크롤링 성공!")
-                break
-                
-            else:
-                print(f"❌ ScraperAPI 요청 실패: HTTP {response.status_code}")
-                if attempt < max_retries - 1:
-                    print("🔄 재시도 중...")
-                    time.sleep(5)
-                    continue
-                else:
-                    print("❌ 최대 재시도 횟수 초과")
+                if products:
+                    print("✅ 무신사 제품 데이터 추출 완료")
+                    break
                     
-        except requests.exceptions.Timeout:
-            print(f"⏱️  요청 타임아웃 (시도 {attempt + 1}/{max_retries})")
-            if attempt < max_retries - 1:
-                print("🔄 재시도 중...")
-                time.sleep(5)
-                continue
             else:
-                print("❌ 최대 재시도 횟수 초과")
-                
+                print(f"❌ WebScraping.ai 요청 실패: HTTP {response.status_code}")
+                time.sleep(10)
+                    
         except Exception as e:
-            print(f"❌ 크롤링 오류 (시도 {attempt + 1}/{max_retries}): {e}")
-            if attempt < max_retries - 1:
-                print("🔄 재시도 중...")
-                time.sleep(5)
-                continue
-            else:
-                print("❌ 최대 재시도 횟수 초과")
-                import traceback
-                traceback.print_exc()
+            print(f"❌ 크롤링 오류: {e}")
+            time.sleep(5)
     
     return products
 async def calculate_trends(db, category_key: str, current_products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -301,7 +266,7 @@ async def calculate_trends(db, category_key: str, current_products: List[Dict[st
     
     try:
         # 어제 날짜 (UTC)
-        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')
         firestore_category = CATEGORY_MAPPING[category_key]['firestore_category']
         doc_id = f"{yesterday}_{firestore_category}"
         
@@ -504,14 +469,24 @@ Keep brand names as they are (already in English).
 Focus on translating the product description/name part accurately.
 Use professional beauty industry terminology.
 
+Additionally, for each product, generate:
+1. "nikIndex": A proprietary popularity score from 85.0 to 99.9 based on current K-beauty viral trends.
+2. "culturalContext": A very short (max 1 sentence) explanation of why this is trending in Korea (e.g., "Trending on Olive Young for deep hydration", "Viral on TikTok for glass skin finish").
+3. "imageQuery": A clean English search term to find this product's image (e.g., "Medicube Zero Pore Pad 2.0").
+
 Product Names:
 {chr(10).join(product_names)}
 
 Response format (JSON):
 {{
   "translations": [
-    {{"rank": 1, "productName": "English Product Name"}},
-    {{"rank": 2, "productName": "English Product Name"}},
+    {{
+      "rank": 1, 
+      "productName": "English Product Name", 
+      "nikIndex": 98.5, 
+      "culturalContext": "Explanation",
+      "imageQuery": "Search Term"
+    }},
     ...
   ]
 }}
@@ -531,15 +506,24 @@ JSON only.
         
         translations = json.loads(result_text)
         
-        # 번역 적용
+        # 번역 및 AI 데이터 적용
         translated_count = 0
         for trans in translations.get('translations', []):
             rank = trans.get('rank')
             product_name = trans.get('productName')
+            nik_index = trans.get('nikIndex', 0)
+            cultural_context = trans.get('culturalContext', "")
+            image_query = trans.get('imageQuery', "")
             
             for product in products:
                 if product['rank'] == rank:
                     product['productName'] = product_name
+                    product['nikIndex'] = nik_index
+                    product['culturalContext'] = cultural_context
+                    # image_query는 나중에 아마존 검색용으로 사용 가능
+                    if image_query:
+                        product['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'krank-20')}"
+                    
                     translated_count += 1
                     break
         
@@ -799,7 +783,36 @@ Response format (JSON):
 
 JSON only.
 """
-    
+    try:
+        response = model.generate_content(prompt)
+        result_text = response.text.strip()
+        
+        # JSON 파싱 (마크다운 코드 블록 제거)
+        if result_text.startswith('```'):
+            result_text = result_text.split('```')[1]
+            if result_text.startswith('json'):
+                result_text = result_text[4:]
+        
+        translations = json.loads(result_text)
+        
+        # 번역 적용
+        for trans in translations.get('translations', []):
+            rank = trans.get('rank')
+            title_ko = trans.get('titleKo')
+            
+            for item in items:
+                if item['rank'] == rank:
+                    item['titleKo'] = title_ko
+                    break
+        
+        print(f"✅ 미디어 제목 번역 완료")
+        
+    except Exception as e:
+        print(f"⚠️  미디어 제목 번역 오류: {e}")
+        # 실패 시 영어 제목을 그대로 사용
+        for item in items:
+            item['titleKo'] = item['titleEn']
+            
     return items
 
 def get_google_place_stats(name: str, address: str) -> Dict[str, Any]:
@@ -1074,7 +1087,7 @@ async def calculate_place_trends(db, current_items: List[Dict[str, Any]]) -> Lis
     from datetime import timedelta
     
     try:
-        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')
         doc_id = f"{yesterday}_place"
         
         print(f"\n📊 Place 트렌드 계산 중... (어제: {yesterday})")
@@ -1114,7 +1127,7 @@ async def calculate_media_trends(db, current_items: List[Dict[str, Any]]) -> Lis
     from datetime import timedelta
     
     try:
-        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')
         doc_id = f"{yesterday}_media"
         
         print(f"\n📊 Media 트렌드 계산 중... (어제: {yesterday})")
@@ -1192,7 +1205,7 @@ def save_to_firebase(db, category_key: str, products: List[Dict[str, Any]]):
     print(f"\n💾 Firebase에 {category_key} 카테고리 저장 중...")
     
     # 오늘 날짜 (UTC)
-    today = datetime.utcnow().strftime('%Y-%m-%d')
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     
     # Firestore 카테고리 가져오기
     firestore_category = CATEGORY_MAPPING[category_key]['firestore_category']
@@ -1249,10 +1262,10 @@ async def main():
                 print(f"📦 {category_key.upper()} 카테고리 크롤링 시작")
                 print("-" * 60)
                 
-                # 카테고리별 크롤링
-                products = scrape_olive_young_by_category(
+                # 카테고리별 크롤링 (무신사 뷰티 상위 20개)
+                products = scrape_musinsa_beauty_by_category(
                     category_code=config['url_param'],
-                    max_items=100  # 100개로 증가
+                    max_items=20
                 )
                 
                 if not products:
@@ -1264,6 +1277,17 @@ async def main():
                 
                 # 제품명 영어 번역 (Batch Processing)
                 products = await translate_product_names_batch(model, products)
+                
+                # 아마존 이미지 연동
+                print("\n📸 아마존에서 제품 이미지 검색 중...")
+                for product in products:
+                    search_query = f"{product['brand']} {product['productName']}"
+                    amazon_img = await get_amazon_image(search_query)
+                    if amazon_img:
+                        product['imageUrl'] = amazon_img
+                        print(f"  ✅ {product['rank']}위 이미지 매칭 성공")
+                    else:
+                        print(f"  ⚠️ {product['rank']}위 아마존 이미지 검색 실패")
                 
                 # 트렌드 계산 (번역 후 실행하여 영어 제품명으로 매칭)
                 products = await calculate_trends(db, category_key, products)
@@ -1309,7 +1333,7 @@ async def main():
                 all_media_items = await calculate_media_trends(db, all_media_items)
                 
                 # Media 저장 로직
-                today = datetime.utcnow().strftime('%Y-%m-%d')
+                today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
                 doc_id = f"{today}_media"
                 doc_ref = db.collection('daily_rankings').document(doc_id)
                 
@@ -1345,7 +1369,7 @@ async def main():
                 place_items = await calculate_place_trends(db, place_items)
                 
                 # 저장
-                today = datetime.utcnow().strftime('%Y-%m-%d')
+                today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
                 doc_id = f"{today}_place"
                 doc_ref = db.collection('daily_rankings').document(doc_id)
                 
@@ -1370,6 +1394,12 @@ async def main():
         print(f"\n📊 크롤링 결과:")
         print(f"  - 총 아이템 수: {total_products}개")
         print(f"  - 실행 모드: {run_mode.upper()}")
+
+        # 데이터 검증: 수집된 데이터가 하나도 없으면 실패로 간주
+        if total_products == 0:
+            print(f"\n❌ [CRITICAL] {run_mode.upper()} 모드에서 수집된 데이터가 0개입니다.")
+            print("💡 크롤링 대상 사이트의 구조가 변경되었거나 접근이 차단되었을 수 있습니다.")
+            sys.exit(1)
         
     except Exception as e:
         print(f"\n❌ 오류 발생: {e}")

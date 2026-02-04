@@ -35,14 +35,14 @@ jobs:
       - name: Create .env file
         run: |
           echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
-          echo "SCRAPER_API_KEY=${{ secrets.SCRAPER_API_KEY }}" >> .env
+          echo "WEBSCRAPING_AI_API_KEY=${{ secrets.WEBSCRAPING_AI_API_KEY }}" >> .env
       
       - name: Run Beauty Scraper
         run: |
           python3 scripts/scraper.py beauty
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
+          WEBSCRAPING_AI_API_KEY: ${{ secrets.WEBSCRAPING_AI_API_KEY }}
       
       - name: Cleanup
         if: always()

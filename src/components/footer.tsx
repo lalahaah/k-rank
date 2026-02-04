@@ -12,7 +12,7 @@ import {
 import { Logo } from "./logo";
 
 const DATA_SOURCES = [
-    { name: "Olive Young Korea", category: "Beauty", link: "https://www.oliveyoung.co.kr" },
+    { name: "Musinsa Beauty", category: "Beauty", link: "https://www.musinsa.com/main/beauty/ranking" },
     { name: "Netflix Top 10 South Korea", category: "Media", link: "https://top10.netflix.com/south-korea" },
     { name: "Google Places API", category: "Food", link: "https://mapsplatform.google.com/maps-products/places/" },
     { name: "VisitKorea TourAPI", category: "Place", link: "https://api.visitkorea.or.kr" },
@@ -94,10 +94,25 @@ export function Footer() {
                     {/* Disclaimer (Legal) */}
                     <div className="col-span-1 md:col-span-1">
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Disclosure</h4>
-                        <p className="text-xs text-gray-400 leading-relaxed">
-                            Next Idea Lab Co., Ltd. is a participant in the Amazon Services LLC Associates Program.
-                            We may earn commissions on qualifying purchases made through our links at no extra cost to you.
-                        </p>
+                        <div className="space-y-4">
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Next Idea Lab Co., Ltd. is a participant in the Amazon Services LLC Associates Program.
+                                We may earn commissions on qualifying purchases made through our links at no extra cost to you.
+                            </p>
+                            <div className="pt-2 border-t border-gray-200">
+                                <h5 className="text-[10px] font-bold text-gray-700 uppercase mb-1">Musinsa Data Usage</h5>
+                                <p className="text-[10px] text-gray-400 leading-tight">
+                                    K-RANK is an independent curator and is not officially affiliated with, endorsed by, or sponsored by MUSINSA.
+                                    All brand names and logos are trademarks of their respective owners.
+                                </p>
+                            </div>
+                            <div className="pt-2">
+                                <h5 className="text-[10px] font-bold text-gray-700 uppercase mb-1">Takedown Policy</h5>
+                                <p className="text-[10px] text-gray-400 leading-tight">
+                                    If you believe your copyright is being infringed, please contact us at <span className="underline">legal@nextidealab.com</span> for immediate removal.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

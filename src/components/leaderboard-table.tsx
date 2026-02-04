@@ -15,12 +15,12 @@ interface LeaderboardTableProps {
 
 const categories = [
     { id: "all", label: "All" },
-    { id: "skincare", label: "Skincare" },
-    { id: "suncare", label: "Suncare" },
-    { id: "masks", label: "Masks" },
-    { id: "makeup", label: "Makeup" },
-    { id: "haircare", label: "Haircare" },
-    { id: "bodycare", label: "Bodycare" },
+    { id: "104001", label: "Skincare" },
+    { id: "104002", label: "Suncare" },
+    { id: "104013", label: "Masks" },
+    { id: "104014", label: "Makeup" },
+    { id: "104006", label: "Haircare" },
+    { id: "104007", label: "Bodycare" },
 ];
 
 export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden = false }: LeaderboardTableProps) {
@@ -54,6 +54,11 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
 
     return (
         <div>
+            {/* Data Source Citation */}
+            <div className="mb-4 text-[10px] text-gray-400 italic">
+                Data Sourced from Musinsa Beauty as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </div>
+
             {/* Filter Bar */}
             {!isCategoryHidden && (
                 <div className="mb-4 overflow-x-auto">
@@ -163,6 +168,18 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                 <div className="text-sm md:text-xs font-medium text-heading mt-1">
                                                     ₩{item.price.replace('원', '')}
                                                 </div>
+                                                {item.nikIndex && (
+                                                    <div className="mt-2 flex items-center gap-2">
+                                                        <span className="text-[10px] font-bold bg-brand-100 text-brand-600 px-1.5 py-0.5 rounded">
+                                                            NIK {item.nikIndex}
+                                                        </span>
+                                                        {item.culturalContext && (
+                                                            <span className="text-[10px] text-gray-400 italic line-clamp-1">
+                                                                {item.culturalContext}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

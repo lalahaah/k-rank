@@ -8,6 +8,8 @@ export interface RankingItem {
     subcategory: string;
     trend: number;
     buyUrl?: string;
+    nikIndex?: number;
+    culturalContext?: string;
     // Fields for Travel
     name_ko?: string;
     name_en?: string;

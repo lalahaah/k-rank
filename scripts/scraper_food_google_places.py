@@ -8,7 +8,7 @@ import os
 import sys
 import math
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Any
 from dotenv import load_dotenv
 
@@ -379,13 +379,13 @@ def save_to_firebase(db, restaurants: List[Dict[str, Any]]):
     """Firebase에 레스토랑 데이터 저장"""
     print("\n💾 Firebase에 저장 중...")
     
-    today = datetime.utcnow().strftime('%Y-%m-%d')
+    today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
     doc_id = f"{today}_restaurants"
     
     data = {
         'category': 'restaurants',
         'date': today,
-        'lastUpdated': datetime.utcnow(),
+        'lastUpdated': datetime.now(timezone.utc),
         'items': restaurants
     }
     
@@ -421,7 +421,7 @@ async def main():
     restaurants = scrape_google_places_new(api_key, max_per_area=7)
     
     if len(restaurants) == 0:
-        print("❌ 레스토랑을 찾지 못했습니다")
+        print("\n❌ [CRITICAL] 수집된 레스토랑 데이터가 0개입니다.")
         sys.exit(1)
     
     # 2. Gemini AI로 한국어 이름 번역
