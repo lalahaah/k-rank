@@ -22,7 +22,7 @@ export const AD_CONFIG = {
         badge: "Exclusive Deal",
         text: "Get up to 20% off on Korean sunscreens at Amazon today!",
         linkText: "Shop Now",
-        linkUrl: "https://www.amazon.com/s?k=korean+sunscreen&tag=nextidealab-20", // 대표님의 아마존 태그 포함 링크
+        linkUrl: `https://www.amazon.com/s?k=korean+sunscreen&tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'krank-20'}`, // 대표님의 아마존 태그 포함 링크
     },
     // 2번: 리스트 중간 광고 (인피드)
     inFeed: {
@@ -39,7 +39,7 @@ export const AD_CONFIG = {
         title: "medicube Toner Pads Zero Pore Pad",
         description: "The viral sensation with over 20k+ reviews on Amazon. Get yours today at the best price.",
         buttonText: "Check Amazon Price",
-        linkUrl: "https://www.amazon.com/Medicube-Zero-Pore-Pads-Dual-Textured/dp/B09V7Z4TJG?ref_=ast_sto_dp&th=1?tag=nextidealab-20",
+        linkUrl: `https://www.amazon.com/Medicube-Zero-Pore-Pads-Dual-Textured/dp/B09V7Z4TJG?tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'krank-20'}`,
         image: "https://m.media-amazon.com/images/I/618ang-TWOL._AC_SL1500_.jpg" // 나중에 이미지 주소가 생기면 여기에 넣으세요.
     }
 };

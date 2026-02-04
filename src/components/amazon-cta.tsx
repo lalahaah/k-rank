@@ -6,7 +6,7 @@ import { ExternalLink } from "lucide-react";
 export function AmazonCta() {
     const handleClick = () => {
         // Amazon.com 한국 스낵 검색 페이지로 리다이렉트
-        const affiliateId = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'krank-20';
+        const affiliateId = process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20';
         const searchUrl = `https://www.amazon.com/s?k=korean+snacks+ramen&tag=${affiliateId}`;
         window.open(searchUrl, '_blank', 'noopener,noreferrer');
     };

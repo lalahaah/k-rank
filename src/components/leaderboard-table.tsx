@@ -205,7 +205,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                     {/* Action Button */}
                                     <div className="md:col-span-1 md:flex md:justify-center">
                                         <a
-                                            href={`https://www.amazon.com/s?k=${encodeURIComponent(item.productName)}&tag=nextidealab-20`}
+                                            href={`https://www.amazon.com/s?k=${encodeURIComponent(item.productName)}&tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'krank-20'}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="block md:inline-block"
