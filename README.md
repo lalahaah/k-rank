@@ -118,14 +118,38 @@ service cloud.firestore {
 
 ## 🤖 데이터 수집
 
-Mock 데이터 생성:
+### Beauty 데이터 (수동 임포트 방식)
+Beauty 카테고리는 정기적으로 제공되는 에디토리얼 랭킹 JSON 파일을 사용합니다:
+
 ```bash
-python3 scripts/generate_mock_data.py
+# 1. editorial_ranking_v2_3.json 파일을 scripts/ 폴더에 준비
+# 2. Firestore에 업로드
+export WRITE_TO_FIRESTORE=true
+python3 scripts/import_editorial_ranking.py
 ```
 
-웹 스크래핑 (개발 중):
+### Media & Place 데이터 (자동 크롤링 방식)
+Media와 Place 카테고리는 자동으로 크롤링됩니다:
+
 ```bash
+# Media와 Place 모두 실행
 python3 scripts/scraper.py
+
+# Media만 실행 (Netflix)
+python3 scripts/scraper.py media
+
+# Place만 실행 (TourAPI)
+python3 scripts/scraper.py place
+```
+
+### Food 데이터 (Google Places API)
+```bash
+python3 scripts/scraper_food_google_places.py
+```
+
+### 개발/테스트용 Mock 데이터
+```bash
+python3 scripts/generate_mock_data.py
 ```
 
 ## 📁 프로젝트 구조

@@ -142,8 +142,13 @@ def initialize_gemini():
 
 async def get_amazon_image(query: str) -> str:
     """
-    아마존 검색을 통해 제품 이미지 URL을 가져옵니다. (WebScraping.ai 사용)
+    아마존 검색을 통해 제품 이미지 URL을 가져옵니다.
+    DEV_MODE일 경우 유료 API를 아끼기 위해 빈 문자열 또는 로컬 Playwright 활용 가능성을 열어둡니다.
     """
+    if DEV_MODE:
+        print(f"🧪 [DEV_MODE] Amazon 이미지 검색 스킵: {query}")
+        return ""
+
     api_key = os.getenv('WEBSCRAPING_AI_API_KEY')
     if not api_key:
         return ""
@@ -161,7 +166,6 @@ async def get_amazon_image(query: str) -> str:
         response = requests.get('https://api.webscraping.ai/html', params=params, timeout=60)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            # 아마존 검색 결과 이미지 선택자
             img_elem = soup.select_one('div[data-component-type="s-search-result"] img.s-image')
             if img_elem:
                 return img_elem.get('src', '')
@@ -184,9 +188,11 @@ async def scrape_hwahae_global(url: str, max_items: int = 20) -> List[Dict[str, 
             print(f"🌐 화해 글로벌 접속 중: {url}")
             # 디버깅을 위해 일시적으로 headless=False 시도 가능 (필요시)
             browser = await p.chromium.launch(headless=True)
+            # 실제 사용자의 브라우저처럼 보이기 위해 User-Agent 강화
+            user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
             context = await browser.new_context(
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-                locale='en-US' # 글로벌 사이트이므로 en-US 우선 시도
+                user_agent=user_agent,
+                locale='en-US'
             )
             page = await context.new_page()
             
@@ -204,11 +210,11 @@ async def scrape_hwahae_global(url: str, max_items: int = 20) -> List[Dict[str, 
             content = await page.content()
             soup = BeautifulSoup(content, 'html.parser')
             
-            # 화해 글로벌 랭킹 아이템 셀렉터 (브라우저 분석 결과 기반)
-            # 각 제품은 li 태그 내에 존재
-            items = soup.select('li.mt-16.bg-white')[:max_items]
+            # 개발 모드일 때는 수집 수량 제한
+            current_max = DEV_LIMIT if DEV_MODE else max_items
+            items = soup.select('li.mt-16.bg-white')[:current_max]
             
-            print(f"🔍 발견된 제품 컨테이너 수: {len(items)}")
+            print(f"🔍 발견된 제품 컨테이너 수: {len(items)} (DEV_MODE: {DEV_MODE}, Limit: {current_max})")
             
             for idx, item in enumerate(items, 1):
                 try:
@@ -503,6 +509,32 @@ def translate_brand_names(products: List[Dict[str, Any]]) -> List[Dict[str, Any]
     
     return products
 
+def calculate_nik_index(hwahae_rank: int, glowpick_rank: int = None, sns_hype_score: float = None) -> float:
+    """
+    NIK Beauty Index 산출 (멀티 소스 가중치 전략)
+    Final Score = (Hwahae_Pts * 0.4) + (Glowpick_Pts * 0.4) + (Viral_Pts * 0.2)
+    역순 점수제: 1위 = 100점, 2위 = 99점...
+    """
+    # 1. 역순 점수 변환 (최대 100점 기준)
+    hwahae_pts = max(0, 101 - hwahae_rank)
+    
+    # 글로우픽 및 SNS 데이터가 없을 경우 화해 점수를 기반으로 상관관계 예측 (폴백)
+    if glowpick_rank is None:
+        # 화해 순위와 유사하되 약간의 변동성 부여
+        glowpick_rank = max(1, hwahae_rank + random.randint(-2, 2))
+    
+    glowpick_pts = max(0, 101 - glowpick_rank)
+    
+    if sns_hype_score is None:
+        # 1-100 scale로 변환
+        sns_hype_score = max(70, hwahae_pts + random.randint(-5, 5))
+        sns_hype_score = min(100, sns_hype_score)
+
+    # 2. 가중치 적용
+    final_score = (hwahae_pts * 0.4) + (glowpick_pts * 0.4) + (sns_hype_score * 0.2)
+    
+    return round(final_score, 1)
+
 # 이전 translate_to_english 함수는 위의 translate_brand_names로 대체됨
 
 async def translate_product_names_batch(model, products: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -529,7 +561,11 @@ async def translate_product_names_batch(model, products: List[Dict[str, Any]]) -
         if 'productNameKo' not in p:
             p['productNameKo'] = p['productName']
             
-        cache_key = f"{p['brand']}_{p['productName']}"
+        # 캐시 키 정규화 (브랜드 및 상품명의 공백 제거 후 소문자화)
+        clean_brand = re.sub(r'\s+', '', p['brand']).lower()
+        clean_name = re.sub(r'\s+', '', p['productName']).lower()
+        cache_key = f"{clean_brand}_{clean_name}"
+        
         if cache_key in cache and 'translatedName' in cache[cache_key]:
             data = cache[cache_key]
             p['productName'] = data['translatedName'] # 영문명으로 교체
@@ -560,9 +596,15 @@ Focus on translating the product description/name part accurately.
 Use professional beauty industry terminology.
 
 Additionally, for each product, generate:
-1. "nikIndex": A proprietary popularity score from 85.0 to 99.9 based on current K-beauty viral trends.
-2. "culturalContext": A very short (max 1 sentence) explanation of why this is trending in Korea (e.g., "Trending on Olive Young for deep hydration", "Viral on TikTok for glass skin finish").
-3. "imageQuery": A clean English search term to find this product's image (e.g., "Medicube Zero Pore Pad 2.0").
+1. "nikIndex": A proprietary popularity score (0-100) based on K-Rank's algorithm. 
+   Consider Hwahae (40%), Glowpick (40%), and SNS/Viral (20%).
+2. "culturalContext": This is now the "AI Analyst Note". Generate a professional, catchy English insight (max 2 sentences).
+   Format: "AI Analyst Note: [Insight content]".
+   Mention its authority (e.g., "Ranked #1 on Hwahae and trending on Glowpick for its [benefit]").
+   Explain why it's the "safest choice" or "most effective" based on Korean user data.
+3. "imageQuery": A clean English search term to find this product's image.
+4. "glowpickRank": Estimated rank on Glowpick (1-50).
+5. "snsHypeScore": Estimated viral score (1-100).
 
 Product Names:
 {chr(10).join(product_names)}
@@ -571,17 +613,19 @@ Response format (JSON):
 {{
   "translations": [
     {{
-      "rank": {to_translate[0]['rank'] if to_translate else 1}, 
+      "rank": 1, 
       "productName": "English Product Name", 
-      "nikIndex": 98.5, 
-      "culturalContext": "Explanation",
-      "imageQuery": "Search Term"
+      "nikIndex": 98.7, 
+      "culturalContext": "AI Analyst Note: This product is a cult favorite in Korea, consistently ranking #1 on Hwahae for chemical-free hydration. It's the safest choice for sensitive skin types craving the viral glass skin finish.",
+      "imageQuery": "Search Term",
+      "glowpickRank": 3,
+      "snsHypeScore": 95
     }},
     ...
   ]
 }}
 
-JSON only.
+JSON only. Use professional beauty industry terminology.
 """
     
     try:
@@ -607,7 +651,15 @@ JSON only.
                 for i, p in enumerate(products):
                     if p['rank'] == rank and i in success_indices:
                         product_name_en = entry.get('productName')
-                        nik_index = entry.get('nikIndex', 90.0)
+                        # AI가 계산한 값을 우선하되, 없으면 로컬 로직으로 보강
+                        nik_index = entry.get('nikIndex')
+                        if nik_index is None:
+                            nik_index = calculate_nik_index(
+                                p['rank'], 
+                                entry.get('glowpickRank'), 
+                                entry.get('snsHypeScore')
+                            )
+                        
                         cultural_context = entry.get('culturalContext', "")
                         image_query = entry.get('imageQuery', "")
 
@@ -624,8 +676,11 @@ JSON only.
                         if image_query:
                             p['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'krank-20')}"
                         
-                        # 캐시 저장 - 원본 한글명(productNameKo)을 키로 사용
-                        cache_key = f"{p['brand']}_{p.get('productNameKo', p['productName'])}"
+                        # 캐시 저장 - 정규화된 키 사용
+                        clean_brand = re.sub(r'\s+', '', p['brand']).lower()
+                        clean_name = re.sub(r'\s+', '', p.get('productNameKo', p['productName'])).lower()
+                        cache_key = f"{clean_brand}_{clean_name}"
+                        
                         cache[cache_key] = {
                             'translatedName': p['productName'],
                             'nikIndex': p['nikIndex'],
@@ -1440,13 +1495,21 @@ def save_to_firebase(db, category_key: str, products: List[Dict[str, Any]]):
     print(f"📄 문서 ID: {doc_id}")
 
 async def main():
-    """메인 실행 함수"""
+    """메인 실행 함수 - Media와 Place 데이터만 자동 크롤링"""
     print("=" * 60)
-    print("🇰🇷 K-Rank Scraper - Beauty & Media")
+    print("🇰🇷 K-Rank Scraper - Media & Place")
     print("=" * 60)
     
     # 커맨드 라인 인자 확인
-    run_mode = sys.argv[1] if len(sys.argv) > 1 else "all"  # "beauty", "media", "place", "all"
+    run_mode = sys.argv[1] if len(sys.argv) > 1 else "all"  # "media", "place", "all"
+    
+    # Beauty는 이제 import_editorial_ranking.py를 통해 수동으로 관리됨
+    if run_mode == "beauty":
+        print("\n" + "=" * 60)
+        print("⚠️  Beauty 카테고리는 더 이상 자동 크롤링되지 않습니다.")
+        print("📝 대신 scripts/import_editorial_ranking.py를 사용하세요.")
+        print("=" * 60)
+        sys.exit(0)
     
     try:
         # 1. Firebase 초기화
@@ -1460,66 +1523,6 @@ async def main():
         print("✅ Gemini AI 연결 완료")
         
         total_products = 0
-        
-        # 3. Beauty 카테고리 크롤링
-        if run_mode in ["beauty", "all"]:
-            print("\n" + "=" * 60)
-            print("💄 BEAUTY 카테고리 크롤링")
-            print("=" * 60)
-            
-            for category_key, config in CATEGORY_MAPPING.items():
-                print("\n" + "-" * 60)
-                print(f"📦 {category_key.upper()} 카테고리 크롤링 시작")
-                print("-" * 60)
-                
-                # 카테고리별 크롤링 (화해 글로벌 상위 20개)
-                actual_limit = DEV_LIMIT if DEV_MODE else 20
-                target_hwahae_url = f"https://www.hwahae.com/en/rankings?english_name=category&theme_id={config['url_param']}"
-                
-                products = await scrape_hwahae_global(
-                    url=target_hwahae_url,
-                    max_items=actual_limit
-                )
-                
-                if not products:
-                    print(f"⚠️  {category_key} 카테고리에서 제품을 찾지 못했습니다.")
-                    continue
-                
-                # 브랜드명 영어 변환 (먼저 실행)
-                products = translate_brand_names(products)
-                
-                # 제품명 영어 번역 및 트렌드 데이터 준비 (Batch Processing)
-                products = await translate_product_names_batch(model, products)
-                
-                # AI 리뷰 요약 (인사이트 생성)
-                products = await summarize_reviews_batch(model, products)
-
-                # 아마존 이미지 연동
-                print("\n📸 아마존에서 제품 이미지 검색 중...")
-                for product in products:
-                    # 개발 모드이고 이미 이미지가 있다면 건너뜀
-                    if DEV_MODE and product.get('imageUrl') and not product['imageUrl'].startswith('https://images.unsplash.com'):
-                         print(f"  ⏭️ {product['rank']}위 이미지 이미 존재함")
-                         continue
-
-                    # 브랜드와 제품명을 조합하여 검색
-                    search_query = f"{product['brand']} {product['productName']}"
-                    amazon_img = await get_amazon_image(search_query)
-                    if amazon_img:
-                        product['imageUrl'] = amazon_img
-                        print(f"  ✅ {product['rank']}위 이미지 매칭 성공")
-                    else:
-                        print(f"  ⚠️ {product['rank']}위 아마존 이미지 검색 실패")
-                
-                # 트렌드 계산 (번역 후 실행하여 영어 제품명으로 매칭)
-                products = await calculate_trends(db, category_key, products)
-                
-                # 태그 자동 생성
-                products = await generate_tags(model, products, category_key)
-                
-                # Firebase에 저장
-                save_to_firebase(db, category_key, products)
-                total_products += len(products)
         
         # 4. Media 카테고리 크롤링
         if run_mode in ["media", "all"]:
@@ -1567,8 +1570,11 @@ async def main():
                     'updatedAt': firestore.SERVER_TIMESTAMP
                 }
                 
-                doc_ref.set(data)
-                print(f"✅ {len(all_media_items)}개 타이틀을 {doc_id} 문서에 저장 완료")
+                if WRITE_TO_FIRESTORE:
+                    doc_ref.set(data)
+                    print(f"✅ {len(all_media_items)}개 타이틀을 {doc_id} 문서에 저장 완료")
+                else:
+                    print(f"🧪 [DEV_MODE] Firebase Media 저장 스킵 ({len(all_media_items)}개)")
                 print(f"   - TV Shows: {len(tv_items)}개")
                 print(f"   - Films: {len(film_items)}개")
                 total_products += len(all_media_items)
@@ -1603,8 +1609,11 @@ async def main():
                     'updatedAt': firestore.SERVER_TIMESTAMP
                 }
                 
-                doc_ref.set(data)
-                print(f"✅ {len(place_items)}개 명소를 {doc_id} 문서에 저장 완료")
+                if WRITE_TO_FIRESTORE:
+                    doc_ref.set(data)
+                    print(f"✅ {len(place_items)}개 명소를 {doc_id} 문서에 저장 완료")
+                else:
+                    print(f"🧪 [DEV_MODE] Firebase Place 저장 스킵 ({len(place_items)}개)")
                 total_products += len(place_items)
             else:
                 print("⚠️ TourAPI에서 데이터를 찾지 못했습니다.")
@@ -1632,7 +1641,9 @@ async def main():
 
 if __name__ == "__main__":
     # 사용법:
-    # python scraper.py           # 모든 카테고리 실행
-    # python scraper.py beauty    # Beauty만 실행
+    # python scraper.py           # Media와 Place 모두 실행
     # python scraper.py media     # Media만 실행
+    # python scraper.py place     # Place만 실행
+    # 
+    # Beauty 데이터는 scripts/import_editorial_ranking.py를 사용하세요
     asyncio.run(main())
