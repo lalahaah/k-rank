@@ -58,14 +58,14 @@ export default function PrivacyPage() {
                             <h2 className="text-2xl font-bold text-slate-900 mb-4">3. Data Sources & Disclaimer (Important)</h2>
                             <h3 className="text-lg font-bold text-slate-800 mb-2">3.1. Publicly Available Information</h3>
                             <p>
-                                K-RANK acts as an information aggregator and search engine for Korean trends. We use automated technologies to index publicly available data from various sources (e.g., Olive Young, etc.) to provide comparative analytics and trend insights.
+                                K-RANK acts as an AI-powered information curator for Korean trends. We use automated technologies to analyze publicly available data from various sources (e.g., Olive Young, Hwahae, Glowpick) to provide AI-curated rankings and trend insights.
                             </p>
                             <h3 className="text-lg font-bold text-slate-800 mt-6 mb-2">3.2. Intellectual Property & Fair Use</h3>
                             <ul className="list-disc pl-5 mt-2 space-y-1">
                                 <li><strong>Product Data:</strong> Product names, brands, and rankings displayed on the Service are factual information and are not subject to copyright.</li>
                                 <li><strong>Images:</strong> Product thumbnails displayed are for <strong>identification purposes only</strong> under the principles of "Fair Use" or are provided directly via authorized Affiliate APIs (e.g., Amazon Associates).</li>
                                 <li><strong>Ownership:</strong> We do not claim ownership of the underlying products or trademarks listed. All trademarks, logos, and brand names are the property of their respective owners.</li>
-                                <li><strong>No Affiliation:</strong> Unless explicitly stated, <strong>Next Idea Lab Co., Ltd.</strong> is not directly affiliated with the data sources (e.g., Olive Young).</li>
+                                <li><strong>No Affiliation:</strong> Unless explicitly stated, <strong>Next Idea Lab Co., Ltd.</strong> is not directly affiliated with the data sources (e.g., Olive Young, Hwahae, Glowpick).</li>
                             </ul>
                             <p className="mt-4">
                                 If you are a copyright owner and believe that your content has been displayed in a way that constitutes copyright infringement, please contact us at the email below for immediate removal.
@@ -178,14 +178,14 @@ export default function PrivacyPage() {
                             <h2 className="text-2xl font-bold text-slate-900 mb-4">3. 데이터 출처 및 면책 조항 (중요)</h2>
                             <h3 className="text-lg font-bold text-slate-800 mb-2">3.1. 공개된 정보의 수집</h3>
                             <p>
-                                <strong>K-RANK</strong>는 한국의 트렌드 정보를 집계하여 제공하는 검색 엔진 및 정보 큐레이션 서비스입니다. 회사는 자동화된 기술을 사용하여 다양한 출처(예: 올리브영 등)에서 <strong>공개적으로 열람 가능한 데이터</strong>를 인덱싱(색인)하여 비교 분석 및 트렌드 정보를 제공합니다.
+                                <strong>K-RANK</strong>는 한국의 트렌드 정보를 AI로 큐레이션하여 제공하는 서비스입니다. 회사는 자동화된 기술을 사용하여 다양한 출처(예: 올리브영, 화해, 글로우픽)에서 <strong>공개적으로 열람 가능한 데이터</strong>를 분석하여 AI 큐레이션 랭킹 및 트렌드 정보를 제공합니다.
                             </p>
                             <h3 className="text-lg font-bold text-slate-800 mt-6 mb-2">3.2. 지적재산권 및 공정이용 (Fair Use)</h3>
                             <ul className="list-disc pl-5 mt-2 space-y-1">
                                 <li><strong>제품 데이터:</strong> 서비스에 표시되는 상품명, 브랜드명, 순위 등의 정보는 사실(Fact)에 기반한 정보로서 저작권의 보호 대상이 아닙니다.</li>
                                 <li><strong>이미지:</strong> 서비스에 표시되는 제품 썸네일은 사용자의 <strong>식별 편의(Identification purposes)</strong>를 위해 '공정이용(Fair Use)' 원칙에 따라 사용되거나, 제휴 파트너(예: Amazon Associates)의 공식 API를 통해 제공됩니다.</li>
                                 <li><strong>소유권:</strong> 회사는 서비스에 나열된 제품이나 상표에 대한 소유권을 주장하지 않습니다. 모든 상표, 로고 및 브랜드명은 해당 소유자의 자산입니다.</li>
-                                <li><strong>비제휴 명시:</strong> 별도의 명시가 없는 한, <strong>Next Idea Lab</strong>은 데이터 원천(예: 올리브영)과 직접적인 제휴 관계가 없습니다.</li>
+                                <li><strong>비제휴 명시:</strong> 별도의 명시가 없는 한, <strong>Next Idea Lab</strong>은 데이터 원천(예: 올리브영, 화해, 글로우픽)과 직접적인 제휴 관계가 없습니다.</li>
                             </ul>
                             <p className="mt-4">
                                 귀하가 저작권 소유자이며 귀하의 콘텐츠가 저작권을 침해하는 방식으로 게시되었다고 판단되는 경우, 아래 연락처로 문의하시면 즉시 조치하겠습니다.

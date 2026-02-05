@@ -15,7 +15,7 @@ export default function LandingPage() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'K-Rank Leaderboard',
-    description: 'Real-time Korean trends rankings for Beauty, Media, Food, and Places',
+    description: 'AI-curated Korean trends from top platforms: Olive Young, Hwahae, Glowpick for Beauty, Netflix for Media',
     url: 'https://k-rank.vercel.app',
     potentialAction: {
       '@type': 'SearchAction',
@@ -80,7 +80,7 @@ export default function LandingPage() {
 
           <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto mb-16 leading-relaxed font-light drop-shadow-md">
             Don't guess what's trending. <strong className="text-white font-bold">Know it.</strong> <br className="hidden md:block" />
-            Real-time rankings for Beauty, Media, Food and Places straight from Korea.
+            AI-curated rankings from Korea's top platforms.
           </p>
 
           {/* Bento Grid Navigation */}
@@ -99,7 +99,7 @@ export default function LandingPage() {
                 </div>
                 <div className="text-left relative z-10">
                   <h3 className="text-4xl font-black text-white mb-2 tracking-tight">K-BEAUTY</h3>
-                  <p className="text-rose-100 text-sm mb-6 font-medium">Olive Young Real-time Rankings.</p>
+                  <p className="text-rose-100 text-sm mb-6 font-medium">AI-curated from Olive Young, Hwahae & Glowpick.</p>
                   <div className="inline-flex items-center gap-3 bg-white text-beauty-500 px-5 py-2.5 rounded-full font-bold text-sm hover:bg-rose-50 transition-colors shadow-lg">
                     View Ranking <ArrowRight className="w-4 h-4" />
                   </div>

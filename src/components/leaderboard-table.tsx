@@ -56,7 +56,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
         <div>
             {/* Data Source Citation */}
             <div className="mb-4 text-[10px] text-gray-400 italic">
-                Data Sourced from Hwahae Global as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                AI-curated from Olive Young, Hwahae (화해) & Glowpick (글로우픽) as of {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             </div>
 
             {/* Filter Bar */}
@@ -166,7 +166,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                     {item.brand}
                                                 </div>
                                                 <div className="text-sm md:text-xs font-medium text-heading mt-1">
-                                                    {item.price === "N/A" ? "Global Price" : `₩${item.price.replace('원', '')}`}
+                                                    {(!item.price || item.price === "N/A") ? "Global Price" : `₩${item.price.replace('원', '')}`}
                                                 </div>
                                                 {item.nikIndex && (
                                                     <div className="mt-2 flex items-center gap-2">
@@ -174,9 +174,9 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                             NIK {item.nikIndex}
                                                         </span>
                                                         {item.culturalContext && (
-                                                            <span className="text-[10px] text-gray-400 italic line-clamp-1">
+                                                            <div className="text-[11px] md:text-[10px] text-gray-500 italic mt-1 leading-relaxed border-l-2 border-brand-200 pl-2">
                                                                 {item.culturalContext}
-                                                            </span>
+                                                            </div>
                                                         )}
                                                     </div>
                                                 )}

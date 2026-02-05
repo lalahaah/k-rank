@@ -29,12 +29,16 @@ export function SeoContent() {
             </h3>
             <p className="text-gray-600 leading-relaxed font-medium">
               In the fast-paced world of <strong>Korean trends</strong>, staying updated is no longer a luxury—it's a necessity.
-              K-RANK acts as your digital bridge to Korea, aggregating real-time data from authoritative sources like
-              <strong> Olive Young</strong> for beauty and <strong>Netflix Korea</strong> for media rankings.
-              Unlike static blogs, our leaderboard updates daily to reflect what Koreans are actually buying and watching <em>right now</em>.
+              K-RANK acts as your digital bridge to Korea, aggregating real-time data from authoritative sources:
+              <strong> Olive Young, Hwahae, and Glowpick</strong> for beauty,
+              <strong> Netflix Korea</strong> for media,
+              <strong> Google Places</strong> for trending restaurants, and
+              <strong> VisitKorea TourAPI</strong> for must-visit destinations.
+              Unlike static blogs, our AI-curated leaderboard updates daily to reflect what Koreans are actually experiencing <em>right now</em>.
             </p>
             <p className="text-gray-600 leading-relaxed font-medium">
-              Whether you are looking for the next <strong>K-Beauty holy grail</strong> or the most talked-about <strong>K-Drama</strong>,
+              Whether you are looking for the next <strong>K-Beauty holy grail</strong>, the most talked-about <strong>K-Drama</strong>,
+              the hottest <strong>Seoul restaurant</strong>, or Korea's trending <strong>travel destinations</strong>,
               K-RANK provides the cultural context you need to understand the <em>why</em> behind the hype.
             </p>
           </div>

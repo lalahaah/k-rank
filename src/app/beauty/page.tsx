@@ -50,7 +50,7 @@ export default function BeautyPage() {
             '@context': 'https://schema.org',
             '@type': 'ItemList',
             name: 'K-Beauty Product Rankings',
-            description: 'Real-time top trending K-Beauty products from Hwahae Global',
+            description: 'AI-curated K-Beauty rankings from Olive Young, Hwahae, and Glowpick',
             numberOfItems: rankings.length,
             itemListElement: rankings.slice(0, 10).map((item, index) => ({
                 '@type': 'ListItem',
@@ -101,14 +101,14 @@ export default function BeautyPage() {
                     <div className="max-w-2xl">
                         <div className="inline-flex items-center gap-2 bg-beauty-50 text-beauty-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6">
                             <span className="flex h-2 w-2 rounded-full bg-beauty-500 animate-pulse"></span>
-                            Real-time Data from Hwahae Global
+                            AI-Curated from Top K-Beauty Platforms
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-6">
                             DECODE K-BEAUTY <br />
                             <span className="text-beauty-500">TRENDS NOW.</span>
                         </h1>
                         <p className="text-lg text-gray-500 font-medium leading-relaxed">
-                            The definitive guide to what's actually trending in Korea's beauty capital. We analyze daily rankings from Hwahae Global to show you the real winners.
+                            The definitive guide to what's actually trending in Korea's beauty scene. Our AI editor analyzes daily rankings from <strong className="text-gray-900">Olive Young</strong>, <strong className="text-gray-900">Hwahae</strong>, and <strong className="text-gray-900">Glowpick</strong> to show you the real winners.
                         </p>
                     </div>
                 </div>
@@ -189,12 +189,28 @@ export default function BeautyPage() {
                     </div>
                     <div className="flex flex-wrap gap-3 relative z-10">
                         <a
+                            href="https://global.oliveyoung.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-beauty-500 hover:text-white transition-all shadow-xl"
+                        >
+                            Olive Young Global
+                        </a>
+                        <a
                             href="https://www.hwahae.com/en"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-beauty-500 hover:text-white transition-all shadow-xl"
                         >
                             Hwahae Global
+                        </a>
+                        <a
+                            href="https://www.glowpick.com/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-beauty-500 hover:text-white transition-all shadow-xl"
+                        >
+                            Glowpick
                         </a>
                         <a
                             href="https://www.yesstyle.com/en/beauty.html"
