@@ -20,12 +20,13 @@ GitHub Actions가 크롤링 스크립트를 실행하려면 다음 환경 변수
 
 **Name**: `GEMINI_API_KEY`
 
-**Secret**: (아래 값을 복사하여 붙여넣기)
+**Secret**: `.env` 파일에 있는 Gemini API 키를 복사하여 붙여넣기
+
 ```
-AIzaSyDBf_Fc0gjXEIqXOude5MhJBMUyxo7n8tY
+your-gemini-api-key-here
 ```
 
-위 값은 현재 `.env` 파일에 있는 Gemini API 키입니다.
+> ⚠️ **보안**: 실제 API 키는 절대 GitHub에 커밋하지 마세요. `.env` 파일에서 복사하세요.
 
 ---
 
