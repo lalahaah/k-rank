@@ -1156,7 +1156,7 @@ async def scrape_tour_api(max_items: int = 50) -> List[Dict[str, Any]]:
                 body = response_obj.get("body", {})
                 if not isinstance(body, dict):
                     if "resultCode" in data:
-                        print(f"❌ TourAPI 비즈니스 오류: {data.get('resultMsg')} (Code: {data.get('resultCode')})")
+                        print(f"❌ TourAPI 비즈니스 오류 발생")
                     else:
                         print(f"❌ TourAPI 응답 오류 (body가 dict 아님)")
                     continue

@@ -268,7 +268,7 @@ async def analyze_restaurants_batch(model: genai.GenerativeModel, restaurants: L
             r['nameKo'] = cached_data.get('nameKo', r['name'])
             r['aiInsight'] = cached_data.get('aiInsight', r['aiInsight'])
             r['details']['mustTry'] = cached_data.get('mustTry', [])
-            print(f"  ⚡ 캐시 사용: {r['name']}")
+            print(f"  ⚡ 캐시 사용")
         else:
             to_process.append(r)
             
@@ -418,11 +418,8 @@ def save_to_firebase(db, restaurants: List[Dict[str, Any]]):
     }
     
     if DEV_MODE and not WRITE_TO_FIRESTORE:
-        print(f"🧪  [DEV_MODE] Firebase 저장을 건너뜁니다. (데이터 미리보기)")
-        preview = data.copy()
-        preview['lastUpdated'] = "SERVER_TIMESTAMP"
-        # 복잡한 객체 JSON 출력을 위해 처리
-        print(json.dumps(preview, ensure_ascii=False, indent=2)[:1000] + "...")
+        print(f"🧪  [DEV_MODE] Firebase 저장을 건너뜁니다.")
+        print(f"  📊 {len(data['items'])}개 레스토랑 준비됨")
         return
 
     doc_ref = db.collection('daily_rankings').document(doc_id)
