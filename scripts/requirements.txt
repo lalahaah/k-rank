@@ -1,7 +1,7 @@
 # Web Scraping
 playwright==1.48.0
 beautifulsoup4==4.12.3
-requests==2.31.0
+requests>=2.32.0
 
 # Firebase
 firebase-admin==6.5.0
