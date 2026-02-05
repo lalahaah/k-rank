@@ -8,6 +8,10 @@ on:
   # 수동 실행 가능
   workflow_dispatch:
 
+# 최소 권한 원칙 적용
+permissions:
+  contents: read
+
 jobs:
   scrape:
     runs-on: ubuntu-latest

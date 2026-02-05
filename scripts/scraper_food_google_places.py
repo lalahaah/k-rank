@@ -122,7 +122,7 @@ def search_nearby_places(api_key: str, location: Dict, radius: int = 1000) -> Li
         result = response.json()
         return result.get("places", [])
     else:
-        print(f"   ❌ API 오류: {response.status_code} - {response.text}")
+        print(f"   ❌ API 오류: {response.status_code}")
         return []
 
 def scrape_google_places_new(api_key: str, max_per_area: int = 3) -> List[Dict[str, Any]]:

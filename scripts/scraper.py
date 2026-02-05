@@ -1140,17 +1140,17 @@ async def scrape_tour_api(max_items: int = 50) -> List[Dict[str, Any]]:
                 try:
                     data = response.json()
                 except Exception:
-                    print(f"❌ JSON 파싱 실패: {response.text[:200]}")
+                    print(f"❌ JSON 파싱 실패")
                     continue
 
                 if not isinstance(data, dict):
-                    print(f"❌ 예상치 못한 응답 형식: {data}")
+                    print(f"❌ 예상치 못한 응답 형식")
                     continue
 
                 # 안전하게 중첩된 데이터 추출
                 response_obj = data.get("response", {})
                 if not isinstance(response_obj, dict):
-                    print(f"❌ TourAPI 응답 오류 (response가 dict 아님): {response_obj}")
+                    print(f"❌ TourAPI 응답 오류 (response가 dict 아님)")
                     continue
                 
                 body = response_obj.get("body", {})
@@ -1158,7 +1158,7 @@ async def scrape_tour_api(max_items: int = 50) -> List[Dict[str, Any]]:
                     if "resultCode" in data:
                         print(f"❌ TourAPI 비즈니스 오류: {data.get('resultMsg')} (Code: {data.get('resultCode')})")
                     else:
-                        print(f"❌ TourAPI 응답 오류 (body가 dict 아님): {body}")
+                        print(f"❌ TourAPI 응답 오류 (body가 dict 아님)")
                     continue
                 
                 items_obj = body.get("items", {})
