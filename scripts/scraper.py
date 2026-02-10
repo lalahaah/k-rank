@@ -674,7 +674,7 @@ JSON only. Use professional beauty industry terminology.
                         p['culturalContext'] = cultural_context
                         
                         if image_query:
-                            p['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'krank-20')}"
+                            p['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'nextidealab-20')}"
                         
                         # 캐시 저장 - 정규화된 키 사용
                         clean_brand = re.sub(r'\s+', '', p['brand']).lower()

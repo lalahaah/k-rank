@@ -146,7 +146,7 @@ Response format (JSON only):
                         
                         # Amazon URL
                         image_query = p['imageQuery']
-                        p['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'krank-20')}"
+                        p['buyUrl'] = f"https://www.amazon.com/s?k={image_query.replace(' ', '+')}&tag={os.getenv('NEXT_PUBLIC_AMAZON_AFFILIATE_ID', 'nextidealab-20')}"
                         break
     except Exception as e:
         print(f"⚠️ Gemini 강화 오류 ({category_key}): {e}")

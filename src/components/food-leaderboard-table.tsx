@@ -86,8 +86,8 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                         key={cat.id}
                         onClick={() => setActiveCategory(cat.id)}
                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${activeCategory === cat.id
-                                ? "bg-food-500 text-white shadow-md"
-                                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                            ? "bg-food-500 text-white shadow-md"
+                            : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
                             }`}
                     >
                         {cat.label}
@@ -141,9 +141,9 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <span className={`text-2xl font-black ${item.displayRank === 1 ? "text-yellow-500" :
-                                                        item.displayRank === 2 ? "text-gray-400" :
-                                                            item.displayRank === 3 ? "text-amber-600" :
-                                                                "text-gray-600"
+                                                    item.displayRank === 2 ? "text-gray-400" :
+                                                        item.displayRank === 3 ? "text-amber-600" :
+                                                            "text-gray-600"
                                                     }`}>
                                                     {item.displayRank}
                                                 </span>
@@ -202,7 +202,9 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                                         <td className="px-6 py-4 whitespace-nowrap text-right">
                                             {item.buyUrl && (
                                                 <a
-                                                    href={item.buyUrl}
+                                                    href={item.buyUrl.includes('amazon.com')
+                                                        ? item.buyUrl.replace(/tag=[^&]+/, `tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20'}`)
+                                                        : item.buyUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-2 px-4 py-2 bg-food-500 hover:bg-food-600 text-white text-sm font-medium rounded-md transition-colors"
@@ -229,9 +231,9 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                                     {/* Rank Badge */}
                                     <div className="flex-shrink-0">
                                         <span className={`text-3xl font-black ${item.displayRank === 1 ? "text-yellow-500" :
-                                                item.displayRank === 2 ? "text-gray-400" :
-                                                    item.displayRank === 3 ? "text-amber-600" :
-                                                        "text-gray-600"
+                                            item.displayRank === 2 ? "text-gray-400" :
+                                                item.displayRank === 3 ? "text-amber-600" :
+                                                    "text-gray-600"
                                             }`}>
                                             {item.displayRank}
                                         </span>
@@ -288,7 +290,9 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                                             <div>{renderTrend(item.trend)}</div>
                                             {item.buyUrl && (
                                                 <a
-                                                    href={item.buyUrl}
+                                                    href={item.buyUrl.includes('amazon.com')
+                                                        ? item.buyUrl.replace(/tag=[^&]+/, `tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20'}`)
+                                                        : item.buyUrl}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-food-500 hover:bg-food-600 text-white text-sm font-medium rounded-md transition-colors"
