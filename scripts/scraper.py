@@ -142,18 +142,14 @@ def initialize_gemini():
 
 async def get_amazon_image(query: str) -> str:
     """
-    아마존 검색을 통해 제품 이미지 URL을 가져옵니다.
-    DEV_MODE일 경우 유료 API를 아끼기 위해 빈 문자열 또는 로컬 Playwright 활용 가능성을 열어둡니다.
+    아마존 검색을 통해 제품 이미지 URL을 가져옵니다. (강화된 버전)
     """
-    if DEV_MODE:
-        print(f"🧪 [DEV_MODE] Amazon 이미지 검색 스킵: {query}")
-        return ""
-
     api_key = os.getenv('WEBSCRAPING_AI_API_KEY')
     if not api_key:
         return ""
     
-    search_url = f"https://www.amazon.com/s?k={query.replace(' ', '+')}"
+    search_query = query.replace(' ', '+')
+    search_url = f"https://www.amazon.com/s?k={search_query}"
     
     try:
         params = {
@@ -163,12 +159,28 @@ async def get_amazon_image(query: str) -> str:
             'country': 'us'
         }
         
+        print(f"🔍 Amazon 이미지 검색 중: {query}")
         response = requests.get('https://api.webscraping.ai/html', params=params, timeout=60)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            img_elem = soup.select_one('div[data-component-type="s-search-result"] img.s-image')
-            if img_elem:
-                return img_elem.get('src', '')
+            
+            # 보다 유연한 셀렉터 시도
+            selectors = [
+                'div[data-component-type="s-search-result"] img.s-image',
+                'img.s-image',
+                'img[src*="media-amazon.com/images/I/"]'
+            ]
+            
+            for selector in selectors:
+                img_elems = soup.select(selector)
+                for img in img_elems:
+                    src = img.get('src', '')
+                    if src and ('images-na.ssl-images-amazon.com' in src or 'm.media-amazon.com' in src) and 'gif' not in src:
+                        # 고해상도 이미지로 변환 (크기 옵션 제거)
+                        # 예: ...._AC_UL320_.jpg -> ....jpg
+                        high_res_src = re.sub(r'\._AC_.*?_\.', '.', src)
+                        return high_res_src
+                    
     except Exception as e:
         print(f"⚠️ Amazon 이미지 검색 오류 ({query}): {e}")
     
@@ -1326,7 +1338,6 @@ JSON only.
             place["hype_score"] = 50
             place["final_score"] = 50
             place["verified_by_mix"] = False
-            enriched_places.append(place)
             enriched_places.append(place)
 
     # Sort by final_score descending

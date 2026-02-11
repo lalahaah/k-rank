@@ -58,23 +58,22 @@ export default function PlacePage() {
     });
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] font-sans selection:bg-place-500 selection:text-white pb-20">
+        <div className="min-h-screen bg-[#F5F7FA] font-sans selection:bg-place-500 selection:text-white pb-20">
             <Navbar />
 
-            {/* Header Section - Popularity-First Commercial Design */}
-            <section className="bg-place-500 py-16 md:py-24 overflow-hidden relative">
-                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            {/* Hero Section - Aligned with other pages */}
+            <section className="bg-white py-16 md:py-24 overflow-hidden relative">
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
                     <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6 border border-white/10">
-                            <span className="flex h-2 w-2 rounded-full bg-green-300 animate-pulse"></span>
+                        <div className="inline-flex items-center gap-2 bg-place-50 text-place-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6">
+                            <span className="flex h-2 w-2 rounded-full bg-place-500 animate-pulse"></span>
                             Popular Local Favorites
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-[0.9] mb-6">
+                        <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-6">
                             REAL TRENDING <br />
-                            <span className="text-emerald-200">K-PLACES.</span>
+                            <span className="text-place-500">K-PLACES.</span>
                         </h1>
-                        <p className="text-lg text-emerald-50 font-medium leading-relaxed">
+                        <p className="text-lg text-gray-500 font-medium leading-relaxed">
                             Based on real-time visit data from TourAPI. Discover where the locals are actually flocking to this month.
                         </p>
                     </div>
@@ -83,7 +82,7 @@ export default function PlacePage() {
 
             {/* Navigation & Search */}
             <div className="sticky top-16 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-                <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
+                <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2">
                         {CATEGORIES.map(cat => (
                             <button
@@ -112,7 +111,7 @@ export default function PlacePage() {
             </div >
 
             {/* Main Ranking Grid */}
-            <main className="max-w-6xl mx-auto px-6 py-12">
+            <main className="max-w-6xl mx-auto px-4 py-12">
                 <div className="flex items-center justify-between mb-8">
                     <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2 tracking-tighter">
                         <TrendingUp className="w-6 h-6 text-place-500" /> Curated Popular Gems
@@ -143,7 +142,7 @@ export default function PlacePage() {
                         <>
                             <div className="space-y-8">
                                 {filteredRankings.map((item, index) => (
-                                    <React.Fragment key={`${item.rank}-${item.name_en}`}>
+                                    <React.Fragment key={`${item.rank}-${item.name_en}-${index}`}>
                                         <PlaceCard item={item} />
 
                                         {/* 2. 인피드 광고 (리스트 2위와 3위 사이 배치) */}

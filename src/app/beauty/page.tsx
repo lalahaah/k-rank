@@ -65,7 +65,7 @@ export default function BeautyPage() {
                     image: item.imageUrl,
                     offers: {
                         '@type': 'Offer',
-                        price: item.price?.replace(/[^0-9]/g, '') || '0',
+                        price: String(item.price || '0').replace(/[^0-9]/g, ''),
                         priceCurrency: 'KRW',
                         availability: 'https://schema.org/InStock',
                     },

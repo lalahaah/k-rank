@@ -154,7 +154,12 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                     unoptimized
                                                     onError={(e) => {
                                                         const target = e.target as HTMLImageElement;
-                                                        target.src = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=48&h=48&fit=crop";
+                                                        // 이미 Unsplash 플레이스홀더인 경우 무한 루프 방지
+                                                        if (target.src.includes("photo-1620916566398-39f1143ab7be")) return;
+
+                                                        // 제품별로 다른 이미지가 나오도록 고유 시그니처 추가
+                                                        const sig = encodeURIComponent(item.productName || item.rank.toString());
+                                                        target.src = `https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=80&h=80&fit=crop&sig=${sig}`;
                                                     }}
                                                 />
                                             </div>
@@ -166,7 +171,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                     {item.brand}
                                                 </div>
                                                 <div className="text-sm md:text-xs font-medium text-heading mt-1">
-                                                    {(!item.price || item.price === "N/A") ? "Global Price" : `₩${item.price.replace('원', '')}`}
+                                                    {(!item.price || item.price === "N/A") ? "Global Price" : `₩${String(item.price).replace('원', '')}`}
                                                 </div>
                                                 {item.nikIndex && (
                                                     <div className="mt-2 flex items-center gap-2">
