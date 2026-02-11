@@ -151,7 +151,7 @@ async def enrich_editorial_data(model, category_key: str, products_raw: List[Dic
             'rank': item.get('rank', idx),
             'brand': brand_en,
             'brandKo': brand_ko,
-            'productName': name_ko,
+            'productName': auto_romanize_korean(name_ko),
             'productNameKo': name_ko,
             'original_raw': raw_name,
             'tags': generate_default_tags(category_key, raw_name),

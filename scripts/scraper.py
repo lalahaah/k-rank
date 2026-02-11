@@ -268,12 +268,13 @@ async def scrape_hwahae_global(url: str, max_items: int = 20) -> List[Dict[str, 
                     detail_url = "https://www.hwahae.com" + link_elem.get('href')
                     
                     product = {
-                        'rank': rank,
-                        'productName': name,
-                        'brand': brand,
+                        'brandKo': brand_ko,
+                        'productName': auto_romanize_korean(name_ko),
+                        'productNameKo': name_ko,
+                        'brand': auto_romanize_korean(brand_ko),
                         'imageUrl': musinsa_img, # 아마존 검색 실패 시 사용할 폴백 이미지
                         'price': price,
-                        'buyUrl': f"https://www.amazon.com/s?k={brand}+{name}",
+                        'buyUrl': f"https://www.amazon.com/s?k={auto_romanize_korean(brand_ko)}+{auto_romanize_korean(name_ko)}",
                         'detailUrl': detail_url,
                         'tags': [],
                         'subcategory': 'beauty',
@@ -1193,7 +1194,7 @@ async def scrape_tour_api(max_items: int = 50) -> List[Dict[str, Any]]:
                     
                     place = {
                         "name_ko": title,
-                        "name_en": title, # Gemini 단계에서 번역됨
+                        "name_en": auto_romanize_korean(title), # Gemini 단계에서 번역됨, 실패 시 로마자 fallback
                         "address_ko": item.get("addr1", ""),
                         "location": item.get("addr1", "").split()[0] if item.get("addr1") else "Unknown",
                         "imageUrl": item.get("firstimage") or "https://images.unsplash.com/photo-1544273677-277914bd9466?w=800&fit=crop",

@@ -18,6 +18,10 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import google.generativeai as genai
 
+# scraper.py에서 유틸리티 함수 임포트
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from scraper import auto_romanize_korean
+
 # 환경변수 로드
 load_dotenv()
 
@@ -82,7 +86,11 @@ def calculate_hype_score(rating: float, user_ratings_total: int, recency_boost: 
     
     rating_factor = rating / 5.0
     review_factor = min(10, math.log10(user_ratings_total + 1) * 2)
-    score = int(rating_factor * review_factor * 10 * recency_boost)
+    
+    # 랭킹에 활력을 주기 위해 ±2% 정도의 무작위 변동성 추가
+    random_factor = random.uniform(0.98, 1.02)
+    
+    score = int(rating_factor * review_factor * 10 * recency_boost * random_factor)
     
     return min(100, score)
 
@@ -132,7 +140,12 @@ def scrape_google_places_new(api_key: str, max_per_area: int = 3) -> List[Dict[s
     all_restaurants = []
     seen_place_ids = set()
     
-    for area in HOT_AREAS:
+    # 지역 순서를 섞어서 매번 다른 지역부터 데이터가 수집되도록 함
+    shuffled_areas = list(HOT_AREAS)
+    import random
+    random.shuffle(shuffled_areas)
+    
+    for area in shuffled_areas:
         print(f"\n📍 {area['name']} 지역 검색 중...")
         
         try:
@@ -197,7 +210,7 @@ def scrape_google_places_new(api_key: str, max_per_area: int = 3) -> List[Dict[s
                 longitude = location_data.get('longitude', 0)
                 
                 restaurant = {
-                    'name': name,
+                    'name': auto_romanize_korean(name),
                     'nameKo': name,
                     'location': area['displayName'],
                     'category': category,
@@ -266,6 +279,7 @@ async def analyze_restaurants_batch(model: genai.GenerativeModel, restaurants: L
         if cache_key in cache:
             cached_data = cache[cache_key]
             r['nameKo'] = cached_data.get('nameKo', r['name'])
+            r['nameEn'] = cached_data.get('nameEn', auto_romanize_korean(r['name']))
             r['aiInsight'] = cached_data.get('aiInsight', r['aiInsight'])
             r['details']['mustTry'] = cached_data.get('mustTry', [])
             print(f"  ⚡ 캐시 사용")
@@ -374,28 +388,44 @@ async def calculate_restaurant_trends(db: firestore.client, current_items: List[
     """레스토랑 순위 변동(Trend) 계산"""
     print("\n📈 순위 변동 계산 중...")
     
-    # 어제 날짜 확인
-    yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime('%Y-%m-%d')
-    doc_id = f"{yesterday}_restaurants"
-    
     try:
-        prev_doc = db.collection('daily_rankings').document(doc_id).get()
-        if not prev_doc.exists:
-            print(f"  ℹ️ 어제 데이터({yesterday})가 없어 변동을 0으로 설정합니다.")
+        # 가장 최근의 'restaurants' 카테고리 문서 가져오기
+        # (오늘 생성될 문서를 제외하기 위해 오늘보다 이전인 데이터 중 가장 최신 것)
+        today = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+        query = db.collection('daily_rankings') \
+            .where('category', '==', 'restaurants') \
+            .where('date', '<', today) \
+            .order_by('date', direction=firestore.Query.DESCENDING) \
+            .limit(1)
+            
+        docs = query.get()
+        
+        if not docs:
+            print("  ℹ️ 이전 데이터가 없어 변동을 0으로 설정합니다.")
             return current_items
             
+        prev_doc = docs[0]
+        prev_date = prev_doc.get('date')
+        print(f"  ✅ 대조군 데이터 발견: {prev_date} (문서 ID: {prev_doc.id})")
+        
         prev_data = prev_doc.to_dict()
         prev_items = prev_data.get('items', [])
         
-        # 이전 순위 매핑
-        prev_rank_map = {item['name']: item['rank'] for item in prev_items}
+        # 이전 순위 매핑 (한글 이름 또는 영문 이름으로 매칭 시도)
+        prev_rank_map = {}
+        for item in prev_items:
+            prev_rank_map[item['name']] = item['rank']
+            if 'nameKo' in item:
+                prev_rank_map[item['nameKo']] = item['rank']
         
         for item in current_items:
-            prev_rank = prev_rank_map.get(item['name'])
+            # 매칭 시도
+            prev_rank = prev_rank_map.get(item['name']) or prev_rank_map.get(item.get('nameKo'))
+            
             if prev_rank:
                 item['trend'] = prev_rank - item['rank']
             else:
-                item['trend'] = 0 # 신규 진입은 0으로 표시 (또는 다른 로직)
+                item['trend'] = 0
                 
         print("  ✅ 변동 계산 완료")
     except Exception as e:

@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "K-Food Leaderboard | Trending Korean Snacks & Ramen",
-    description: "Discover the top trending Korean ramen, snacks, and beverages from convenience stores. Real-time rankings updated daily.",
-    keywords: ["K-Food", "Korean Snacks", "Korean Ramen", "Korean Beverages", "GS25", "CU", "Convenience Store"],
+    title: "K-Food Leaderboard | Trending Seoul Restaurants",
+    description: "Discover the hottest trending restaurants, cafes, and bars in Seoul. Real-time rankings based on local hype and global interest.",
+    keywords: ["K-Food", "Seoul Restaurants", "Trending Restaurants", "Korean Dining", "Seoul Eats", "Hot Places Korea"],
     openGraph: {
-        title: "K-Food Leaderboard | Trending Korean Snacks",
-        description: "Real-time rankings of the hottest Korean snacks and ramen from convenience stores",
+        title: "K-Food Leaderboard | Trending Seoul Restaurants",
+        description: "Explore the most popular restaurants and cafes in Seoul right now.",
         type: "website",
         url: "https://k-rank.vercel.app/food",
         images: [
@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "K-Food Leaderboard | Korean Snacks Rankings",
-        description: "Discover trending Korean ramen, snacks, and drinks",
+        title: "K-Food Leaderboard | Seoul Restaurant Rankings",
+        description: "Discover trending Seoul restaurants and local dining favorites.",
         images: ["/og-food.png"],
     },
 };
