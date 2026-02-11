@@ -1,0 +1,804 @@
+{
+    "report_info": {
+        "title": "NIK Beauty Index: Weekly Editorial Report",
+        "version": "2.4",
+        "base_date": "2026-02-02",
+        "total_items": 130
+    },
+    "categories": {
+        "all": [
+            {
+                "rank": 1,
+                "name": "토리든 다이브인 세럼",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/61vU9S3M6LL.jpg"
+            },
+            {
+                "rank": 2,
+                "name": "라운드랩 자작나무 선크림",
+                "price": 25000,
+                "url": "https://m.media-amazon.com/images/I/61SvyuQ68SL.jpg"
+            },
+            {
+                "rank": 3,
+                "name": "VT 리들샷 100",
+                "price": 32000,
+                "url": "https://m.media-amazon.com/images/I/61S-BqF0k-L.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "퓌(fwee) 푸딩팟",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/61Jp0rR5mDL.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "아누아 PDRN 캡슐 세럼",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/71K8U7Xf0FL.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "스킨푸드 당근 패드",
+                "price": 26000,
+                "url": "https://images.unsplash.com/photo-1617897903246-719242758050?w=800&q=80"
+            },
+            {
+                "rank": 7,
+                "name": "어노브 트리트먼트 EX",
+                "price": 28000,
+                "url": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=800&q=80"
+            },
+            {
+                "rank": 8,
+                "name": "메디힐 티트리 패드",
+                "price": 17000,
+                "url": "https://images.unsplash.com/photo-1556228852-80a279f10d3e?w=800&q=80"
+            },
+            {
+                "rank": 9,
+                "name": "라네즈 립 슬리핑 마스크",
+                "price": 22000,
+                "url": "https://images.unsplash.com/photo-1631730486572-226d1f595b68?w=800&q=80"
+            },
+            {
+                "rank": 10,
+                "name": "일리윤 세라마이드 로션",
+                "price": 21900,
+                "url": "https://images.unsplash.com/photo-1570554886111-e80fcca6a029?w=800&q=80"
+            }
+        ],
+        "skincare": [
+            {
+                "rank": 1,
+                "name": "토리든 다이브인 세럼",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/61vU9S3M6LL.jpg"
+            },
+            {
+                "rank": 2,
+                "name": "VT 리들샷 100",
+                "price": 32000,
+                "url": "https://m.media-amazon.com/images/I/61S-BqF0k-L.jpg"
+            },
+            {
+                "rank": 3,
+                "name": "아누아 PDRN 캡슐 세럼",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/71K8U7Xf0FL.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "메디힐 흔적 리페어 세럼",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/51C5ubJuVuL.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "라운드랩 독도 토너",
+                "price": 15000,
+                "url": "https://m.media-amazon.com/images/I/41WC1qaAGIL.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "웰라쥬 블루 100 앰플",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/815FzXHa8SL.jpg"
+            },
+            {
+                "rank": 7,
+                "name": "스킨1004 센텔라 앰플",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/61zILb6PBuL.jpg"
+            },
+            {
+                "rank": 8,
+                "name": "마녀공장 퓨어 클렌징 오일",
+                "price": 19900,
+                "url": "https://m.media-amazon.com/images/I/71xpjovk+kL.jpg"
+            },
+            {
+                "rank": 9,
+                "name": "구달 청귤 비타C 세럼",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/61Qx8GHWcCL.jpg"
+            },
+            {
+                "rank": 10,
+                "name": "비플레인 녹두 클렌징폼",
+                "price": 14000,
+                "url": "https://m.media-amazon.com/images/I/41wFtTjYJjL.jpg"
+            },
+            {
+                "rank": 11,
+                "name": "에스네이처 오아시스 토너",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/71SDVKnBOfL.jpg"
+            },
+            {
+                "rank": 12,
+                "name": "코스알엑스 6 펩타이드",
+                "price": 24500,
+                "url": "https://m.media-amazon.com/images/I/71zUoUi2m7L.jpg"
+            },
+            {
+                "rank": 13,
+                "name": "파티온 노스카나인 세럼",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/61TVd3MxmgL.jpg"
+            },
+            {
+                "rank": 14,
+                "name": "아이소이 잡티세럼",
+                "price": 29800,
+                "url": "https://m.media-amazon.com/images/I/71rQUROAkML.jpg"
+            },
+            {
+                "rank": 15,
+                "name": "성분에디터 그린토마토",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/61aTvByByPL.jpg"
+            },
+            {
+                "rank": 16,
+                "name": "프리메라 비타티놀 세럼",
+                "price": 35000,
+                "url": "https://m.media-amazon.com/images/I/71TtDLY29RL.jpg"
+            },
+            {
+                "rank": 17,
+                "name": "넘버즈인 3번 결 세럼",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/811AOlOD1XL.jpg"
+            },
+            {
+                "rank": 18,
+                "name": "닥터자르트 시카페어 세럼",
+                "price": 38000,
+                "url": "https://m.media-amazon.com/images/I/51C5ubJuVuL.jpg"
+            },
+            {
+                "rank": 19,
+                "name": "한율 어린쑥 진정수",
+                "price": 25000,
+                "url": "https://m.media-amazon.com/images/I/41EUP34hVUL.jpg"
+            },
+            {
+                "rank": 20,
+                "name": "에스쁘아 부스팅 세럼",
+                "price": 30000,
+                "url": "https://m.media-amazon.com/images/I/71On2Ehi7iL.jpg"
+            }
+        ],
+        "suncare": [
+            {
+                "rank": 1,
+                "name": "라운드랩 자작나무 선크림",
+                "price": 25000,
+                "url": "https://m.media-amazon.com/images/I/61SvyuQ68SL.jpg"
+            },
+            {
+                "rank": 2,
+                "name": "스킨1004 시카 선 세럼",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/61twZTX9VbL.jpg"
+            },
+            {
+                "rank": 3,
+                "name": "토코보 바이오 선 크림",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/51q8h4rC7KL.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "셀퓨전씨 레이저 썬스크린",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/71sTpmmE28L.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "아누아 어성초 선크림",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/51iZJZk+BTL.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "닥터지 수딩 업 선",
+                "price": 25000,
+                "url": "https://m.media-amazon.com/images/I/51q8h4rC7KL.jpg"
+            },
+            {
+                "rank": 7,
+                "name": "달바 트러블 미스트(선)",
+                "price": 29000,
+                "url": "https://m.media-amazon.com/images/I/51p69fcA8pL.jpg"
+            },
+            {
+                "rank": 8,
+                "name": "에스쁘아 워터 스플래쉬 선",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/71Q3skoXP9L.jpg"
+            },
+            {
+                "rank": 9,
+                "name": "닥터지 그린 마일드 선",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/71tSEvkKyLL.jpg"
+            },
+            {
+                "rank": 10,
+                "name": "식물나라 선 스프레이",
+                "price": 12800,
+                "url": "https://m.media-amazon.com/images/I/61CQDZsnXYL.jpg"
+            },
+            {
+                "rank": 11,
+                "name": "구달 청귤 이별 선크림",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/51F8U2m%2BPQL.SL1000.jpg"
+            },
+            {
+                "rank": 12,
+                "name": "비플레인 까만녹두 선",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/610eKLi5yQL.jpg"
+            },
+            {
+                "rank": 13,
+                "name": "메디힐 티트리 선크림",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/61Bxh5-ZdsL.jpg"
+            },
+            {
+                "rank": 14,
+                "name": "아넷사 퍼펙트 UV",
+                "price": 36000,
+                "url": "https://m.media-amazon.com/images/I/61qJlds0+4L.jpg"
+            },
+            {
+                "rank": 15,
+                "name": "이니스프리 수분 선스크린",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/61twZTX9VbL.jpg"
+            },
+            {
+                "rank": 16,
+                "name": "헤라 멀티디펜스",
+                "price": 50000,
+                "url": "https://m.media-amazon.com/images/I/818sd-e0K0L.jpg"
+            },
+            {
+                "rank": 17,
+                "name": "듀이트리 안티폴루션 선",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/81ZL886f6jL.jpg"
+            },
+            {
+                "rank": 18,
+                "name": "스킨푸드 베리 선크림",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL.SL1000.jpg"
+            },
+            {
+                "rank": 19,
+                "name": "유리아쥬 배리어썬 스틱",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/41EUP34hVUL.jpg"
+            },
+            {
+                "rank": 20,
+                "name": "에스트라 장벽수분 선",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/71uCXfq+DKL.jpg"
+            }
+        ],
+        "masks": [
+            {
+                "rank": 1,
+                "name": "스킨푸드 당근 패드",
+                "price": 26000,
+                "url": "https://images.unsplash.com/photo-1617897903246-719242758050?w=800&q=80"
+            },
+            {
+                "rank": 2,
+                "name": "메디힐 티트리 패드",
+                "price": 17000,
+                "url": "https://images.unsplash.com/photo-1556228852-80a279f10d3e?w=800&q=80"
+            },
+            {
+                "rank": 3,
+                "name": "토리든 다이브인 마스크",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/619ZDceAo-L.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "아비브 어성초 마스크",
+                "price": 4000,
+                "url": "https://m.media-amazon.com/images/I/71QBvkHvM3L.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "일소 노즈팩",
+                "price": 12000,
+                "url": "https://m.media-amazon.com/images/I/61LHR4iCwzL.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "넘버즈인 듬뿍 패드",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/61L8AG9x1XL.jpg"
+            },
+            {
+                "rank": 7,
+                "name": "파티온 트러블 패드",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/71540OErSdL.jpg"
+            },
+            {
+                "rank": 8,
+                "name": "아누아 어성초 77 패드",
+                "price": 25000,
+                "url": "https://m.media-amazon.com/images/I/51iZJZk+BTL.jpg"
+            },
+            {
+                "rank": 9,
+                "name": "구달 비타C 토너 패드",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/615r5gYZQBL.jpg"
+            },
+            {
+                "rank": 10,
+                "name": "메디힐 마데카소사이드 팩",
+                "price": 2000,
+                "url": "https://m.media-amazon.com/images/I/716sRc-eHpL.jpg"
+            },
+            {
+                "rank": 11,
+                "name": "바이오더마 히드라비오 팩",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/619ZDceAo-L.jpg"
+            },
+            {
+                "rank": 12,
+                "name": "닥터지 레드 블레미쉬 팩",
+                "price": 3000,
+                "url": "https://m.media-amazon.com/images/I/61shIxuZJAL.jpg"
+            },
+            {
+                "rank": 13,
+                "name": "브링그린 사과 식초 패드",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/71On2Ehi7iL.jpg"
+            },
+            {
+                "rank": 14,
+                "name": "셀리맥스 지우개 패드",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/61KTR69R5vL.jpg"
+            },
+            {
+                "rank": 15,
+                "name": "성분에디터 모공 패드",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/714zp7SuzyL.jpg"
+            },
+            {
+                "rank": 16,
+                "name": "아비브 콜라겐 젤 마스크",
+                "price": 5000,
+                "url": "https://m.media-amazon.com/images/I/71wGIE5mijL.jpg"
+            },
+            {
+                "rank": 17,
+                "name": "듀이트리 픽앤퀵 마스크",
+                "price": 23000,
+                "url": "https://m.media-amazon.com/images/I/71wGIE5mijL.jpg"
+            },
+            {
+                "rank": 18,
+                "name": "메이크프렘 인테카 패치",
+                "price": 12000,
+                "url": "https://m.media-amazon.com/images/I/619c3TmjkPL.jpg"
+            },
+            {
+                "rank": 19,
+                "name": "메디큐브 제로 모공 패드",
+                "price": 26000,
+                "url": "https://m.media-amazon.com/images/I/61P9g9SKkmL.jpg"
+            },
+            {
+                "rank": 20,
+                "name": "리얼베리어 수딩 앰플 팩",
+                "price": 3000,
+                "url": "https://m.media-amazon.com/images/I/619c3TmjkPL.jpg"
+            }
+        ],
+        "makeup": [
+            {
+                "rank": 1,
+                "name": "퓌 립앤치크 푸딩팟",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/61+b5+9+juL.jpg"
+            },
+            {
+                "rank": 2,
+                "name": "라네즈 립 슬리핑 마스크",
+                "price": 22000,
+                "url": "https://images.unsplash.com/photo-1631730486572-226d1f595b68?w=800&q=80"
+            },
+            {
+                "rank": 3,
+                "name": "헤라 센슈얼 누드 글로스",
+                "price": 40000,
+                "url": "https://m.media-amazon.com/images/I/61uEvVoizoL.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "롬앤 글래스팅 글로스",
+                "price": 13000,
+                "url": "https://m.media-amazon.com/images/I/814MWlaDKbL.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "데이지크 섀도우 팔레트",
+                "price": 34000,
+                "url": "https://m.media-amazon.com/images/I/61Kjdk50X0L.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "힌스 누 블러 틴트",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/61njDkkBWkL.jpg"
+            },
+            {
+                "rank": 7,
+                "name": "에스쁘아 비글로우 쿠션",
+                "price": 38000,
+                "url": "https://m.media-amazon.com/images/I/81uwhh-EGnL.jpg"
+            },
+            {
+                "rank": 8,
+                "name": "어뮤즈 베베 틴트",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/81KNPkGYB2L.jpg"
+            },
+            {
+                "rank": 9,
+                "name": "컬러그램 꿀로스",
+                "price": 9800,
+                "url": "https://m.media-amazon.com/images/I/71cR5h9sKeL.jpg"
+            },
+            {
+                "rank": 10,
+                "name": "클리오 킬래쉬 마스카라",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/71deVN6-JNL.jpg"
+            },
+            {
+                "rank": 11,
+                "name": "바닐라코 클렌징 밤",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/51Uuhn8wzKL.jpg"
+            },
+            {
+                "rank": 12,
+                "name": "정샘물 스킨 누더 쿠션",
+                "price": 42000,
+                "url": "https://m.media-amazon.com/images/I/71fV0CZbh8L.jpg"
+            },
+            {
+                "rank": 13,
+                "name": "웨이크메이크 아이 팔레트",
+                "price": 34000,
+                "url": "https://m.media-amazon.com/images/I/31QevocqITL.jpg"
+            },
+            {
+                "rank": 14,
+                "name": "투쿨포스쿨 쉐딩",
+                "price": 16000,
+                "url": "https://m.media-amazon.com/images/I/61DwGP8N3hL.jpg"
+            },
+            {
+                "rank": 15,
+                "name": "페리페라 무드 글로이",
+                "price": 11000,
+                "url": "https://m.media-amazon.com/images/I/51niG1XlYGL.jpg"
+            },
+            {
+                "rank": 16,
+                "name": "퓌 쿠션 글래스",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/71W9rstpWFL.jpg"
+            },
+            {
+                "rank": 17,
+                "name": "루나 팁 컨실러",
+                "price": 14000,
+                "url": "https://m.media-amazon.com/images/I/61u9ZR4c7pL.jpg"
+            },
+            {
+                "rank": 18,
+                "name": "삐아 젤 아이라이너",
+                "price": 9000,
+                "url": "https://m.media-amazon.com/images/I/51FkXuAucpL.jpg"
+            },
+            {
+                "rank": 19,
+                "name": "릴리바이레드 키보드",
+                "price": 27000,
+                "url": "https://m.media-amazon.com/images/I/717pIPKRRYL.jpg"
+            },
+            {
+                "rank": 20,
+                "name": "하트퍼센트 립펜슬",
+                "price": 14000,
+                "url": "https://m.media-amazon.com/images/I/41aJShKaEjL.jpg"
+            }
+        ],
+        "haircare": [
+            {
+                "rank": 1,
+                "name": "어노브 트리트먼트 EX",
+                "price": 28000,
+                "url": "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?w=800&q=80"
+            },
+            {
+                "rank": 2,
+                "name": "라보에이치 두피 샴푸",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/51liMudPmAL.jpg"
+            },
+            {
+                "rank": 3,
+                "name": "미쟝센 퍼펙트 세럼",
+                "price": 15000,
+                "url": "https://m.media-amazon.com/images/I/51C5ubJuVuL.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "아로마티카 루트 인핸서",
+                "price": 16000,
+                "url": "https://m.media-amazon.com/images/I/516IlE+wJ4L.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "힐링버드 노워시 앰플",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/51OT1o+D4oL.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "닥터그루트 탈모 샴푸",
+                "price": 31000,
+                "url": "https://m.media-amazon.com/images/I/71p1aVm5gPL.jpg"
+            },
+            {
+                "rank": 7,
+                "name": "닥터포헤어 폴리젠 샴푸",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/41630K3rFgL.jpg"
+            },
+            {
+                "rank": 8,
+                "name": "모레모 워터 트리트먼트",
+                "price": 15000,
+                "url": "https://m.media-amazon.com/images/I/81M58qwDXRL.jpg"
+            },
+            {
+                "rank": 9,
+                "name": "실크테라피 오리지널",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/61O3PnJD0YL.jpg"
+            },
+            {
+                "rank": 10,
+                "name": "롱테이크 샌달우드 샴푸",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/71uSzMO5SgL.jpg"
+            },
+            {
+                "rank": 11,
+                "name": "제이숲 워터팩",
+                "price": 26000,
+                "url": "https://m.media-amazon.com/images/I/713DYfQW0QL.jpg"
+            },
+            {
+                "rank": 12,
+                "name": "헤들리 헤어팩",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/71WaaV84RWL.jpg"
+            },
+            {
+                "rank": 13,
+                "name": "커리쉴 실키 오일",
+                "price": 28000,
+                "url": "https://m.media-amazon.com/images/I/71ckTkLbKnL.jpg"
+            },
+            {
+                "rank": 14,
+                "name": "쿤달 네이처 샴푸",
+                "price": 10000,
+                "url": "https://m.media-amazon.com/images/I/71uSzMO5SgL.jpg"
+            },
+            {
+                "rank": 15,
+                "name": "사이오스 리페어 샴푸",
+                "price": 16000,
+                "url": "https://m.media-amazon.com/images/I/61DJce9XlYL.jpg"
+            },
+            {
+                "rank": 16,
+                "name": "케라스타즈 엘릭서 얼팀",
+                "price": 65000,
+                "url": "https://m.media-amazon.com/images/I/91YpUVVQ6wL.jpg"
+            },
+            {
+                "rank": 17,
+                "name": "아모스 컬링에센스",
+                "price": 12000,
+                "url": "https://m.media-amazon.com/images/I/41P9ZI-40YL.jpg"
+            },
+            {
+                "rank": 18,
+                "name": "다슈 단백질 샴푸",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/71lqaeT9oWL.jpg"
+            },
+            {
+                "rank": 19,
+                "name": "그로우어스 두피 스케일러",
+                "price": 24000,
+                "url": "https://m.media-amazon.com/images/I/71Ewhhl+tJL.jpg"
+            },
+            {
+                "rank": 20,
+                "name": "달리아 헤어 오일",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/61huqHQWGzL.jpg"
+            }
+        ],
+        "bodycare": [
+            {
+                "rank": 1,
+                "name": "일리윤 세라마이드 로션",
+                "price": 21900,
+                "url": "https://images.unsplash.com/photo-1570554886111-e80fcca6a029?w=800&q=80"
+            },
+            {
+                "rank": 2,
+                "name": "세라비 모이스처라이징",
+                "price": 19000,
+                "url": "https://m.media-amazon.com/images/I/61shIxuZJAL.jpg"
+            },
+            {
+                "rank": 3,
+                "name": "비욘드 바디 에멀전",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/51KGq8SJp1L.jpg"
+            },
+            {
+                "rank": 4,
+                "name": "더마비 바디 로션",
+                "price": 16000,
+                "url": "https://m.media-amazon.com/images/I/61theMDQUTL.jpg"
+            },
+            {
+                "rank": 5,
+                "name": "이솝 레저렉션 핸드 밤",
+                "price": 39000,
+                "url": "https://m.media-amazon.com/images/I/61m9U2m%2BSXL.SL1000.jpg"
+            },
+            {
+                "rank": 6,
+                "name": "온더바디 벨먼 스파",
+                "price": 14900,
+                "url": "https://m.media-amazon.com/images/I/71-YtEmqMTL.jpg"
+            },
+            {
+                "rank": 7,
+                "name": "닥터브로너스 매직 솝",
+                "price": 20000,
+                "url": "https://m.media-amazon.com/images/I/61LHR4iCwzL.jpg"
+            },
+            {
+                "rank": 8,
+                "name": "록시땅 시어 버터 핸드",
+                "price": 15000,
+                "url": "https://m.media-amazon.com/images/I/91fqi2kLD2L.jpg"
+            },
+            {
+                "rank": 9,
+                "name": "카밀 핸드크림 클래식",
+                "price": 6200,
+                "url": "https://m.media-amazon.com/images/I/518UgunfzcL.jpg"
+            },
+            {
+                "rank": 10,
+                "name": "부케가르니 바디워시",
+                "price": 12000,
+                "url": "https://m.media-amazon.com/images/I/61k9U2m%2BWPL.SL1000.jpg"
+            },
+            {
+                "rank": 11,
+                "name": "아비노 스킨 릴리프",
+                "price": 19900,
+                "url": "https://m.media-amazon.com/images/I/71EmwcDIMbL.jpg"
+            },
+            {
+                "rank": 12,
+                "name": "바이오더마 아토덤 크림",
+                "price": 25000,
+                "url": "https://m.media-amazon.com/images/I/61hlYPO8-SL.jpg"
+            },
+            {
+                "rank": 13,
+                "name": "바셀린 인텐시브 로션",
+                "price": 12000,
+                "url": "https://m.media-amazon.com/images/I/71ox873+F6L.jpg"
+            },
+            {
+                "rank": 14,
+                "name": "뉴트로지나 바디 에멀전",
+                "price": 15000,
+                "url": "https://m.media-amazon.com/images/I/81frIMgizEL.jpg"
+            },
+            {
+                "rank": 15,
+                "name": "라로슈포제 리피카 밤",
+                "price": 32000,
+                "url": "https://m.media-amazon.com/images/I/518UgunfzcL.jpg"
+            },
+            {
+                "rank": 16,
+                "name": "사봉 바디 스크럽",
+                "price": 45000,
+                "url": "https://m.media-amazon.com/images/I/611auMZ+HmL.jpg"
+            },
+            {
+                "rank": 17,
+                "name": "닥터지 배리어 D 토너",
+                "price": 26000,
+                "url": "https://m.media-amazon.com/images/I/71rIy4m8fnL.jpg"
+            },
+            {
+                "rank": 18,
+                "name": "스킨유 딥 머스크 로션",
+                "price": 22000,
+                "url": "https://m.media-amazon.com/images/I/51HeCyjIvWL.jpg"
+            },
+            {
+                "rank": 19,
+                "name": "유리아쥬 진피 젤",
+                "price": 18000,
+                "url": "https://m.media-amazon.com/images/I/71vNlJRvNBL.jpg"
+            },
+            {
+                "rank": 20,
+                "name": "멜린앤게츠 바디 워시",
+                "price": 34000,
+                "url": "https://m.media-amazon.com/images/I/71On2Ehi7iL.jpg"
+            }
+        ]
+    }
+}
