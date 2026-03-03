@@ -15,7 +15,7 @@ export function HeavyRainIcon({ size = 48, className }: WeatherIconProps) {
         { x: 29, d: 0.1 }, { x: 34, d: 0.4 }, { x: 37, d: 0.25 },
     ];
     return (
-        <svg viewBox="-2 -2 52 52" fill="none" className={cn("text-current", className)} style={{ width: size, height: size }}>
+        <svg viewBox="-8 -8 64 64" fill="none" className={cn("text-current overflow-visible", className)} style={{ width: size, height: size }}>
             <path d="M36 20H14a7 7 0 01-.5-14A9 9 0 0134 8a6 6 0 012 12z" fill="currentColor" opacity={0.15} />
             <path d="M36 20H14a7 7 0 01-.5-14A9 9 0 0134 8a6 6 0 012 12z" stroke="currentColor" strokeWidth={2} strokeLinecap="round" />
             {drops.map((drop) => (
