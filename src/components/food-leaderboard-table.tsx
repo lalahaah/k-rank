@@ -202,9 +202,15 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                                         <td className="px-6 py-4 whitespace-nowrap text-right">
                                             {item.buyUrl && (
                                                 <a
-                                                    href={item.buyUrl.includes('amazon.com')
-                                                        ? item.buyUrl.replace(/tag=[^&]+/, `tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20'}`)
-                                                        : item.buyUrl}
+                                                    href={(() => {
+                                                        try {
+                                                            const url = new URL(item.buyUrl);
+                                                            if (url.hostname === 'amazon.com' || url.hostname === 'www.amazon.com' || url.hostname.endsWith('.amazon.com')) {
+                                                                return item.buyUrl.replace(/tag=[^&]+/, `tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20'}`);
+                                                            }
+                                                        } catch (e) { }
+                                                        return item.buyUrl;
+                                                    })()}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-2 px-4 py-2 bg-food-500 hover:bg-food-600 text-white text-sm font-medium rounded-md transition-colors"
@@ -290,9 +296,15 @@ export function FoodLeaderboardTable({ rankings: initialRankings }: FoodLeaderbo
                                             <div>{renderTrend(item.trend)}</div>
                                             {item.buyUrl && (
                                                 <a
-                                                    href={item.buyUrl.includes('amazon.com')
-                                                        ? item.buyUrl.replace(/tag=[^&]+/, `tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20'}`)
-                                                        : item.buyUrl}
+                                                    href={(() => {
+                                                        try {
+                                                            const url = new URL(item.buyUrl);
+                                                            if (url.hostname === 'amazon.com' || url.hostname === 'www.amazon.com' || url.hostname.endsWith('.amazon.com')) {
+                                                                return item.buyUrl.replace(/tag=[^&]+/, `tag=${process.env.NEXT_PUBLIC_AMAZON_AFFILIATE_ID || 'nextidealab-20'}`);
+                                                            }
+                                                        } catch (e) { }
+                                                        return item.buyUrl;
+                                                    })()}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="inline-flex items-center gap-2 px-3 py-1.5 bg-food-500 hover:bg-food-600 text-white text-sm font-medium rounded-md transition-colors"

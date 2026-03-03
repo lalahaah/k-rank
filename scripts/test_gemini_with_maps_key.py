@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 api_key = os.getenv('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY')
-print(f"Using key: {api_key[:10]}...")
+print("Using Gemini API Client...")
 
 genai.configure(api_key=api_key)
 model = genai.GenerativeModel('models/gemini-2.0-flash')

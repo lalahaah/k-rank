@@ -171,15 +171,27 @@ async def get_amazon_image(query: str) -> str:
                 'img[src*="media-amazon.com/images/I/"]'
             ]
             
+            from urllib.parse import urlparse
             for selector in selectors:
                 img_elems = soup.select(selector)
                 for img in img_elems:
                     src = img.get('src', '')
-                    if src and ('images-na.ssl-images-amazon.com' in src or 'm.media-amazon.com' in src) and 'gif' not in src:
-                        # 고해상도 이미지로 변환 (크기 옵션 제거)
-                        # 예: ...._AC_UL320_.jpg -> ....jpg
-                        high_res_src = re.sub(r'\._AC_.*?_\.', '.', src)
-                        return high_res_src
+                    if src:
+                        try:
+                            parsed_src = urlparse(src)
+                            # 호스트 이름을 정확히 체크하여 보안 취약점 해결
+                            is_amazon_host = parsed_src.netloc in [
+                                'images-na.ssl-images-amazon.com', 
+                                'm.media-amazon.com', 
+                                'images-amazon.com',
+                                'www.amazon.com'
+                            ]
+                            if is_amazon_host and 'gif' not in src:
+                                # 고해상도 이미지로 변환 (크기 옵션 제거)
+                                high_res_src = re.sub(r'\._AC_.*?_\.', '.', src)
+                                return high_res_src
+                        except:
+                            continue
                     
     except Exception as e:
         print(f"⚠️ Amazon 이미지 검색 오류 ({query}): {e}")
@@ -452,7 +464,7 @@ def auto_romanize_korean(text: str) -> str:
             return text
     except Exception as e:
         # 변환 실패 시 원본 반환
-        print(f"⚠️  Romanization 오류 ({text}): {e}")
+        print(f"⚠️  Romanization 오류: {e}")
         return text
 
 

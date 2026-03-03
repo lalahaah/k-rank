@@ -61,7 +61,13 @@ async def check_url_valid(url: str) -> bool:
     """URL이 유효한지(404가 아닌지) 확인"""
     if not url: return False
     # Unsplash 및 Amazon 미디어 URL은 유효한 것으로 간주 (직접 넣은 고품질 이미지)
-    if "images.unsplash.com" in url or "m.media-amazon.com" in url: return True
+    from urllib.parse import urlparse
+    try:
+        parsed_url = urlparse(url)
+        if parsed_url.netloc in ["images.unsplash.com", "m.media-amazon.com", "www.amazon.com"]:
+            return True
+    except:
+        pass
     
     try:
         headers = {
