@@ -49,8 +49,8 @@ export function Footer() {
                     <div>
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Company</h4>
                         <ul className="space-y-2 text-sm text-gray-500">
-                            <li><Link href="#" className="hover:text-brand-500 transition-colors">About Us</Link></li>
-                            <li><Link href="#" className="hover:text-brand-500 transition-colors">Contact</Link></li>
+                            <li><a href="https://www.nextidealab.app/" target="_blank" rel="noopener noreferrer" className="hover:text-brand-500 transition-colors">About Us</a></li>
+                            <li><a href="mailto:hello@nextidealab.app" className="hover:text-brand-500 transition-colors">Contact</a></li>
                             <li><Link href="/privacy" className="hover:text-brand-500 transition-colors">Privacy Policy</Link></li>
                             <li>
                                 <Dialog>
