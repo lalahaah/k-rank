@@ -108,7 +108,7 @@ export default function BeautyPage() {
                             <span className="text-beauty-500">TRENDS NOW.</span>
                         </h1>
                         <p className="text-lg text-gray-500 font-medium leading-relaxed">
-                            The definitive guide to what's actually trending in Korea's beauty scene. Our AI editor analyzes daily rankings from <strong className="text-gray-900">Olive Young</strong>, <strong className="text-gray-900">Hwahae</strong>, and <strong className="text-gray-900">Glowpick</strong> to show you the real winners.
+                            The definitive guide to what's actually trending in Korea's beauty scene. Our AI editor analyzes weekly rankings from <strong className="text-gray-900">Olive Young</strong>, <strong className="text-gray-900">Hwahae</strong>, and <strong className="text-gray-900">Glowpick</strong> to show you the real winners.
                         </p>
                     </div>
                 </div>

@@ -6,7 +6,7 @@ import { Metadata } from 'next';
  */
 export const beautyMetadata: Metadata = {
     title: 'K-Beauty Leaderboard - Real-time Olive Young Rankings',
-    description: 'Track the top trending K-Beauty products from Olive Young. Real-time rankings of Korean skincare, makeup, and beauty products updated daily from Seoul.',
+    description: 'Track the top trending K-Beauty products from Olive Young. Real-time rankings of Korean skincare, makeup, and beauty products updated weekly from Seoul.',
     keywords: [
         'K-Beauty',
         'Olive Young',
@@ -22,7 +22,7 @@ export const beautyMetadata: Metadata = {
     ],
     openGraph: {
         title: 'K-Beauty Leaderboard - Real-time Olive Young Rankings',
-        description: 'Track the top trending K-Beauty products from Olive Young. Real-time rankings updated daily from Seoul.',
+        description: 'Track the top trending K-Beauty products from Olive Young. Real-time rankings updated weekly from Seoul.',
         url: 'https://k-rank.vercel.app/beauty',
         images: [
             {
@@ -37,7 +37,7 @@ export const beautyMetadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'K-Beauty Leaderboard - Real-time Olive Young Rankings',
-        description: 'Track the top trending K-Beauty products from Olive Young. Real-time rankings updated daily.',
+        description: 'Track the top trending K-Beauty products from Olive Young. Real-time rankings updated weekly.',
         images: ['/twitter-beauty.png'],
     },
     alternates: {

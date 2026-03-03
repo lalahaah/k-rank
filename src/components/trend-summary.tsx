@@ -13,6 +13,7 @@ import {
     Minus,
     TrendingDown
 } from 'lucide-react';
+import { HeavyRainIcon } from '@/components/weather-icons';
 import { FirebaseRankingRepository } from '@/infrastructure/repositories/firebase-ranking-repository';
 import { RankingItem, MediaRankingItem, RestaurantRankingItem, PlaceRankingItem } from '@/domain/entities/ranking';
 
@@ -201,34 +202,47 @@ export function TrendSummary() {
                                 </div>
                                 <div className="text-right">
                                     <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest block mb-1">
-                                        {item.id === "beauty" ? "Daily" : "Weekly"}
+                                        Weekly
                                     </span>
                                     <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border-2 ${item.textColor} border-current opacity-80 flex items-center gap-1`}>
-                                        {item.change === "Stable" ? <Minus size={10} /> : item.change.startsWith('+') ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                                        {item.change}
+                                        {item.id === "food" || item.id === "place" ? <Minus size={10} /> : (item.change === "Stable" ? <Minus size={10} /> : item.change.startsWith('+') ? <TrendingUp size={10} /> : <TrendingDown size={10} />)}
+                                        {item.id === "food" || item.id === "place" ? "Stable" : item.change}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="mb-6 flex-1 text-left">
-                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{item.category} Insight</p>
-                                <h3 className="text-xl font-black text-gray-900 leading-[1.1] mb-3 group-hover:text-brand-500 transition-colors line-clamp-2">
-                                    {item.title}
-                                </h3>
-                                <div className="flex items-center gap-1.5 text-brand-500 font-black text-sm uppercase">
-                                    {item.stat}
-                                </div>
-                            </div>
 
-                            <div className="mb-8 p-4 bg-gray-50/50 rounded-2xl border border-gray-100/50">
-                                <div className="flex justify-between items-end mb-2">
-                                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
-                                        {item.id === "beauty" ? "24-Hour Velocity" : "7-Day Velocity"}
-                                    </span>
-                                    <span className="text-[9px] font-bold text-gray-400 uppercase">Live</span>
+                            {item.id === "food" || item.id === "place" ? (
+                                <div className="flex-1 flex flex-col items-center justify-center text-center mt-2 mb-8">
+                                    <div className="relative">
+                                        <HeavyRainIcon size={64} className={item.textColor} />
+                                    </div>
+                                    <h4 className="text-xl font-black tracking-tighter text-gray-900 mt-4 leading-none">COMING SOON</h4>
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-2 tracking-widest">새단장 중</p>
                                 </div>
-                                <Sparkline data={item.pulse} color={item.color} />
-                            </div>
+                            ) : (
+                                <>
+                                    <div className="mb-6 flex-1 text-left">
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">{item.category} Insight</p>
+                                        <h3 className="text-xl font-black text-gray-900 leading-[1.1] mb-3 group-hover:text-brand-500 transition-colors line-clamp-2">
+                                            {item.title}
+                                        </h3>
+                                        <div className="flex items-center gap-1.5 text-brand-500 font-black text-sm uppercase">
+                                            {item.stat}
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-8 p-4 bg-gray-50/50 rounded-2xl border border-gray-100/50">
+                                        <div className="flex justify-between items-end mb-2">
+                                            <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">
+                                                7-Day Velocity
+                                            </span>
+                                            <span className="text-[9px] font-bold text-gray-400 uppercase">Live</span>
+                                        </div>
+                                        <Sparkline data={item.pulse} color={item.color} />
+                                    </div>
+                                </>
+                            )}
 
                             <a href={item.link} className="flex items-center justify-between group/link pt-6 border-t border-gray-50">
                                 <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Go to Board</span>

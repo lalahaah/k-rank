@@ -34,7 +34,7 @@ export function SeoContent() {
               <strong> Netflix Korea</strong> for media,
               <strong> Google Places</strong> for trending restaurants, and
               <strong> VisitKorea TourAPI</strong> for must-visit destinations.
-              Unlike static blogs, our AI-curated leaderboard updates daily to reflect what Koreans are actually experiencing <em>right now</em>.
+              Unlike static blogs, our AI-curated leaderboard updates weekly to reflect what Koreans are actually experiencing <em>right now</em>.
             </p>
             <p className="text-gray-600 leading-relaxed font-medium">
               Whether you are looking for the next <strong>K-Beauty holy grail</strong>, the most talked-about <strong>K-Drama</strong>,

@@ -30,7 +30,7 @@ export function Footer() {
                     <div className="col-span-1 md:col-span-1">
                         <Logo variant="brand" className="mb-4" size="lg" />
                         <p className="text-sm text-gray-500 leading-relaxed">
-                            The data-driven heartbeat of K-Culture. We decode the latest signals from Seoul to bring you daily rankings in Beauty, Media, Food, and Places.
+                            The data-driven heartbeat of K-Culture. We decode the latest signals from Seoul to bring you weekly rankings in Beauty, Media, Food, and Places.
                         </p>
                     </div>
 
@@ -98,7 +98,7 @@ export function Footer() {
                         <h4 className="font-bold text-gray-900 mb-4 text-sm uppercase tracking-wide">Disclosure</h4>
                         <div className="space-y-4">
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                Next Idea Lab Co., Ltd. is a participant in the Amazon Services LLC Associates Program.
+                                Lucifer Co., Ltd. is a participant in the Amazon Services LLC Associates Program.
                                 We may earn commissions on qualifying purchases made through our links at no extra cost to you.
                             </p>
                             <div className="pt-2 border-t border-gray-200">
@@ -112,7 +112,7 @@ export function Footer() {
                             <div className="pt-2">
                                 <h5 className="text-[10px] font-bold text-gray-700 uppercase mb-1">Takedown Policy</h5>
                                 <p className="text-[10px] text-gray-400 leading-tight">
-                                    If you believe your copyright is being infringed, please contact us at <span className="underline">legal@nextidealab.com</span> for immediate removal.
+                                    If you believe your copyright is being infringed, please contact us at <span className="underline">hello@nextidealab.app</span> for immediate removal.
                                 </p>
                             </div>
                         </div>
@@ -122,7 +122,7 @@ export function Footer() {
                 {/* Bottom Bar */}
                 <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-gray-400">
-                        &copy; {new Date().getFullYear()} Next Idea Lab Co., Ltd. All rights reserved.
+                        &copy; {new Date().getFullYear()} Lucifer Co., Ltd. All rights reserved.
                     </p>
 
                 </div>

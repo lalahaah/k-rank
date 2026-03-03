@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: "K-Rank Leaderboard | Real-time Korean Trends Rankings",
     template: "%s | K-Rank"
   },
-  description: "The OP.GG for K-Trends - Discover real-time rankings of K-Beauty, K-Media, K-Food, and K-Places. Track trending Korean products and content updated daily from Seoul.",
+  description: "The OP.GG for K-Trends - Discover real-time rankings of K-Beauty, K-Media, K-Food, and K-Places. Track trending Korean products and content updated weekly from Seoul.",
   keywords: [
     "K-Beauty Rankings",
     "Korean Beauty Products",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'K-Rank Leaderboard | Real-time Korean Trends Rankings',
-    description: 'The OP.GG for K-Trends - Track trending Korean products and content updated daily from Seoul.',
+    description: 'The OP.GG for K-Trends - Track trending Korean products and content updated weekly from Seoul.',
     images: ['/twitter-image.png'],
     creator: '@krank',
   },

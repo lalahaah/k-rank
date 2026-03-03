@@ -6,7 +6,7 @@ import { Metadata } from 'next';
  */
 export const mediaMetadata: Metadata = {
     title: 'K-Media Leaderboard - Netflix Korea Top 10 Rankings',
-    description: 'Discover the top trending K-Dramas and Korean shows on Netflix. Real-time rankings of Korean movies, dramas, and entertainment content updated daily.',
+    description: 'Discover the top trending K-Dramas and Korean shows on Netflix. Real-time rankings of Korean movies, dramas, and entertainment content updated weekly.',
     keywords: [
         'K-Drama',
         'Netflix Korea',
@@ -22,7 +22,7 @@ export const mediaMetadata: Metadata = {
     ],
     openGraph: {
         title: 'K-Media Leaderboard - Netflix Korea Top 10 Rankings',
-        description: 'Discover the top trending K-Dramas and Korean shows on Netflix. Real-time rankings updated daily.',
+        description: 'Discover the top trending K-Dramas and Korean shows on Netflix. Real-time rankings updated weekly.',
         url: 'https://k-rank.vercel.app/media',
         images: [
             {
@@ -37,7 +37,7 @@ export const mediaMetadata: Metadata = {
     twitter: {
         card: 'summary_large_image',
         title: 'K-Media Leaderboard - Netflix Korea Top 10 Rankings',
-        description: 'Discover the top trending K-Dramas and Korean shows on Netflix. Real-time rankings updated daily.',
+        description: 'Discover the top trending K-Dramas and Korean shows on Netflix. Real-time rankings updated weekly.',
         images: ['/twitter-media.png'],
     },
     alternates: {
