@@ -13,7 +13,7 @@ export default function PlacePage() {
             <main className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                 <div className="bg-white p-12 md:p-16 rounded-[3rem] shadow-sm border border-gray-100 max-w-2xl w-full">
                     <div className="flex justify-center mb-8">
-                        <HeavyRainIcon size={96} className="text-place-300" />
+                        <HeavyRainIcon size={96} className="text-place-500" />
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-gray-900 mb-4">
                         COMING SOON
