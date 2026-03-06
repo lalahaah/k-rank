@@ -33,6 +33,10 @@ const nextConfig: NextConfig = {
         hostname: "tong.visitkorea.or.kr",
         pathname: "/cms/resource/**",
       },
+      {
+        protocol: "https",
+        hostname: "m.media-amazon.com",
+      },
     ],
   },
 };

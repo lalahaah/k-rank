@@ -128,7 +128,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                     {/* Data Rows */}
                     <div className="divide-y divide-gray-100">
                         {rankings.map((item, index) => (
-                            <React.Fragment key={item.rank}>
+                            <React.Fragment key={`${item.rank}-${item.productName}-${item.brand}-${index}`}>
                                 <div
                                     /* 모바일: 카드 레이아웃, 태블릿 이상: 그리드 레이아웃 */
                                     className="flex flex-col gap-3 p-4 md:grid md:grid-cols-12 md:gap-4 md:px-6 md:py-4 md:items-center hover:bg-brand-50 transition-colors group"
@@ -149,7 +149,7 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                     src={item.imageUrl}
                                                     alt={item.productName}
                                                     fill
-                                                    className="object-cover"
+                                                    className="object-cover transition-transform duration-500 group-hover:scale-110"
                                                     sizes="(max-width: 768px) 80px, 48px"
                                                     unoptimized
                                                     onError={(e) => {
@@ -164,22 +164,26 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                                 />
                                             </div>
                                             <div className="min-w-0 flex-1">
-                                                <div className="font-bold text-base md:text-sm text-text-heading line-clamp-2 md:truncate">
+                                                <div className="font-bold text-base md:text-sm text-text-heading line-clamp-2 md:truncate group-hover:text-beauty-600 transition-colors">
                                                     {item.productName}
                                                 </div>
                                                 <div className="text-sm md:text-xs text-text-muted truncate mt-0.5">
                                                     {item.brand}
                                                 </div>
-                                                <div className="text-sm md:text-xs font-medium text-heading mt-1">
-                                                    {(!item.price || item.price === "N/A") ? "Global Price" : `₩${String(item.price).replace('원', '')}`}
+                                                <div className="text-sm md:text-xs font-semibold text-beauty-500 mt-1">
+                                                    {(!item.price || item.price === "N/A") ? "Global Price" : `₩${String(item.price).toLocaleString()}`}
                                                 </div>
                                                 {item.nikIndex && (
-                                                    <div className="mt-2 flex items-center gap-2">
-                                                        <span className="text-[10px] font-bold bg-brand-100 text-brand-600 px-1.5 py-0.5 rounded">
-                                                            NIK {item.nikIndex}
-                                                        </span>
+                                                    <div className="mt-2 space-y-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] font-bold bg-beauty-50 text-beauty-600 px-2 py-0.5 rounded-full border border-beauty-100 flex items-center gap-1">
+                                                                <span className="w-1 h-1 rounded-full bg-beauty-400 animate-pulse"></span>
+                                                                AI Pick {item.nikIndex}
+                                                            </span>
+                                                        </div>
                                                         {item.culturalContext && (
-                                                            <div className="text-[11px] md:text-[10px] text-gray-500 italic mt-1 leading-relaxed border-l-2 border-brand-200 pl-2">
+                                                            <div className="text-[11px] md:text-[10px] text-gray-500 italic leading-relaxed bg-gray-50 p-2 rounded-lg border-l-2 border-beauty-200">
+                                                                <span className="not-italic mr-1">💡</span>
                                                                 {item.culturalContext}
                                                             </div>
                                                         )}
@@ -190,23 +194,23 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                     </div>
 
                                     {/* 모바일 메타 정보: Trend + Tags */}
-                                    <div className="flex flex-col gap-2 md:contents">
+                                    <div className="flex flex-col gap-3 md:contents">
                                         {/* Trend */}
                                         <div className="md:col-span-2 md:flex md:justify-center">
                                             {item.trend > 0 ? (
-                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-trend-up bg-red-50 px-2 py-1 rounded w-fit">
-                                                    <TrendingUp size={14} />
+                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 border border-red-100 px-2 py-1 rounded-full shadow-sm">
+                                                    <TrendingUp size={12} strokeWidth={3} />
                                                     {item.trend}
                                                 </span>
                                             ) : item.trend < 0 ? (
-                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-trend-down bg-blue-50 px-2 py-1 rounded w-fit">
-                                                    <TrendingDown size={14} />
+                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-1 rounded-full shadow-sm">
+                                                    <TrendingDown size={12} strokeWidth={3} />
                                                     {Math.abs(item.trend)}
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-trend-stable bg-gray-50 px-2 py-1 rounded w-fit">
-                                                    <Minus size={14} />
-                                                    0
+                                                <span className="inline-flex items-center gap-1 text-xs font-bold text-gray-400 bg-gray-50 border border-gray-100 px-2 py-1 rounded-full">
+                                                    <Minus size={12} strokeWidth={3} />
+                                                    NEW
                                                 </span>
                                             )}
                                         </div>
@@ -216,9 +220,9 @@ export function LeaderboardTable({ rankings: initialRankings, isCategoryHidden =
                                             {item.tags.map((tag, idx) => (
                                                 <span
                                                     key={idx}
-                                                    className="bg-gray-100 text-gray-600 text-xs md:text-[10px] px-2.5 md:px-2 py-1 rounded-full"
+                                                    className="bg-white text-gray-600 border border-gray-200 text-[11px] md:text-[10px] px-2.5 md:px-2 py-0.5 rounded-md shadow-sm group-hover:border-beauty-200 transition-colors"
                                                 >
-                                                    {tag}
+                                                    #{tag}
                                                 </span>
                                             ))}
                                         </div>

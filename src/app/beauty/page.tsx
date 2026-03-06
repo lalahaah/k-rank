@@ -95,20 +95,25 @@ export default function BeautyPage() {
             {/* Billboard Ad (Header Bottom) */}
             <BillboardAd />
 
-            {/* Hero Section - Beauty Theme (Aligned with Food Style) */}
-            <section className="bg-white py-16 md:py-24 overflow-hidden relative">
+            {/* Hero Section - Beauty Theme (Enhanced Premium Look) */}
+            <section className="bg-white py-20 md:py-32 overflow-hidden relative border-b border-gray-50">
+                {/* Background Accents */}
+                <div className="absolute top-0 right-0 w-[50%] h-full bg-gradient-to-l from-beauty-50/50 to-transparent pointer-events-none"></div>
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-beauty-100/30 rounded-full blur-[100px] pointer-events-none"></div>
+
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
-                    <div className="max-w-2xl">
-                        <div className="inline-flex items-center gap-2 bg-beauty-50 text-beauty-600 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest mb-6">
-                            <span className="flex h-2 w-2 rounded-full bg-beauty-500 animate-pulse"></span>
-                            AI-Curated from Top K-Beauty Platforms
+                    <div className="max-w-3xl">
+                        <div className="inline-flex items-center gap-2 bg-white border border-beauty-100 text-beauty-600 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 shadow-sm">
+                            <span className="flex h-2 w-2 rounded-full bg-beauty-400 animate-ping"></span>
+                            AI-Curated Trends v2.5
                         </div>
-                        <h1 className="text-5xl md:text-7xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-6">
-                            DECODE K-BEAUTY <br />
-                            <span className="text-beauty-500">TRENDS NOW.</span>
+                        <h1 className="text-6xl md:text-8xl font-black text-gray-900 tracking-tighter leading-[0.85] mb-8">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-beauty-600">DECODE</span> <br />
+                            K-BEAUTY <span className="text-beauty-500">NOW.</span>
                         </h1>
-                        <p className="text-lg text-gray-500 font-medium leading-relaxed">
-                            The definitive guide to what's actually trending in Korea's beauty scene. Our AI editor analyzes weekly rankings from <strong className="text-gray-900">Olive Young</strong>, <strong className="text-gray-900">Hwahae</strong>, and <strong className="text-gray-900">Glowpick</strong> to show you the real winners.
+                        <p className="text-xl text-gray-500 font-medium leading-relaxed max-w-xl">
+                            The definitive guide to Korea's most-wanted products. <br />
+                            Our AI engine deciphers weekly data from <span className="text-gray-900 font-bold border-b-2 border-beauty-200">Olive Young</span>, <span className="text-gray-900 font-bold border-b-2 border-beauty-200">Hwahae</span>, and <span className="text-gray-900 font-bold border-b-2 border-beauty-200">Glowpick</span>.
                         </p>
                     </div>
                 </div>

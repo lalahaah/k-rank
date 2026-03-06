@@ -55,3 +55,10 @@ __pycache__/
 # Scraping debug files
 oliveyoung_debug.html
 oliveyoung_debug.png
+
+# Local caches and temporary data
+scripts/gemini_cache.json
+scripts/names_to_translate.json
+scripts/names_to_translate.txt
+scripts/editorial_ranking_v2_5.json
+scripts/editorial_ranking_v2_4.json

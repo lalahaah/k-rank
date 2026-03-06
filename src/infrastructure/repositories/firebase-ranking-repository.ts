@@ -11,7 +11,8 @@ export class FirebaseRankingRepository implements IRankingRepository {
             if (category === 'place') {
                 firestoreCategory = 'place';
             } else if (category !== 'all') {
-                firestoreCategory = `beauty-${category}`;
+                // 이미 'beauty-' 접두어가 붙어있는지 확인하여 중복 방지
+                firestoreCategory = category.startsWith('beauty-') ? category : `beauty-${category}`;
             }
 
             const rankingsRef = collection(db, 'daily_rankings');

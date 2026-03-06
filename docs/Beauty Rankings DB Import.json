@@ -1,0 +1,831 @@
+[
+  {
+    "id": "2026-03-05-all",
+    "date": "2026-03-05",
+    "category": "all",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "Anua PDRN Hyaluronic Acid Capsule Serum",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/51n80x9XUGL._SL1000_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "Round Lab Birch Juice Moisturizing Sunscreen",
+        "price_krw": 25000,
+        "image_url": "https://m.media-amazon.com/images/I/51H-1G9Y-tL._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "fwee Lip & Cheek Blurry Pudding Pot",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/61NlB8M-VWL._SL1500_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "Torriden Dive-In Low Molecular Hyaluronic Acid Serum",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51OInV6h5GL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "Mediheal Madecassoside Blemish Pad",
+        "price_krw": 17000,
+        "image_url": "https://m.media-amazon.com/images/I/61P0U8zR+GL._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "Biodance Bio-Collagen Real Deep Mask",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51Kz2H+8m2L._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "Aestura Atobarrier 365 Cream",
+        "price_krw": 31000,
+        "image_url": "https://m.media-amazon.com/images/I/61-A7rVp+ML._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "Rom&nd Glasting Color Gloss",
+        "price_krw": 13000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "VT Reedle Shot 100",
+        "price_krw": 32000,
+        "image_url": "https://m.media-amazon.com/images/I/61SId9p71BL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "COSRX The 6 Peptide Skin Booster Serum",
+        "price_krw": 24500,
+        "image_url": "https://m.media-amazon.com/images/I/61m9U2m+SXL._SL1000_.jpg"
+      }
+    ]
+  },
+  {
+    "id": "2026-03-05-skincare",
+    "date": "2026-03-05",
+    "category": "skincare",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "Anua PDRN Hyaluronic Acid Capsule Serum",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/51n80x9XUGL._SL1000_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "Torriden Dive-In Low Molecular Hyaluronic Acid Serum",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51OInV6h5GL._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "Aestura Atobarrier 365 Cream",
+        "price_krw": 31000,
+        "image_url": "https://m.media-amazon.com/images/I/61-A7rVp+ML._SL1000_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "COSRX The 6 Peptide Skin Booster Serum",
+        "price_krw": 24500,
+        "image_url": "https://m.media-amazon.com/images/I/61m9U2m+SXL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "Wellage Real Hyaluronic Blue 100 Ampoule",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51P9Y3H+fKL._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "Innisfree Retinol Cica Repair Ampoule",
+        "price_krw": 32000,
+        "image_url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "Manyo Factory Pure Cleansing Oil",
+        "price_krw": 19900,
+        "image_url": "https://m.media-amazon.com/images/I/61k8U2W+YQL._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "Fation Nosca9 Trouble Serum",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "Round Lab 1025 Dokdo Toner",
+        "price_krw": 15000,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BCL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "Goodal Green Tangerine Vita C Dark Spot Care Serum",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 11,
+        "name_en": "beplain Greenful pH-Balanced Cleansing Foam",
+        "price_krw": 14000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      },
+      {
+        "rank": 12,
+        "name_en": "S.NATURE Aqua Squalane Moisturizing Cream",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/61m1R5F-3vL._SL1000_.jpg"
+      },
+      {
+        "rank": 13,
+        "name_en": "ISOI Blemish Care Up Serum",
+        "price_krw": 29800,
+        "image_url": "https://m.media-amazon.com/images/I/61z8U2m+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 14,
+        "name_en": "SKIN1004 Madagascar Centella Ampoule",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/61W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 15,
+        "name_en": "numbuzin No.5 Vitamin Concentrated Serum",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/51w8U2m+FBL._SL1000_.jpg"
+      },
+      {
+        "rank": 16,
+        "name_en": "Sungboon Editor Green Tomato Pore Lifting Ampoule",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/51m8U2m+GKL._SL1000_.jpg"
+      },
+      {
+        "rank": 17,
+        "name_en": "VT Reedle Shot 100",
+        "price_krw": 32000,
+        "image_url": "https://m.media-amazon.com/images/I/61SId9p71BL._SL1000_.jpg"
+      },
+      {
+        "rank": 18,
+        "name_en": "Bioderma Sensibio H2O Micellar Water",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/61z9U2m+HJL._SL1000_.jpg"
+      },
+      {
+        "rank": 19,
+        "name_en": "Dr.Jart+ Cicapair Intensive Soothing Repair Serum",
+        "price_krw": 38000,
+        "image_url": "https://m.media-amazon.com/images/I/51w9U2m+DML._SL1000_.jpg"
+      },
+      {
+        "rank": 20,
+        "name_en": "Hanyul Pure Artemisia Calming Water",
+        "price_krw": 25000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      }
+    ]
+  },
+  {
+    "id": "2026-03-05-suncare",
+    "date": "2026-03-05",
+    "category": "suncare",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "Round Lab Birch Juice Moisturizing Sunscreen",
+        "price_krw": 25000,
+        "image_url": "https://m.media-amazon.com/images/I/51H-1G9Y-tL._SL1000_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "SKIN1004 Madagascar Centella Hyalu-Cica Water-Fit Sun Serum",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/61v+1vG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "eSpoir Water Splash Sun Cream Ceramide",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "TOCOBO Bio Watery Sun Cream",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51P8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "d'Alba Waterfull Essence Sun Cream",
+        "price_krw": 29000,
+        "image_url": "https://m.media-amazon.com/images/I/51Z7C-O+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "Cell Fusion C Laser Sunscreen 100",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/61k8U2W+YQL._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "Anua Heartleaf Silky Moisture Sun Cream",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/61m9U2m+SXL._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "Dr.G Green Mild Up Sun Plus",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/61z8U2m+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "beplain Mung Bean Mild Sunscreen",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51m8U2m+GKL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "Mediheal Tea Tree Soothing Sun Cream",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/61k9U2m+WPL._SL1000_.jpg"
+      },
+      {
+        "rank": 11,
+        "name_en": "Innisfree Hyaluron Moist Sunscreen",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/51H8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 12,
+        "name_en": "Aestura Derma UV 365 Barrier Hydro Sunscreen",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 13,
+        "name_en": "Goodal Green Tangerine Vita C Dark Spot Care Sun Serum",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      },
+      {
+        "rank": 14,
+        "name_en": "Dewytree Urban Shade Anti-Pollution Sun",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/51w9U2m+DML._SL1000_.jpg"
+      },
+      {
+        "rank": 15,
+        "name_en": "HERA UV Protector Multi Defense",
+        "price_krw": 50000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      },
+      {
+        "rank": 16,
+        "name_en": "Shingmulnara Oxygen Water Light Sun Spray",
+        "price_krw": 12800,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BCL._SL1000_.jpg"
+      },
+      {
+        "rank": 17,
+        "name_en": "Anessa Perfect UV Sunscreen Skincare Milk",
+        "price_krw": 36000,
+        "image_url": "https://m.media-amazon.com/images/I/61z9U2m+HJL._SL1000_.jpg"
+      },
+      {
+        "rank": 18,
+        "name_en": "Uriage Bariesun Stick Invisible",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 19,
+        "name_en": "HERA UV Protector Tone-Up",
+        "price_krw": 50000,
+        "image_url": "https://m.media-amazon.com/images/I/51w8U2m+FBL._SL1000_.jpg"
+      },
+      {
+        "rank": 20,
+        "name_en": "La Roche-Posay Anthelios UVMUNE 400",
+        "price_krw": 32000,
+        "image_url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL._SL1000_.jpg"
+      }
+    ]
+  },
+  {
+    "id": "2026-03-05-masks",
+    "date": "2026-03-05",
+    "category": "masks",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "Mediheal Madecassoside Blemish Pad",
+        "price_krw": 17000,
+        "image_url": "https://m.media-amazon.com/images/I/61P0U8zR+GL._SL1000_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "Biodance Bio-Collagen Real Deep Mask",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51Kz2H+8m2L._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "SKINFOOD Carrot Carotene Calming Water Pad",
+        "price_krw": 26000,
+        "image_url": "https://m.media-amazon.com/images/I/71YyM8rA6vL._SL1000_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "Torriden Dive-In Low Molecular Hyaluronic Acid Mask",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/51OInV6h5GL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "numbuzin No.3 Super Glowing Essence Toner Pad",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BCL._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "Abib Gummy Sheet Mask Heartleaf Sticker",
+        "price_krw": 4000,
+        "image_url": "https://m.media-amazon.com/images/I/61W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "ilso Natural Mild Clear Nose Pack",
+        "price_krw": 12000,
+        "image_url": "https://m.media-amazon.com/images/I/61k8U2W+YQL._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "celimax Ji Woo Gae Heartleaf BHA Peeling Pad",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/61z9U2m+HJL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "Goodal Green Tangerine Vita C Toner Pad",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "Anua Heartleaf 77 Clear Pad",
+        "price_krw": 25000,
+        "image_url": "https://m.media-amazon.com/images/I/51m8U2m+GKL._SL1000_.jpg"
+      },
+      {
+        "rank": 11,
+        "name_en": "Mediheal Tea Tree Essential Mask",
+        "price_krw": 2000,
+        "image_url": "https://m.media-amazon.com/images/I/61z8U2m+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 12,
+        "name_en": "Dr.G Red Blemish Clear Quick Soothing Pack",
+        "price_krw": 3000,
+        "image_url": "https://m.media-amazon.com/images/I/51w8U2m+FBL._SL1000_.jpg"
+      },
+      {
+        "rank": 13,
+        "name_en": "Medicube Zero Pore Pad 2.0",
+        "price_krw": 26000,
+        "image_url": "https://m.media-amazon.com/images/I/51W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 14,
+        "name_en": "Abib Collagen Gel Mask",
+        "price_krw": 5000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      },
+      {
+        "rank": 15,
+        "name_en": "Fation Nosca9 Trouble Pad",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      },
+      {
+        "rank": 16,
+        "name_en": "Bring Green Tea Tree Cica Soothing Toner Pad",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/61k9U2m+WPL._SL1000_.jpg"
+      },
+      {
+        "rank": 17,
+        "name_en": "Dewytree Pick And Quick Calming Full Mask",
+        "price_krw": 23000,
+        "image_url": "https://m.media-amazon.com/images/I/51w9U2m+DML._SL1000_.jpg"
+      },
+      {
+        "rank": 18,
+        "name_en": "Sungboon Editor Green Tomato Pore Peeling Jumbo Pad",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51H8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 19,
+        "name_en": "make p:rem Inteca Soothing Patch",
+        "price_krw": 12000,
+        "image_url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 20,
+        "name_en": "Real Barrier Aqua Soothing Ampoule Mask",
+        "price_krw": 3000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      }
+    ]
+  },
+  {
+    "id": "2026-03-05-makeup",
+    "date": "2026-03-05",
+    "category": "makeup",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "fwee Lip & Cheek Blurry Pudding Pot",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/61NlB8M-VWL._SL1500_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "Rom&nd Glasting Color Gloss",
+        "price_krw": 13000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "WAKEMAKE Soft Blurring Eye Palette",
+        "price_krw": 34000,
+        "image_url": "https://m.media-amazon.com/images/I/51W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "dasique Mood Blur Lip Pencil",
+        "price_krw": 14000,
+        "image_url": "https://m.media-amazon.com/images/I/51w8U2m+FBL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "HERA Sensual Nude Gloss",
+        "price_krw": 40000,
+        "image_url": "https://m.media-amazon.com/images/I/51-A7rVp+ML._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "Laneige Neo Cushion Matte",
+        "price_krw": 30000,
+        "image_url": "https://m.media-amazon.com/images/I/61-A7rVp+ML._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "eSpoir Pro Tailor Be Glow Cushion Newclass",
+        "price_krw": 38000,
+        "image_url": "https://m.media-amazon.com/images/I/61k9U2m+WPL._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "CLIO Kill Cover Mesh Glow Cushion",
+        "price_krw": 36000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "AMUSE Jel-Fit Tint",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/61z9U2m+HJL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "hince Mood Enhancer Water Liquid Glow",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/61z8U2m+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 11,
+        "name_en": "Peripera Ink Mood Glowy Tint",
+        "price_krw": 11000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 12,
+        "name_en": "too cool for school Artclass By Rodin Shading",
+        "price_krw": 16000,
+        "image_url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 13,
+        "name_en": "JUNGSAEMMOOL Essential Skin Nuder Cushion",
+        "price_krw": 42000,
+        "image_url": "https://m.media-amazon.com/images/I/51H8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 14,
+        "name_en": "CLIO Kill Lash Superproof Mascara",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51w9U2m+DML._SL1000_.jpg"
+      },
+      {
+        "rank": 15,
+        "name_en": "BBIA Last Auto Gel Eyeliner",
+        "price_krw": 9000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      },
+      {
+        "rank": 16,
+        "name_en": "BANILA CO Clean It Zero Cleansing Balm",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      },
+      {
+        "rank": 17,
+        "name_en": "LUNA Long Lasting Tip Concealer",
+        "price_krw": 14000,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BCL._SL1000_.jpg"
+      },
+      {
+        "rank": 18,
+        "name_en": "colorgram Tanghulu Tangle Glow Tint",
+        "price_krw": 9800,
+        "image_url": "https://m.media-amazon.com/images/I/51m8U2m+GKL._SL1000_.jpg"
+      },
+      {
+        "rank": 19,
+        "name_en": "lilybyred Smiley Lip Blending Stick",
+        "price_krw": 12000,
+        "image_url": "https://m.media-amazon.com/images/I/61m9U2m+SXL._SL1000_.jpg"
+      },
+      {
+        "rank": 20,
+        "name_en": "ETUDE Shadow Shading",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      }
+    ]
+  },
+  {
+    "id": "2026-03-05-haircare",
+    "date": "2026-03-05",
+    "category": "haircare",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "LABO-H Hair Loss Relief Shampoo",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51H8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "UNOVE Deep Damage Treatment EX",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/51Kz2H+8m2L._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "mise en scene Perfect Serum Original",
+        "price_krw": 15000,
+        "image_url": "https://m.media-amazon.com/images/I/51W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "AROMATICA Rosemary Root Enhancer",
+        "price_krw": 16000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "Dr.Groot Hair Loss Control Shampoo",
+        "price_krw": 31000,
+        "image_url": "https://m.media-amazon.com/images/I/61k8U2W+YQL._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "Healing Bird No Wash Ampoule Treatment",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BCL._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "Dr.FORHAIR Folligen Shampoo",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "MOREMO Water Treatment Miracle 10",
+        "price_krw": 15000,
+        "image_url": "https://m.media-amazon.com/images/I/61m9U2m+SXL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "Silk Therapy Original Essence",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "Longtake Sandalwood Intensive Shampoo",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/61z8U2m+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 11,
+        "name_en": "Headley Hair Pack",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/51w8U2m+FBL._SL1000_.jpg"
+      },
+      {
+        "rank": 12,
+        "name_en": "JSOUP Purple J Water Pack",
+        "price_krw": 26000,
+        "image_url": "https://m.media-amazon.com/images/I/51m8U2m+GKL._SL1000_.jpg"
+      },
+      {
+        "rank": 13,
+        "name_en": "CURLYSHYLL Silky Oil Serum",
+        "price_krw": 28000,
+        "image_url": "https://m.media-amazon.com/images/I/61k9U2m+WPL._SL1000_.jpg"
+      },
+      {
+        "rank": 14,
+        "name_en": "KUNDAL Nature Shampoo",
+        "price_krw": 10000,
+        "image_url": "https://m.media-amazon.com/images/I/61z9U2m+HJL._SL1000_.jpg"
+      },
+      {
+        "rank": 15,
+        "name_en": "Syoss Silicone Free Repair Shampoo",
+        "price_krw": 16000,
+        "image_url": "https://m.media-amazon.com/images/I/51w9U2m+DML._SL1000_.jpg"
+      },
+      {
+        "rank": 16,
+        "name_en": "Kerastase Elixir Ultime",
+        "price_krw": 65000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      },
+      {
+        "rank": 17,
+        "name_en": "Amos Professional Curling Essence 2X",
+        "price_krw": 12000,
+        "image_url": "https://m.media-amazon.com/images/I/51H8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 18,
+        "name_en": "DASHU Daily Protein Shampoo",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 19,
+        "name_en": "GROWUS Sea Salt Therapy Scalp Scaler",
+        "price_krw": 24000,
+        "image_url": "https://m.media-amazon.com/images/I/51W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 20,
+        "name_en": "Dahlia Hair Oil",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      }
+    ]
+  },
+  {
+    "id": "2026-03-05-bodycare",
+    "date": "2026-03-05",
+    "category": "bodycare",
+    "items": [
+      {
+        "rank": 1,
+        "name_en": "Illiyoon Ceramide Ato Lotion",
+        "price_krw": 21900,
+        "image_url": "https://m.media-amazon.com/images/I/61I4x8N-S8L._SL1000_.jpg"
+      },
+      {
+        "rank": 2,
+        "name_en": "CeraVe Moisturizing Lotion",
+        "price_krw": 19000,
+        "image_url": "https://m.media-amazon.com/images/I/61k8U2W+YQL._SL1000_.jpg"
+      },
+      {
+        "rank": 3,
+        "name_en": "BEYOND Deep Moisture Body Emulsion",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BCL._SL1000_.jpg"
+      },
+      {
+        "rank": 4,
+        "name_en": "Derma:B Daily Moisture Body Lotion",
+        "price_krw": 16000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      },
+      {
+        "rank": 5,
+        "name_en": "Aesop Resurrection Aromatique Hand Balm",
+        "price_krw": 39000,
+        "image_url": "https://m.media-amazon.com/images/I/61m9U2m+SXL._SL1000_.jpg"
+      },
+      {
+        "rank": 6,
+        "name_en": "ON:THE BODY Veilment Spa Body Wash",
+        "price_krw": 14900,
+        "image_url": "https://m.media-amazon.com/images/I/51k8U2m+AZL._SL1000_.jpg"
+      },
+      {
+        "rank": 7,
+        "name_en": "Dr. Bronner's Peppermint Pure-Castile Liquid Soap",
+        "price_krw": 20000,
+        "image_url": "https://m.media-amazon.com/images/I/61z8U2m+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 8,
+        "name_en": "Kamill Hand & Nail Cream Classic",
+        "price_krw": 6200,
+        "image_url": "https://m.media-amazon.com/images/I/51w8U2m+FBL._SL1000_.jpg"
+      },
+      {
+        "rank": 9,
+        "name_en": "L'Occitane Shea Butter Hand Cream",
+        "price_krw": 15000,
+        "image_url": "https://m.media-amazon.com/images/I/51m8U2m+GKL._SL1000_.jpg"
+      },
+      {
+        "rank": 10,
+        "name_en": "Bouquet Garni Body Wash",
+        "price_krw": 12000,
+        "image_url": "https://m.media-amazon.com/images/I/61k9U2m+WPL._SL1000_.jpg"
+      },
+      {
+        "rank": 11,
+        "name_en": "Aveeno Skin Relief Moisturizing Lotion",
+        "price_krw": 19900,
+        "image_url": "https://m.media-amazon.com/images/I/61z9U2m+HJL._SL1000_.jpg"
+      },
+      {
+        "rank": 12,
+        "name_en": "Bioderma Atoderm Cream",
+        "price_krw": 25000,
+        "image_url": "https://m.media-amazon.com/images/I/51w9U2m+DML._SL1000_.jpg"
+      },
+      {
+        "rank": 13,
+        "name_en": "Vaseline Intensive Care Lotion",
+        "price_krw": 12000,
+        "image_url": "https://m.media-amazon.com/images/I/51k9U2m+RAL._SL1000_.jpg"
+      },
+      {
+        "rank": 14,
+        "name_en": "Neutrogena Body Emulsion",
+        "price_krw": 15000,
+        "image_url": "https://m.media-amazon.com/images/I/51H8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 15,
+        "name_en": "La Roche-Posay Lipikar Baume AP+M",
+        "price_krw": 32000,
+        "image_url": "https://m.media-amazon.com/images/I/51Y8U2m8NCL._SL1000_.jpg"
+      },
+      {
+        "rank": 16,
+        "name_en": "SABON Body Scrub",
+        "price_krw": 45000,
+        "image_url": "https://m.media-amazon.com/images/I/51W8-uG8oBL._SL1000_.jpg"
+      },
+      {
+        "rank": 17,
+        "name_en": "Dr.G Dermoisture Barrier D Liquid Toner",
+        "price_krw": 26000,
+        "image_url": "https://m.media-amazon.com/images/I/61Z7C-O+NLL._SL1000_.jpg"
+      },
+      {
+        "rank": 18,
+        "name_en": "Malin+Goetz Body Wash",
+        "price_krw": 34000,
+        "image_url": "https://m.media-amazon.com/images/I/61k8U2W+YQL._SL1000_.jpg"
+      },
+      {
+        "rank": 19,
+        "name_en": "SKIN U Deep Musk Body Lotion",
+        "price_krw": 22000,
+        "image_url": "https://m.media-amazon.com/images/I/51X9E8m+BBCL._SL1000_.jpg"
+      },
+      {
+        "rank": 20,
+        "name_en": "Uriage Gyn-Phy Refreshing Gel",
+        "price_krw": 18000,
+        "image_url": "https://m.media-amazon.com/images/I/51F8U2m+PQL._SL1000_.jpg"
+      }
+    ]
+  }
+]
